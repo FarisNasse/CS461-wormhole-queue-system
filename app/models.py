@@ -28,6 +28,9 @@ class User(db.Model):
     )
     tickets: orm.WriteOnlyMapped['Ticket'] = orm.relationship(back_populates="wormhole_assistant")
 
+    def __repr__(self) -> str:
+        return f"<User(id={self.id}, username={self.username}, email={self.email})>"
+
 class Ticket(db.Model):
     __tablename__ = 'tickets'
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
@@ -46,3 +49,6 @@ class Ticket(db.Model):
         sa.ForeignKey('users.id'), default=None, index=True
     )
     wormhole_assistant: orm.Mapped[User] = orm.relationship(back_populates="tickets")
+
+    def __repr__(self) -> str:
+        return f"<Ticket(id={self.id}, student_name={self.student_name}, status={self.status})>"
