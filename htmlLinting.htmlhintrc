@@ -1,9 +1,12 @@
 {
-  "attr-lowercase": true,
-  "tagname-lowercase": true,
-  "doctype-first": "warn",
   "tag-pair": true,
-  "spec-char-escape": true,
+  "attr-no-duplication": true,
   "id-unique": true,
-  "src-not-empty": true
+  "doctype-first": false,
+  "src-not-empty": false,
+  "attr-lowercase": false,
+  "style-disabled": false,
+  "spec-char-escape": true,
+  "custom-tags": ["block", "extends", "if", "else", "endif", "for", "endfor", "with", "endwith"], 
+  "custom-attrs": ["{{", "}}"]
 }
