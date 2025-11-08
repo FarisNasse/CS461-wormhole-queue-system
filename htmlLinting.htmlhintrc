@@ -7,6 +7,19 @@
   "attr-lowercase": false,
   "style-disabled": false,
   "spec-char-escape": true,
-  "custom-tags": ["block", "extends", "if", "else", "endif", "for", "endfor", "with", "endwith"], 
-  "custom-attrs": ["{{", "}}"]
+  "space-tab-mixed-disabled": "space",
+  "linebreak-style": "LF",
+  "attr-value-not-empty": false,
+  
+  "custom-tags": [
+    "block", "extends", "if", "else", "endif", 
+    "for", "endfor", "with", "endwith", "macro", "endmacro"
+  ],
+  
+  "custom-attrs": [
+    "{{", "}}", "{%", "%}"
+  ],
+  
+  "id-class-value": "dash",
+  "img-alt-require": true
 }
