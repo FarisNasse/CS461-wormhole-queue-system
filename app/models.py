@@ -56,7 +56,7 @@ class Ticket(db.Model):
     wa_id: orm.Mapped[Optional[int]] = orm.mapped_column(
         sa.ForeignKey('users.id'), default=None, index=True
     )
-    wormhole_assistant: orm.Mapped[User] = orm.relationship(back_populates="tickets")
+    wormhole_assistant: orm.Mapped[Optional[User]] = orm.relationship(back_populates="tickets")
 
     def __repr__(self) -> str:
         return f"<Ticket(id={self.id}, student_name={self.student_name}, status={self.status})>"
