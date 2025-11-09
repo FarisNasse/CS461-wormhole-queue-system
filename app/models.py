@@ -20,10 +20,10 @@ from app import db
 
 class User(db.Model):
     __tablename__ = 'users'
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
     username: orm.Mapped[str] = orm.mapped_column(sa.String(100))
     email: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
-    password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(128))
+    password_hash: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(128))
     is_admin: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     time_created: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
@@ -41,15 +41,15 @@ class User(db.Model):
 
 class Ticket(db.Model):
     __tablename__ = 'tickets'
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
     student_name: orm.Mapped[str] = orm.mapped_column(sa.String(100))
     table: orm.Mapped[str] = orm.mapped_column(sa.String(50))
-    physics_course: orm.Mapped[str] = orm.mappped_column(sa.String(50))
+    physics_course: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     status: orm.Mapped[str] = orm.mapped_column(sa.String(20), index=True, default='live')
     time_created: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    time_resolved: orm.Mappped[Optional[datetime]] = orm.mapped_column(
+    time_resolved: orm.Mapped[Optional[datetime]] = orm.mapped_column(
         default=None
     )
     number_of_students: orm.Mapped[Optional[int]] = orm.mapped_column(default=1)
