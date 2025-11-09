@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page">
+    <div class="section student-home">
+        <br/>
+        <h2 style="text-align:center">For Students</h2>
+        <p style="text-align:center"><a href="{{ url_for('createhelprequest') }}">Submit a Help Request</a></p>
+    </div>
+    <div class="section ta-home">
+        <br/>
+        <h2 style="text-align:center">For Teaching Assistants</h2>
+        {% if current_user.is_anonymous %}
+            <p style="text-align:center"><a href="{{ url_for('login') }}">Log In</a></p>
+        {% else %}
+            <p style="text-align:center"><a href="{{ url_for('userpage', username=current_user.username) }}">Profile</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
