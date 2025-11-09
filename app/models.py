@@ -12,9 +12,11 @@ Typical usage example:
 
 from datetime import datetime, timezone
 from typing import Optional
+
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from werkzeug.security import generate_password_hash, check_password_hash
+
 from app import db
 
 
@@ -38,6 +40,12 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def claim_ticket(self, ticket: 'Ticket') -> bool:
+        if ticket.wa_id is None:
+            ticket.assign_to(self)
+            return True
+        return False
 
 class Ticket(db.Model):
     __tablename__ = 'tickets'
@@ -70,7 +78,21 @@ class Ticket(db.Model):
             "status": self.status,
             "created_at": self.created_at,
         }
-      
+    
+    def mark_resolved(self, user: Optional['User'] = None):
+        self.status = 'resolved'
+        self.time_resolved = datetime.now(timezone.utc)
+        if user and self.wa_id is None:
+            self.assign_to(user)
+        db.session.commit()
+
+    def assign_to(self, user: 'User'):
+        """Assign ticket to a user."""
+        self.wa_id = user.id
+        db.session.commit()
+    
+# Old models for reference
+
 # class Ticket(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
 #     student_name = db.Column(db.String(80))

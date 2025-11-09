@@ -6,6 +6,11 @@ from app import db
 
 auth_bp = Blueprint('auth', __name__)
 
+@auth_bp.route("/")
+@auth_bp.route("/index")
+def index():
+    return jsonify({"message": "Welcome to the Wormhole Queue System API!"}), 200
+
 @auth_bp.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
