@@ -46,7 +46,7 @@ class Ticket(db.Model):
     table: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     physics_course: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     status: orm.Mapped[str] = orm.mapped_column(sa.String(20), index=True, default='live')
-    time_created: orm.Mapped[datetime] = orm.mapped_column(
+    created_at: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
     time_resolved: orm.Mapped[Optional[datetime]] = orm.mapped_column(
@@ -65,8 +65,8 @@ class Ticket(db.Model):
         return {
             "id": self.id,
             "student_name": self.student_name,
-            "table_number": self.table_number,
-            "class_name": self.class_name,
+            "table": self.table,
+            "physics_course": self.physics_course,
             "status": self.status,
             "created_at": self.created_at,
         }
