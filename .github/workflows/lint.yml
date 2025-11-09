@@ -1,0 +1,32 @@
+name: Lint HTML and CSS
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Fix file permissions
+        run: |
+          chmod +x ./node_modules/.bin/htmlhint
+          chmod +x ./node_modules/.bin/stylelint
+
+      - name: Lint HTML
+        run: npx htmlhint "Templates/**/*.html"
+
+      - name: Lint CSS
+        run: npx stylelint "static/**/*.css"
