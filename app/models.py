@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import sqlalchemy as sa
-import sqlalchemy.orm as orm
+from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
