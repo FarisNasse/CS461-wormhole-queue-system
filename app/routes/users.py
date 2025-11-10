@@ -51,4 +51,4 @@ user_bp = Blueprint('users', __name__)
 
     db.session.add(new_user)
     db.session.commit()
-    return(jsonify(data), 201) # return lik
+    return jsonify(data), 201 # return lik
