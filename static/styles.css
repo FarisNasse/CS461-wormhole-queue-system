@@ -1,3 +1,94 @@
+#main-header {
+    background-color: #000000;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 2.5rem 1rem;
+}
+
+#main-header h1 {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/* Style the paragraph below the heading */
+#main-header p {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  color: #d6d6d6;
+}
+
+/* Main navigation bar */
+#main-nav {
+  background-color: #ffffff;   /* dark gray, like Wormhole nav */
+  display: flex;               /* horizontal layout */
+  justify-content: center;     /* center all links */
+  gap: 10rem;                   /* space between links */
+  padding: 1rem 1rem;       /* vertical + horizontal padding */
+  flex-wrap: wrap;             /* wrap on smaller screens */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* subtle shadow */
+  border-radius: 6px;          /* rounded edges */
+}
+
+#main-nav ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns in the first row */
+    gap: 1rem; /* spacing between grid items */
+    list-style: none; /* remove bullets */
+    padding: 0;
+    margin: 0 auto; /* center the grid */
+    max-width: 800px; /* optional: limit width */
+}
+
+/* Second row has 2 items, the grid will automatically flow */
+#main-nav li {
+    background-color: #D73F09; /* OSU blue button */
+    border-radius: 6px;
+    text-align: center;
+    padding: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+#main-nav li a {
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem; /* space between icon and text */
+    padding: 1rem;
+}
+
+#main-nav li a i {
+    font-size: 40px;    /* larger icon */
+    margin: 0;          /* remove default margin */
+}
+
+#main-nav li:hover {
+    background-color: #ad2e00;
+}
+
+/* Optional: Adjust for smaller screens */
+@media (max-width: 600px) {
+    #main-nav ul {
+        grid-template-columns: 1fr; /* single column on mobile */
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 * {
   margin: 20;
   padding: 0;
