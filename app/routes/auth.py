@@ -1,5 +1,5 @@
 #auth.py
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, render_template
 from werkzeug.security import check_password_hash
 from app.models import User
 from app import db
@@ -9,7 +9,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route("/")
 @auth_bp.route("/index")
 def index():
-    return jsonify({"message": "Welcome to the Wormhole Queue System API!"}), 200
+    return render_template("index.html")
 
 @auth_bp.route('/api/login', methods=['POST'])
 def login():
