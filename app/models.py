@@ -27,7 +27,7 @@ class User(db.Model):
     email: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
     password_hash: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(128))
     is_admin: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
-    time_created: orm.Mapped[datetime] = orm.mapped_column(
+    created_at: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
     tickets: orm.WriteOnlyMapped['Ticket'] = orm.relationship(back_populates="wormhole_assistant")
