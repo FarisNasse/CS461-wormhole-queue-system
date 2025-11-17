@@ -29,3 +29,7 @@ Data
 
 Note from 10/31  
 Append instead of create new archive file  
+
+Note from 11/17
+Reduce 'business' on home page
+Make code accessible
