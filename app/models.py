@@ -44,12 +44,12 @@ class Ticket(db.Model):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     student_name: orm.Mapped[str] = orm.mapped_column(sa.String(100))
     table: orm.Mapped[str] = orm.mapped_column(sa.String(50))
-    physics_course: orm.Mapped[str] = orm.mappped_column(sa.String(50))
+    physics_course: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     status: orm.Mapped[str] = orm.mapped_column(sa.String(20), index=True, default='live')
     time_created: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    time_resolved: orm.Mappped[Optional[datetime]] = orm.mapped_column(
+    time_resolved: orm.Mapped[Optional[datetime]] = orm.mapped_column(
         default=None
     )
     number_of_students: orm.Mapped[Optional[int]] = orm.mapped_column(default=1)
