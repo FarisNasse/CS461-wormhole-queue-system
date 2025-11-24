@@ -4,12 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 def create_app(testing=False):
     """
     Application factory for the Wormhole Queue System.
 
     Supports:
-    - normal mode (sqlite file)
+    - normal mode (sqlite file on disk)
     - testing mode (SQLite in-memory DB)
 
     This function is used by production, development, and pytest.
@@ -24,6 +25,7 @@ def create_app(testing=False):
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
+
     else:
         # ---------------------------------------------------
         # Normal Development/Production Configuration
@@ -32,12 +34,12 @@ def create_app(testing=False):
         app.config.setdefault("SECRET_KEY", "dev-secret-key")
 
     # ---------------------------------------------------
-    # Initialize database
+    # Initialize DB
     # ---------------------------------------------------
     db.init_app(app)
 
     # ---------------------------------------------------
-    # Simple root route (for testing / CI)
+    # Root test route (CI / smoke test)
     # ---------------------------------------------------
     @app.route("/")
     def index():
@@ -48,14 +50,15 @@ def create_app(testing=False):
     # ---------------------------------------------------
     from app.routes.auth import auth_bp
 
-    # tickets blueprint is optional during early development
     try:
         from app.routes.tickets import tickets_bp
     except ModuleNotFoundError:
         tickets_bp = None
 
+    # Register auth routes
     app.register_blueprint(auth_bp)
 
+    # Register tickets routes ONLY if file exists
     if tickets_bp:
         app.register_blueprint(tickets_bp)
 

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Live Queue</title>
+        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    </head>
+    <body>
+        <header id="live-queue-header">
+
+            <nav class = "nav-bar">
+                <ul>
+                    <li>
+                        <a href = "./index.html">Home Page</a>
+                    </li>
+                    <li>
+                        <a href = "./createticket.html">Submit Help Request</a>
+                    </li>
+                    <li>
+                        <a href = "./livequeue.html">Live Queue</a>
+                    </li>
+                    <li>
+                        <a href = "./assistantlogin.html">Wormhole Assistants</a>
+                    </li>
+                </ul>
+            </nav>
+
+        </header>
+
+        <h2>Live Queue</h2>
+        <div id="queue-container">
+            <table id="queue-table">
+                <thead>
+                    <tr>
+                        <th>Index</th>
+                        <th>Name</th>
+                        <th>Table</th>
+                        <th>Class</th>
+                    </tr>
+                </thead>
+                <tbody id="queue-body">
+                    <!-- Queue entries will be dynamically inserted here -->
+                </tbody>
+            </table>
+
+    </body>
+</html>

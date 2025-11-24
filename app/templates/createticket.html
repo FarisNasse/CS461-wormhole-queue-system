@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Help Request</title>
+        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    </head>
+    <body>
+        <header id="ticket-creation-header">
+
+            <nav class = "nav-bar">
+                <ul>
+                    <li>
+                        <a href = "./index.html">Home Page</a>
+                    </li>
+                    <li>
+                        <a href = "./createticket.html">Submit Help Request</a>
+                    </li>
+                    <li>
+                        <a href = "./livequeue.html">Live Queue</a>
+                    </li>
+                    <li>
+                        <a href = "./assistantlogin.html">Wormhole Assistants</a>
+                    </li>
+                </ul>
+            </nav>
+
+        </header>
+
+        <h2>Create Help Request</h2>
+
+            <form action="/submit_ticket" method="post">
+                <label for="name">Name (No spaces):</label><br>
+                <input type="text" id="name" name="name" required pattern="\S+"><br><br>
+
+                <label for="class">Select Class…</label><br>
+                <select id="class" name="class" required>
+                <option value="">-- Please choose --</option>
+                <option value="Physics211">Physics 211</option>
+                <option value="Physics212">Physics 212</option>
+                <option value="Physics213">Physics 213</option>
+                <option value="Physics20x">Physics 20x</option>
+                <option value="Physics20xEcampus">Physics 20x Ecampus</option>
+                <option value="Physics21xEcampus">Physics 21x Ecampus</option>
+                </select><br><br>
+
+                <label for="location">Select Location…</label><br>
+                <select id="location" name="location" required>
+                <option value="">-- Please choose --</option>
+                <option value="Teams">Teams</option>
+                <option value="Zoom">Zoom</option>
+                </select><br><br>
+
+                <button type="submit">Submit</button>
+            </form>
+    </body>
