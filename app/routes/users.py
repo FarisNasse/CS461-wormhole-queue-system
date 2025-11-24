@@ -25,7 +25,11 @@ def users_remove():
    
     db.session.delete(user)
     db.session.commit()
-    return jsonify({'success': 'item deleted'}), 200
+
+    if user.is_admin:
+        return jsonify({'success': 'admin removed'}), 200
+
+    return jsonify({'success': 'user removed'}), 200
 
 #route to add user
 @user_bp.route('/users_add', methods=['POST'])
@@ -33,19 +37,29 @@ def users_add():
 
     data = request.get_json()
 
-    # check for all input parameters, and return error if missing any
+    # initial post request inputs. pass, email, and is_admin r currently used
+    # email and pass can be empty
+    # can be figured out after UI is figured out
     if not data or not all(k in data for k in ['username',
-                                                'email',
-                                                'password',
                                                 'is_admin']):
         return jsonify({'error': 'Missing required fields'}), 400
 
+    # default email if email is missing
+    email = ''
+    if not data['email']:
+        email = 'ONID@oregonstate.edu'
+    else:
+        email = data['email']
 
     new_user = User(
         username = data['username'],
-        email = data['email'],
+        email = email,
         is_admin = data.get("is_admin", False)
     )
+
+    # set default password if no password provided
+    if not data['password']:
+        new_user.set_password("Wormhole")
 
     new_user.set_password(data['password'])
 
