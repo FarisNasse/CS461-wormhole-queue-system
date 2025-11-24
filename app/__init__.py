@@ -11,10 +11,9 @@ def create_app(testing=False):
 
     Supports:
     - normal mode (sqlite file)
-    - testing mode (SQLite in-memory DB)
-
-    This function is used by production, development, and pytest.
+    - testing mode (SQLite in-memory)
     """
+
     app = Flask(__name__)
 
     # -----------------------------
@@ -27,18 +26,18 @@ def create_app(testing=False):
         app.config["SECRET_KEY"] = "test-secret"
     else:
         # -----------------------------
-        # Normal (Development/Production)
+        # Normal Development/Production Config
         # -----------------------------
         app.config.setdefault("SQLALCHEMY_DATABASE_URI", "sqlite:///app.db")
         app.config.setdefault("SECRET_KEY", "dev-secret-key")
 
     # -----------------------------
-    # Initialize database
+    # Initialize Extensions
     # -----------------------------
     db.init_app(app)
 
     # -----------------------------
-    # Simple root route (for testing)
+    # Root test route
     # -----------------------------
     @app.route("/")
     def index():
@@ -49,18 +48,11 @@ def create_app(testing=False):
     # -----------------------------
     from app.routes.auth import auth_bp
 
-    # Some teams put tickets in app/routes/tickets.py — adjust this if needed:
+    # Optional: tickets blueprint if it exists
     try:
         from app.routes.tickets import tickets_bp
     except ModuleNotFoundError:
         tickets_bp = None
-
-    # Optional error blueprint
-    try:
-        from app.routes.error import error_bp
-        app.register_blueprint(error_bp)
-    except ModuleNotFoundError:
-        pass
 
     app.register_blueprint(auth_bp)
 
