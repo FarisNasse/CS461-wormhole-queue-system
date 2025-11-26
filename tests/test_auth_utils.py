@@ -45,7 +45,7 @@ def test_login_required_blocks_unauthenticated(auth_test_client):
 
 
 def test_login_required_allows_authenticated(auth_test_client):
-    """[NEW] Ensure users with a valid session are allowed."""
+    """Ensure users with a valid session are allowed."""
     # Create a valid user session
     with auth_test_client.session_transaction() as sess:
         sess["user_id"] = 123

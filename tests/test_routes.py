@@ -1,5 +1,4 @@
 # tests/test_routes.py
-from flask import session
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
