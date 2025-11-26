@@ -29,6 +29,9 @@ def login():
     username = data.get('username')
     password = data.get('password')
 
+    if not username or not password:
+        return jsonify({'error': 'Username and password are required'}), 400
+
     user = User.query.filter_by(username=username).first()
 
     if user and check_password_hash(user.password_hash, password):

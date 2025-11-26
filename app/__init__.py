@@ -22,8 +22,14 @@ except Exception as e:
 
 def create_app(testing=False):
     """
-    Application factory for the Wormhole Queue System.
-    # ... docstring content ...
+    Creates and configures the Flask application instance.
+    
+    Args:
+        testing (bool): If True, configures the app for testing with an
+            in-memory SQLite database.
+            
+    Returns:
+        Flask: The configured Flask application instance.
     """
     app = Flask(__name__)
 
@@ -57,8 +63,7 @@ def create_app(testing=False):
     # ---------------------------------------------------
     # Register Blueprints
     # ---------------------------------------------------
-    # These imports are guaranteed to succeed because they were verified 
-    # outside this function (above) with the try/except block.
+    # The imports happened at the top of the file, so we just register them here.
     app.register_blueprint(auth_bp)
     app.register_blueprint(tickets_bp)
 
