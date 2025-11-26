@@ -1,9 +1,11 @@
 # app/__init__.py
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate  # [Restored Import]
+from config import Config          # [Restored Import]
 
 db = SQLAlchemy()
-
+migrate = Migrate()                # [Restored Instance]
 
 def create_app(testing=False):
     """
@@ -18,32 +20,38 @@ def create_app(testing=False):
     app = Flask(__name__)
 
     # ---------------------------------------------------
-    # Testing Configuration
+    # Configuration
     # ---------------------------------------------------
+    # [Fix] Load the base Config class first (restores normal DB path)
+    app.config.from_object(Config)
+
     if testing:
         app.config["TESTING"] = True
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
-
-    else:
-        # ---------------------------------------------------
-        # Normal Development/Production Configuration
-        # ---------------------------------------------------
-        app.config.setdefault("SQLALCHEMY_DATABASE_URI", "sqlite:///app.db")
-        app.config.setdefault("SECRET_KEY", "dev-secret-key")
+    
+    # [Fix] Removed the 'else' block with hardcoded relative paths. 
+    # The app.config.from_object(Config) call above handles the 
+    # production/dev configuration correctly now.
 
     # ---------------------------------------------------
-    # Initialize DB
+    # Initialize Extensions
     # ---------------------------------------------------
     db.init_app(app)
+    migrate.init_app(app, db)  # [Fix] Initialize Flask-Migrate
+
+    # [Fix] Import models to register them with SQLAlchemy
+    # This must happen after db.init_app but before the app runs
+    from app import models 
 
     # ---------------------------------------------------
     # Root test route (CI / smoke test)
     # ---------------------------------------------------
-    @app.route("/")
-    def index():
-        return jsonify({"message": "Welcome to the Wormhole Queue System API!"}), 200
+    # [Fix] Changed route to '/health' to avoid conflict with auth_bp
+    @app.route("/health")
+    def health_check():
+        return jsonify({"message": "Wormhole Queue System API is running"}), 200
 
     # ---------------------------------------------------
     # Register Blueprints
