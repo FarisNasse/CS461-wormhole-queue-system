@@ -7,17 +7,11 @@ from config import Config
 db = SQLAlchemy()
 migrate = Migrate()
 
-# --- REQUIRED IMPORTS (Fail Loudly) ---
-# The auth and tickets blueprints are CRITICAL to the app's function.
-# If they fail to import, the app should halt immediately.
-
-try:
-    from app.routes.auth import auth_bp
-    from app.routes.tickets import tickets_bp
-except Exception as e:
-    # Use RuntimeError to stop the application startup process if a critical dependency fails.
-    # This prevents the app from running in a broken state.
-    raise RuntimeError(f"FATAL: Failed to import critical blueprints: {e}")
+# --- REQUIRED IMPORTS ---
+# We import these at the top level. If they fail (e.g., syntax error or missing file),
+# the application will crash immediately with a helpful traceback.
+from app.routes.auth import auth_bp
+from app.routes.tickets import tickets_bp
 
 
 def create_app(testing=False):
