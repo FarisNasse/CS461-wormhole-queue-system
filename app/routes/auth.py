@@ -1,15 +1,4 @@
-# ===============================
-# auth.py — Authentication Routes
-# ===============================
-# This file defines the authentication-related API routes for the
-# Wormhole Queue System backend. It handles:
-#   • User login (verifies username/password)
-#   • User logout (clears the session)
-#   • Session checking (to verify if a user is currently logged in)
-#
-# It uses Flask’s session mechanism to temporarily store user data between
-# requests, and Werkzeug’s password hashing utilities to securely verify passwords.
-
+# app/routes/auth.py
 from flask import Blueprint, request, jsonify, session, render_template
 from werkzeug.security import check_password_hash
 from app.models import User
@@ -27,7 +16,8 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route("/")
 @auth_bp.route("/index")
 def index():
-    return render_template("index.html")
+    # [Nitpick Fix] Added explicit status code 200 for consistency
+    return render_template("index.html"), 200
 
 # -------------------------------
 # POST /api/login
@@ -44,11 +34,13 @@ def login():
     if user and check_password_hash(user.password_hash, password):
         session['user_id'] = user.id
         session['is_admin'] = user.is_admin
+        # [Check] Explicit 200 OK
         return jsonify({
             'message': 'Login successful',
             'is_admin': user.is_admin
         }), 200
 
+    # [Check] Explicit 401 Unauthorized
     return jsonify({'error': 'Invalid credentials'}), 401
 
 
@@ -59,6 +51,7 @@ def login():
 @auth_bp.route('/api/logout', methods=['POST'])
 def logout():
     session.clear()
+    # [Check] Explicit 200 OK
     return jsonify({'message': 'Logged out successfully'}), 200
 
 
@@ -69,9 +62,11 @@ def logout():
 @auth_bp.route('/api/check-session', methods=['GET'])
 def check_session():
     if 'user_id' in session:
+        # [Check] Explicit 200 OK
         return jsonify({
             'logged_in': True,
             'is_admin': session.get('is_admin', False)
         }), 200
 
+    # [Check] Explicit 200 OK
     return jsonify({'logged_in': False}), 200

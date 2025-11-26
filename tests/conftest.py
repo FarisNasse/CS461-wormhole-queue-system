@@ -12,13 +12,6 @@ from app import create_app, db
 def test_app():
     app = create_app(testing=True)
 
-    app.config.update({
-        "TESTING": True,
-        "WTF_CSRF_ENABLED": False,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "SECRET_KEY": "test-secret-key"
-    })
-
     with app.app_context():
         db.create_all()
         yield app

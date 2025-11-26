@@ -1,7 +1,11 @@
 # tests/test_routes.py
-def test_index_route(test_client):
-    response = test_client.get("/")
+def test_health_check_route(test_client):
+    """Test the /health route returns 200 and the correct JSON message."""
+    # [FIX]: Testing the new /health endpoint instead of the old /
+    response = test_client.get("/health") 
     assert response.status_code == 200
+    assert response.get_json() == {"message": "Wormhole Queue System API is running"}
+
 
 def test_404_for_unknown_route(test_client):
     response = test_client.get("/notreal")
