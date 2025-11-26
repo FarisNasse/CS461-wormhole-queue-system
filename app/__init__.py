@@ -13,7 +13,6 @@ migrate = Migrate()
 from app.routes.auth import auth_bp
 from app.routes.tickets import tickets_bp
 
-
 def create_app(testing=False):
     """
     Creates and configures the Flask application instance.

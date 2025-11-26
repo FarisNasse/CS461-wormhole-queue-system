@@ -1,28 +1,39 @@
-# app/routes/auth.py
 from flask import Blueprint, request, jsonify, session, render_template
 from werkzeug.security import check_password_hash
 from app.models import User
 from app import db
+from app.auth_utils import login_required
 
-# -------------------------------
-# Create a Blueprint for auth routes
-# -------------------------------
 auth_bp = Blueprint('auth', __name__)
 
 # -------------------------------
-# GET /
+# GET / (Student Home Page)
 # -------------------------------
-# This provides the public landing page.
 @auth_bp.route("/")
 @auth_bp.route("/index")
 def index():
-    # [Nitpick Fix] Added explicit status code 200 for consistency
-    return render_template("index.html"), 200
+    # [FIX] Now renders your existing main home page
+    return render_template("index.html")
 
 # -------------------------------
-# POST /api/login
+# GET /assistant-login (Assistant Login Page)
 # -------------------------------
-# Verifies username/password and sets session variables.
+@auth_bp.route("/assistant-login")
+def assistant_login():
+    # [FIX] Renders the login form specifically at this URL
+    return render_template("login.html")
+
+# -------------------------------
+# GET /dashboard (Protected Area)
+# -------------------------------
+@auth_bp.route("/dashboard")
+@login_required
+def dashboard():
+    return "<h1>Welcome! You are logged in to the Wormhole System.</h1>", 200
+
+# -------------------------------
+# POST /api/login (The Logic)
+# -------------------------------
 @auth_bp.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -37,39 +48,30 @@ def login():
     if user and check_password_hash(user.password_hash, password):
         session['user_id'] = user.id
         session['is_admin'] = user.is_admin
-        # [Check] Explicit 200 OK
         return jsonify({
             'message': 'Login successful',
             'is_admin': user.is_admin
         }), 200
 
-    # [Check] Explicit 401 Unauthorized
     return jsonify({'error': 'Invalid credentials'}), 401
-
 
 # -------------------------------
 # POST /api/logout
 # -------------------------------
-# Clears the session (logs user out).
 @auth_bp.route('/api/logout', methods=['POST'])
 def logout():
     session.clear()
-    # [Check] Explicit 200 OK
     return jsonify({'message': 'Logged out successfully'}), 200
-
 
 # -------------------------------
 # GET /api/check-session
 # -------------------------------
-# Returns user’s session state.
 @auth_bp.route('/api/check-session', methods=['GET'])
 def check_session():
     if 'user_id' in session:
-        # [Check] Explicit 200 OK
         return jsonify({
             'logged_in': True,
             'is_admin': session.get('is_admin', False)
         }), 200
 
-    # [Check] Explicit 200 OK
     return jsonify({'logged_in': False}), 200
