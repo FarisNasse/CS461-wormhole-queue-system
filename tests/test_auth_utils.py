@@ -1,3 +1,5 @@
+#tests/test_auth_utils.py
+
 import pytest
 from flask import Flask, jsonify
 from app.auth_utils import login_required, admin_required
@@ -86,3 +88,4 @@ def test_admin_required_allows_admin(auth_test_client):
     res = auth_test_client.get("/protected-admin")
     assert res.status_code == 200
     assert res.get_json()["message"] == "ok"
+
