@@ -1,13 +1,9 @@
-#app/models.py
+# app/models.py
 """
 Module Name: models.py
 
-A python module that describes the database models.
-
 Defines User and Ticket database models using SQLAlchemy ORM.
-
-Typical usage example:
-    from app import models
+Updated to support Flask-Login and provide legacy template compatibility.
 """
 
 from datetime import datetime, timezone
@@ -16,14 +12,14 @@ from typing import Optional
 import sqlalchemy as sa
 from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin  # [NEW] Required for Flask-Login
 
 from app import db
 
-
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
-    username: orm.Mapped[str] = orm.mapped_column(sa.String(100))
+    username: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
     email: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
     password_hash: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(128))
     is_admin: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
@@ -46,6 +42,10 @@ class User(db.Model):
             ticket.assign_to(self)
             return True
         return False
+    
+    # [Flask-Login] Optional explicit override (UserMixin does this by default, but this is safe)
+    def get_id(self):
+        return str(self.id)
 
 class Ticket(db.Model):
     __tablename__ = 'tickets'
@@ -65,6 +65,23 @@ class Ticket(db.Model):
         sa.ForeignKey('users.id'), default=None, index=True
     )
     wormhole_assistant: orm.Mapped[Optional[User]] = orm.relationship(back_populates="tickets")
+
+    # --- COMPATIBILITY LAYER (Shims for Legacy Templates) ---
+    # These properties allow old templates to use old names without breaking.
+    
+    @property
+    def name(self):
+        return self.student_name
+
+    @property
+    def phClass(self):
+        return self.physics_course
+
+    @property
+    def time_create(self):
+        return self.created_at
+
+    # --------------------------------------------------------
 
     def __repr__(self) -> str:
         return f"<Ticket(id={self.id}, student_name={self.student_name}, status={self.status})>"
@@ -90,24 +107,3 @@ class Ticket(db.Model):
         """Assign ticket to a user."""
         self.wa_id = user.id
         db.session.commit()
-    
-# Old models for reference
-
-# class Ticket(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     student_name = db.Column(db.String(80))
-#     table_number = db.Column(db.String(10))
-#     class_name = db.Column(db.String(50))
-#     status = db.Column(db.String(50), default="Open")
-#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-#     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-#     deactivated_at = db.Column(db.DateTime, nullable=True)
-#     num_students = db.Column(db.Integer, nullable=True)
-#     current_ta = db.Column(db.String(80), nullable=True)
-
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(64), unique=True, nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=False)
-#     password_hash = db.Column(db.String(128), nullable=False)
-#     is_admin = db.Column(db.Boolean, default=False)

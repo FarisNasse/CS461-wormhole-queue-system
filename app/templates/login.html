@@ -1,64 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wormhole Login</title>
-    <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; }
-        .login-box { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
-        h2 { text-align: center; color: #333; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #0056b3; }
-        .error { color: red; text-align: center; display: none; margin-bottom: 10px; }
-    </style>
-</head>
-<body>
-    <div class="login-box">
-        <h2>System Login</h2>
-        <div id="error-msg" class="error"></div>
-        <form id="loginForm">
-            <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Username" required>
-            <input type="text" id="username" placeholder="Username" autocomplete="username" required>
-            <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
-            <button type="submit">Sign In</button>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page">
+    <div class="section create-ticket">
+        <h2 style="text-align: center; color: #333;">System Login</h2>
+        
+        <div id="error-msg" style="color: red; text-align: center; display: none; margin-bottom: 10px;"></div>
+        
+        <form id="loginForm" align="center">
+            <p style="text-align:center">
+                <label for="username">Username</label><br>
+                <input type="text" id="username" name="username" required style="padding: 5px;">
+            </p>
+            
+            <p style="text-align:center">
+                <label for="password">Password</label><br>
+                <input type="password" id="password" name="password" required style="padding: 5px;">
+            </p>
+            
+            <p style="text-align:center">
+                <button type="submit" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; cursor: pointer;">Sign In</button>
+            </p>
         </form>
+
+        <p style="text-align:center">
+            <a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a>
+        </p>
     </div>
+</div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('error-msg');
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Stop the page from reloading
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('error-msg');
 
-            // clear previous errors
-            errorDiv.style.display = 'none';
+        // Clear previous errors
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
 
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (response.ok) {
-                    // Success! Redirect to dashboard
-                    window.location.href = '/dashboard';
-                } else {
-                    // Show error message
-                    errorDiv.textContent = data.error || 'Login failed';
-                    errorDiv.style.display = 'block';
-                }
-            } catch (err) {
-                errorDiv.textContent = 'Network error. Please try again.';
+            if (response.ok) {
+                // Login Success! Redirect to the dashboard
+                window.location.href = '/dashboard';
+            } else {
+                // Show error message from the server (e.g., "Invalid credentials")
+                errorDiv.textContent = data.error || 'Login failed';
                 errorDiv.style.display = 'block';
             }
-        });
-    </script>
-</body>
-</html>
+        } catch (err) {
+            console.error(err);
+            errorDiv.textContent = 'Network error. Please try again.';
+            errorDiv.style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}

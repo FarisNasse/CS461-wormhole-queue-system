@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="page"><div class="section Tickets">
+    <br />
+    <h2>User List</h2>
+    
+    <p><table style="display:inline-block;">
+        <tr><th>Current Users</th></tr>
+        {% for u in new_users %}
+            <tr><td><a href="{{ url_for('delete', username=u.username) }}">{{ u.username }}</a></td></tr>
+        {% endfor %}
+    </table>
+    <table style="display:inline-block;">
+        <tr><th>Old Users</th></tr>
+    	{% for u in old_users %}
+	<tr><td><a href="{{ url_for('delete', username=u.username) }}">{{ u.username }} (Last Seen: {{ u.last_login.date() }})</a></td></tr>
+	{% endfor %}
+    </table></p>
+</div></div>
+
+{% endblock %}
+
+

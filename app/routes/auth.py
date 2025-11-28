@@ -1,41 +1,41 @@
-from flask import Blueprint, request, jsonify, session, render_template
-from werkzeug.security import check_password_hash
+# app/routes/auth.py
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask_login import current_user, login_user, logout_user, login_required # [NEW]
 from app.models import User
 from app import db
-from app.auth_utils import login_required
+from app.auth_decorators import admin_required
 
 auth_bp = Blueprint('auth', __name__)
 
-# -------------------------------
-# GET / (Student Home Page)
-# -------------------------------
+# --- Routes ---
+
 @auth_bp.route("/")
 @auth_bp.route("/index")
 def index():
-    # [FIX] Now renders your existing main home page
     return render_template("index.html")
 
-# -------------------------------
-# GET /assistant-login (Assistant Login Page)
-# -------------------------------
 @auth_bp.route("/assistant-login")
 def assistant_login():
-    # [FIX] Renders the login form specifically at this URL
+    if current_user.is_authenticated:
+        return redirect(url_for('auth.user_profile')) # Redirect if already logged in
     return render_template("login.html")
 
-# -------------------------------
-# GET /dashboard (Protected Area)
-# -------------------------------
 @auth_bp.route("/dashboard")
-@login_required
-def dashboard():
-    return "<h1>Welcome! You are logged in to the Wormhole System.</h1>", 200
+@auth_bp.route("/profile")
+@login_required  # [NEW] Using Flask-Login's decorator
+def user_profile():
+    # Flask-Login provides 'current_user' automatically.
+    # The template userpage.html uses 'user' for the profile owner and 'current_user' for the viewer.
+    # In the dashboard, they are the same person.
+    return render_template("userpage.html", user=current_user)
 
-# -------------------------------
-# POST /api/login (The Logic)
-# -------------------------------
+# --- API Logic ---
+
 @auth_bp.route('/api/login', methods=['POST'])
 def login():
+    if current_user.is_authenticated:
+        return jsonify({'message': 'Already logged in'}), 200
+
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
@@ -45,9 +45,9 @@ def login():
 
     user = User.query.filter_by(username=username).first()
 
-    if user and check_password_hash(user.password_hash, password):
-        session['user_id'] = user.id
-        session['is_admin'] = user.is_admin
+    if user and user.check_password(password):
+        # [NEW] This is the magic line. It creates the session for you.
+        login_user(user) 
         return jsonify({
             'message': 'Login successful',
             'is_admin': user.is_admin
@@ -55,23 +55,37 @@ def login():
 
     return jsonify({'error': 'Invalid credentials'}), 401
 
-# -------------------------------
-# POST /api/logout
-# -------------------------------
-@auth_bp.route('/api/logout', methods=['POST'])
+@auth_bp.route('/api/logout', methods=['POST', 'GET'])
+@login_required
 def logout():
-    session.clear()
+    logout_user() # [NEW] Clears session automatically
+    if request.method == 'GET':
+        return redirect(url_for('auth.index'))
     return jsonify({'message': 'Logged out successfully'}), 200
 
-# -------------------------------
-# GET /api/check-session
-# -------------------------------
-@auth_bp.route('/api/check-session', methods=['GET'])
-def check_session():
-    if 'user_id' in session:
-        return jsonify({
-            'logged_in': True,
-            'is_admin': session.get('is_admin', False)
-        }), 200
+@auth_bp.route("/register", methods=['GET', 'POST'])
+@login_required  # Layer 1: Must be logged in
+@admin_required  # Layer 2: Must be an Admin
+def register():
+    # Only admins can see the registration form
+    if request.method == 'POST':
+        # ... logic to create user ...
+        pass
+    return render_template("register.html")
 
-    return jsonify({'logged_in': False}), 200
+@auth_bp.route('/users')
+@login_required
+@admin_required
+def user_list():
+    # Only admins can see the list of all users
+    users = User.query.all()
+    # Passing placeholder lists to match Jonathan's template expectations
+    return render_template('user_list.html', new_users=users, old_users=[])
+
+@auth_bp.route('/users/batch')
+@login_required
+@admin_required
+def register_batch():
+    return render_template('register_batch.html')
+
+# ... (Keep reset_password_request placeholder if you want, or remove) ...

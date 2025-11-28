@@ -1,33 +1,56 @@
-# /app/routes/tickets.py
-from flask import Blueprint, jsonify, request
+# app/routes/tickets.py
+from flask import Blueprint, jsonify, request, render_template
 from app import db
 from app.models import Ticket
 
-tickets_bp = Blueprint('tickets', __name__, url_prefix='/api')
+tickets_bp = Blueprint('tickets', __name__)
 
-# GET: list all tickets
-@tickets_bp.route('/tickets', methods=['GET'])
+# -------------------------------
+# HTML Page Routes
+# -------------------------------
+
+@tickets_bp.route('/live-queue')
+def live_queue():
+    return render_template('livequeue.html')
+
+@tickets_bp.route('/create-ticket')
+def create_ticket_page():
+    return render_template('createticket.html')
+
+@tickets_bp.route('/archive')
+def archive():
+    return render_template('archive.html')
+
+@tickets_bp.route('/manage-queue')
+def manage_queue():
+    return render_template('queue.html')
+
+
+# -------------------------------
+# API Routes
+# -------------------------------
+
+@tickets_bp.route('/api/tickets', methods=['GET'])
 def get_tickets():
     tickets = Ticket.query.all()
-    return jsonify([t.to_dict() for t in tickets])
+    return jsonify([t.to_dict() for t in tickets]), 200
 
-# POST: create a new ticket
-@tickets_bp.route('/tickets', methods=['POST'])
+
+@tickets_bp.route('/api/tickets', methods=['POST'])
 def create_ticket():
-    data = request.get_json()
-    if not data or not all(k in data for k in ['student_name', 'table_number', 'class_name']):
-        return jsonify({'error': 'Missing required fields'}), 400
+    data = request.get_json() or {}
 
-    new_ticket = Ticket(
-        student_name=data['student_name'],
-        table_number=data['table_number'],
-        class_name=data['class_name'],
-        status="Open"
+    required = ["student_name", "table", "physics_course"]
+    if not all(k in data and data[k] for k in required):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    ticket = Ticket(
+        student_name=data["student_name"],
+        table=data["table"],
+        physics_course=data["physics_course"]
     )
-    db.session.add(new_ticket)
+
+    db.session.add(ticket)
     db.session.commit()
-    return jsonify(new_ticket.to_dict()), 201
 
-
-
-
+    return jsonify(ticket.to_dict()), 201

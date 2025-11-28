@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='jquery/jquery-4.3.1.js') }}"></script>
+    <script src="{{ url_for('static', filename='socketio/socket.io.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/userpage.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="section Tickets">
+        <h2 style="text-align:center">Tickets (<span id='queue_length'></span>)</h2>
+        
+        {% if current_user.is_authenticated %}
+        <h4 style="text-align:center"><a href="#">Get Next Request</a></h4>
+        <h4 style="text-align:center"><a href="#">Check Current Request</a></h4>
+        {% endif %}
+
+        <h3>Recently Archived Tickets</h3>
+        <ul>
+            </ul>
+        <p style="text-align:center">Last Refresh Time: <span id="refresh_time"></span></p>
+    </div>
+    <div class="section profile">    
+        <h2 style="text-align:center">Profile</h2>
+        <p style="margin:10px">
+            <b>Username: </b>{{ current_user.username }}<br>
+            <b>Email: </b>{{ current_user.email }} <br>
+            <b>Adminstrator: </b>{{ current_user.is_admin }} <br>
+            <a href="{{ url_for('auth.change_password') }}">Change Password</a>
+        </p>
+        {% if current_user.is_admin %}
+            <h3 style="text-align:center">Admin Utilities</h3>
+            <p style="margin:10px"><a href="{{ url_for('auth.register') }}">Register New User</a></p>
+            <p style="margin:10px"><a href="{{ url_for('tickets.manage_queue') }}">Queue</a></p>
+            <p style="margin:10px"><a href="{{ url_for('tickets.archive') }}">Archive</a></p>
+            <p style="margin:10px"><a href="{{ url_for('auth.register_batch') }}">Register Users in Batch</a></p>
+            <p style="margin:10px"><a href="{{ url_for('auth.user_list') }}">TA/LA List</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

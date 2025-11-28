@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page"><div class="section Generic">
+    <h1>New User Registration In Bactch</h1>
+    <form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+    	This page will generate any new TA/LAs out of a list of emails,
+	prompting them to create a password. The emails must be comma
+	seperated, and valid email addresses (this program doesn't 
+	check if the email is valid).
+    </p>
+    <p>
+        {{ form.emailcsv.label }}<br>
+        {{ form.emailcsv(size=32) }}<br>
+        {% for er in form.emailcsv.errors %}
+            <span style="color: red;">[{{ er }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.submit() }}
+    </p>
+    </form>
+</div></div>
+
+{% endblock %}
