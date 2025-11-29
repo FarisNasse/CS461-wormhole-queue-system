@@ -32,12 +32,13 @@
         </header>
         <nav id="main-nav">
             <ul>
-                <li><a href="./createticket.html">
-                    <i class = "fa-solid fa-bolt"></i>
+                <li><a href="{{ url_for('auth.createticket') }}">
+                    <i class="fa-solid fa-bolt"></i>
                     Submit a Help Request</a>
                 </li>
-                <li><a href="./livequeue.html">
-                    <i class = "fa-solid fa-users"></i>
+
+                <li><a href="{{ url_for('auth.livequeue') }}">
+                    <i class="fa-solid fa-users"></i>
                     Live Queue</a>
                 </li>
                 <li><a href="/assistant-login">

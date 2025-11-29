@@ -12,9 +12,17 @@
         <header id="ticket-creation-header">
             <nav class="nav-bar">
                 <ul>
-                    <li><a href="./index.html">Home Page</a></li>
-                    <li><a href="./createticket.html">Submit Help Request</a></li>
-                    <li><a href="./livequeue.html">Live Queue</a></li>
+                    <li>
+                        <a href = "{{ url_for('auth.index')}}">
+                            Home Page</a>
+                    </li>
+                    <li>
+                        <a href = "{{ url_for('auth.createticket') }}">
+                            Submit Help Request</a>
+                    </li>
+                    <li><a href="{{ url_for('auth.livequeue') }}">
+                            Live Queue</a>
+                    </li>
                     <li><a href="./assistantlogin.html">Wormhole Assistants</a></li>
                 </ul>
             </nav>

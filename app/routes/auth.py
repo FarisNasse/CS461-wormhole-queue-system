@@ -7,9 +7,17 @@ from app import db
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route("/")
-@auth_bp.route("/index")
+@auth_bp.route("/index", endpoint = "index")
 def index():
     return render_template("index.html")
+
+@auth_bp.route("/createticket", endpoint = "createticket")
+def createticket():
+    return render_template("createticket.html")
+
+@auth_bp.route("/livequeue", endpoint = "livequeue")
+def livequeue():
+    return render_template("livequeue.html")
 
 @auth_bp.route('/api/login', methods=['POST'])
 def login():
