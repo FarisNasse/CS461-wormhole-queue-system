@@ -1,21 +1,16 @@
 # tests/conftest.py
 import os
 import sys
+import pytest
 
-# Add the project root directory to the Python path
+# Add project root to PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import pytest
 from app import create_app, db
-
 
 @pytest.fixture()
 def test_app():
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-    })
+    app = create_app(testing=True)
 
     with app.app_context():
         db.create_all()
