@@ -11,7 +11,7 @@ auth_bp = Blueprint('auth', __name__)
 # GET / (Student Home Page)
 # -------------------------------
 @auth_bp.route("/")
-@auth_bp.route("/index")
+@auth_bp.route("/index", endpoint = "index")
 def index():
     # [FIX] Now renders your existing main home page
     return render_template("index.html")

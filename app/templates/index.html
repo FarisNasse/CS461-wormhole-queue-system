@@ -15,7 +15,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>The Wormhole</title>
-        <link rel="stylesheet" href="/static/styles.css" />
+        <link rel="stylesheet" href="../static/styles.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     </head>
@@ -32,12 +32,13 @@
         </header>
         <nav id="main-nav">
             <ul>
-                <li><a href="./createticket">
-                    <i class = "fa-solid fa-bolt"></i>
+                <li><a href="{{ url_for('tickets.createticket') }}">
+                    <i class="fa-solid fa-bolt"></i>
                     Submit a Help Request</a>
                 </li>
-                <li><a href="./livequeue">
-                    <i class = "fa-solid fa-users"></i>
+
+                <li><a href="{{ url_for('tickets.livequeue') }}">
+                    <i class="fa-solid fa-users"></i>
                     Live Queue</a>
                 </li>
                 <li><a href="/assistant-login">
