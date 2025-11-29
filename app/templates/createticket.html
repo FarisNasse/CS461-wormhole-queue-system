@@ -6,38 +6,28 @@
         <title>Help Request</title>
         <link rel="stylesheet" href="../static/styles.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
     </head>
+
     <body>
         <header id="ticket-creation-header">
-
-            <nav class = "nav-bar">
+            <nav class="nav-bar">
                 <ul>
-                    <li>
-                        <a href = "./index.html">Home Page</a>
-                    </li>
-                    <li>
-                        <a href = "./createticket.html">Submit Help Request</a>
-                    </li>
-                    <li>
-                        <a href = "./livequeue.html">Live Queue</a>
-                    </li>
-                    <li>
-                        <a href = "./assistantlogin.html">Wormhole Assistants</a>
-                    </li>
+                    <li><a href="./index.html">Home Page</a></li>
+                    <li><a href="./createticket.html">Submit Help Request</a></li>
+                    <li><a href="./livequeue.html">Live Queue</a></li>
+                    <li><a href="./assistantlogin.html">Wormhole Assistants</a></li>
                 </ul>
             </nav>
-
         </header>
 
         <h2>Create Help Request</h2>
 
-            <form action="/submit_ticket" method="post">
-                <label for="name">Name (No spaces):</label><br>
-                <input type="text" id="name" name="name" required pattern="\S+"><br><br>
+        <form id="ticketForm">
+            <label for="name">Name (No spaces):</label><br>
+            <input type="text" id="name" name="student_name" required pattern="\S+"><br><br>
 
-                <label for="class">Select Class…</label><br>
-                <select id="class" name="class" required>
+            <label for="class">Select Class</label><br>
+            <select id="class" name="class_name" required>
                 <option value="">-- Please choose --</option>
                 <option value="Physics211">Physics 211</option>
                 <option value="Physics212">Physics 212</option>
@@ -45,15 +35,57 @@
                 <option value="Physics20x">Physics 20x</option>
                 <option value="Physics20xEcampus">Physics 20x Ecampus</option>
                 <option value="Physics21xEcampus">Physics 21x Ecampus</option>
-                </select><br><br>
+            </select><br><br>
 
-                <label for="location">Select Location…</label><br>
-                <select id="location" name="location" required>
+            <label for="location">Select Location…</label><br>
+            <select id="location" name="location" required>
                 <option value="">-- Please choose --</option>
                 <option value="Teams">Teams</option>
                 <option value="Zoom">Zoom</option>
-                </select><br><br>
+            </select><br><br>
 
-                <button type="submit">Submit</button>
-            </form>
+            <!-- Hidden table number placeholder -->
+            <input type="hidden" name="table_number" value="0">
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="result" style="margin-top:20px; font-weight:bold;"></div>
+
+        <script>
+        document.getElementById("ticketForm").addEventListener("submit", async function (e) {
+            e.preventDefault(); // stop page reload
+
+            const form = new FormData(this);
+
+            // Convert FormData → JSON object
+            const data = {
+                student_name: form.get("student_name"),
+                class_name: form.get("class_name"),
+                table_number: form.get("table_number"),
+                location: form.get("location")
+            };
+
+            const response = await fetch("/api/tickets", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Redirect after successful creation
+                window.location.href = "./livequeue.html";
+            } else {
+                document.getElementById("result").innerText =
+                    "Error: " + result.error;
+            }
+        });
+        </script>
+
+
     </body>
+</html>
