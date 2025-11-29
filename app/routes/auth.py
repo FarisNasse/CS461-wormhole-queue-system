@@ -1,3 +1,4 @@
+# app/routes/auth.py
 from flask import Blueprint, request, jsonify, session, render_template
 from werkzeug.security import check_password_hash
 from app.models import User
@@ -14,6 +15,20 @@ auth_bp = Blueprint('auth', __name__)
 def index():
     # [FIX] Now renders your existing main home page
     return render_template("index.html")
+
+# -------------------------------
+# GET / (Live Queue)
+# -------------------------------
+@auth_bp.route("/livequeue")
+def student():
+    return render_template("livequeue.html")
+
+# -------------------------------
+# GET / (Help Request Creation)
+# -------------------------------
+@auth_bp.route("/createticket")
+def create_ticket_page():
+    return render_template("createticket.html")
 
 # -------------------------------
 # GET /assistant-login (Assistant Login Page)
