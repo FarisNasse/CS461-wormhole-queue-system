@@ -60,7 +60,4 @@ def create_app(testing=False):
     app.register_blueprint(auth_bp)
     app.register_blueprint(tickets_bp)
 
-    from app.routes.tickets import tickets_bp
-    app.register_blueprint(tickets_bp)
-
     return app

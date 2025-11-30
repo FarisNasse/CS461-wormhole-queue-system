@@ -47,3 +47,9 @@ def create_ticket():
     db.session.commit()
 
     return jsonify(new_ticket.to_dict()), 201
+
+# GET: API route to get all open tickets
+@tickets_bp.route('/opentickets', methods=['GET'])
+def get_open_tickets():
+    tickets = Ticket.query.filter_by(status="Open").all()
+    return jsonify([t.to_dict() for t in tickets])
