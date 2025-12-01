@@ -1,32 +1,17 @@
 # app/__init__.py
-<<<<<<< Updated upstream
-from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-=======
 from flask import Flask, jsonify, redirect, render_template, url_for
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
->>>>>>> Stashed changes
 from config import Config
 
 
 db = SQLAlchemy()
 migrate = Migrate()
-<<<<<<< Updated upstream
-
-# --- REQUIRED IMPORTS ---
-# We import these at the top level. If they fail (e.g., syntax error or missing file),
-# the application will crash immediately with a helpful traceback.
-from app.routes.auth import auth_bp
-from app.routes.tickets import tickets_bp
-=======
 login = LoginManager()
 login.login_view = "auth.assistant_login"  # Where to send users who aren't logged in
 
->>>>>>> Stashed changes
 
 def create_app(testing=False):
     """
@@ -62,9 +47,6 @@ def create_app(testing=False):
     from app import models 
 
     # ---------------------------------------------------
-<<<<<<< Updated upstream
-    # Health Check Route
-=======
     # COMPATIBILITY LAYER (The Professional Fix)
     # ---------------------------------------------------
 
@@ -132,7 +114,6 @@ def create_app(testing=False):
 
     # ---------------------------------------------------
     # Health Check
->>>>>>> Stashed changes
     # ---------------------------------------------------
     @app.route("/health")
     def health_check():
@@ -141,13 +122,9 @@ def create_app(testing=False):
     # ---------------------------------------------------
     # Register Blueprints
     # ---------------------------------------------------
-<<<<<<< Updated upstream
-    # The imports happened at the top of the file, so we just register them here.
-=======
     from app.routes.auth import auth_bp
     from app.routes.tickets import tickets_bp
 
->>>>>>> Stashed changes
     app.register_blueprint(auth_bp)
     app.register_blueprint(tickets_bp)
 

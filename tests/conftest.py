@@ -1,30 +1,19 @@
 # tests/conftest.py
 import os
 import sys
-<<<<<<< Updated upstream
-import pytest
-
-# Add project root to PYTHONPATH
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-=======
 
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import pytest
 
->>>>>>> Stashed changes
 from app import create_app, db
 
 
 @pytest.fixture()
 def test_app():
     app = create_app(testing=True)
-<<<<<<< Updated upstream
-=======
     app.config["WTF_CSRF_ENABLED"] = False
->>>>>>> Stashed changes
 
     with app.app_context():
         db.create_all()
@@ -36,8 +25,6 @@ def test_app():
 @pytest.fixture()
 def test_client(test_app):
     return test_app.test_client()
-<<<<<<< Updated upstream
-=======
 
 
 @pytest.fixture()
@@ -54,4 +41,3 @@ def auth_client(test_client):
         "/api/login", json={"username": "testuser", "password": "password"}
     )
     return test_client
->>>>>>> Stashed changes

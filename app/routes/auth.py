@@ -1,13 +1,7 @@
 # app/routes/auth.py
-<<<<<<< Updated upstream
-from flask import Blueprint, request, jsonify, session, render_template
-from werkzeug.security import check_password_hash
-from app.models import User
-=======
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user  # [NEW]
 
->>>>>>> Stashed changes
 from app import db
 from app.auth_utils import login_required
 
@@ -19,58 +13,15 @@ from app.models import User
 
 auth_bp = Blueprint("auth", __name__)
 
-<<<<<<< Updated upstream
-# -------------------------------
-# GET / (Student Home Page)
-# -------------------------------
-=======
 # --- Routes ---
 
 
->>>>>>> Stashed changes
 @auth_bp.route("/")
 @auth_bp.route("/index", endpoint = "index")
 def index():
     # [FIX] Now renders your existing main home page
     return render_template("index.html")
 
-<<<<<<< Updated upstream
-# -------------------------------
-# GET / (Live Queue)
-# -------------------------------
-@auth_bp.route("/livequeue")
-def student():
-    return render_template("livequeue.html")
-
-# -------------------------------
-# GET / (Help Request Creation)
-# -------------------------------
-@auth_bp.route("/createticket")
-def create_ticket_page():
-    return render_template("createticket.html")
-
-# -------------------------------
-# GET /assistant-login (Assistant Login Page)
-# -------------------------------
-@auth_bp.route("/assistant-login")
-def assistant_login():
-    # [FIX] Renders the login form specifically at this URL
-    return render_template("login.html")
-
-# -------------------------------
-# GET /dashboard (Protected Area)
-# -------------------------------
-@auth_bp.route("/dashboard")
-@login_required
-def dashboard():
-    return "<h1>Welcome! You are logged in to the Wormhole System.</h1>", 200
-
-# -------------------------------
-# POST /api/login (The Logic)
-# -------------------------------
-@auth_bp.route('/api/login', methods=['POST'])
-def login():
-=======
 
 @auth_bp.route("/assistant-login")
 def assistant_login():
@@ -97,7 +48,6 @@ def login():
     if current_user.is_authenticated:
         return jsonify({"message": "Already logged in"}), 200
 
->>>>>>> Stashed changes
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
@@ -107,45 +57,13 @@ def login():
 
     user = User.query.filter_by(username=username).first()
 
-<<<<<<< Updated upstream
-    if user and check_password_hash(user.password_hash, password):
-        session['user_id'] = user.id
-        session['is_admin'] = user.is_admin
-        return jsonify({
-            'message': 'Login successful',
-            'is_admin': user.is_admin
-        }), 200
-=======
     if user and user.check_password(password):
         # [NEW] This is the magic line. It creates the session for you.
         login_user(user)
         return jsonify({"message": "Login successful", "is_admin": user.is_admin}), 200
->>>>>>> Stashed changes
 
     return jsonify({"error": "Invalid credentials"}), 401
 
-<<<<<<< Updated upstream
-# -------------------------------
-# POST /api/logout
-# -------------------------------
-@auth_bp.route('/api/logout', methods=['POST'])
-def logout():
-    session.clear()
-    return jsonify({'message': 'Logged out successfully'}), 200
-
-# -------------------------------
-# GET /api/check-session
-# -------------------------------
-@auth_bp.route('/api/check-session', methods=['GET'])
-def check_session():
-    if 'user_id' in session:
-        return jsonify({
-            'logged_in': True,
-            'is_admin': session.get('is_admin', False)
-        }), 200
-
-    return jsonify({'logged_in': False}), 200
-=======
 
 @auth_bp.route("/api/logout", methods=["POST", "GET"])
 @login_required
@@ -241,4 +159,3 @@ def reset_password(token):
         return redirect(url_for("auth.assistant_login"))
 
     return render_template("reset_password.html", form=form)
->>>>>>> Stashed changes

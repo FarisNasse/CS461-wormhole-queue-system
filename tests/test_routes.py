@@ -1,10 +1,6 @@
-<<<<<<< Updated upstream
-# tests/test_routes.py
-=======
 from app import db
 from app.models import User
 
->>>>>>> Stashed changes
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
@@ -42,21 +38,6 @@ def test_dashboard_is_protected(test_client):
     Should return 401 (Unauthorized).
     """
     response = test_client.get("/dashboard")
-<<<<<<< Updated upstream
-    assert response.status_code == 401
-    # Check that we get the JSON error from your @login_required decorator
-    assert response.get_json() == {"error": "Authentication required"}
-
-def test_dashboard_access_granted(test_client):
-    """
-    Verify that '/dashboard' allows users who ARE logged in.
-    We simulate a login by manually setting the session cookie.
-    """
-    # 1. Simulate a logged-in user by setting the session
-    with test_client.session_transaction() as sess:
-        sess['user_id'] = 1  # Fake user ID
-        sess['is_admin'] = False
-=======
     assert response.status_code == 302
     assert "/assistant-login" in response.location
 
@@ -72,7 +53,6 @@ def test_dashboard_access_granted(test_client, test_app):
     test_client.post(
         "/api/login", json={"username": "dash_user", "password": "password"}
     )
->>>>>>> Stashed changes
 
     # 2. Try to access the dashboard
     response = test_client.get("/dashboard")
@@ -85,15 +65,3 @@ def test_dashboard_access_granted(test_client, test_app):
 def test_404_for_unknown_route(test_client):
     response = test_client.get("/notreal")
     assert response.status_code == 404
-<<<<<<< Updated upstream
-
-# tests/test_auth.py
-def test_login_route_exists(test_client):
-    response = test_client.post("/api/login", json={
-        "username": "testuser",
-        "password": "password123"
-    })
-    assert response.status_code in [200, 401]  # Valid route, even if logic incomplete
-
-=======
->>>>>>> Stashed changes

@@ -10,13 +10,8 @@ This module contains integration and unit tests for:
 - Session management and admin flag behavior
 """
 
-<<<<<<< Updated upstream
-from app.models import User
-from app import db
-=======
 from app import db
 from app.models import User
->>>>>>> Stashed changes
 
 
 # --------------------------------------------------------------------------
@@ -44,43 +39,26 @@ def test_user_password_hashing(test_app):
 # Login Route Tests
 # --------------------------------------------------------------------------
 
-<<<<<<< Updated upstream
-def test_login_route_accepts_credentials(test_client, test_app):
-    """Verify that valid credentials return a successful login response."""
-=======
 
 def test_login_logs_user_in(test_client, test_app):
     """Ensure valid credentials log the user in via Flask-Login."""
->>>>>>> Stashed changes
     with test_app.app_context():
         u = User(username="tester", email="t@t.com")
         u.set_password("password123")
         db.session.add(u)
         db.session.commit()
 
-<<<<<<< Updated upstream
-    response = test_client.post("/api/login", json={
-        "username": "tester",
-        "password": "password123"
-    })
-=======
     # Attempt Login
     response = test_client.post(
         "/api/login", json={"username": "tester", "password": "password123"}
     )
->>>>>>> Stashed changes
 
     assert response.status_code == 200
     assert "Login successful" in response.get_data(as_text=True)
 
 
-<<<<<<< Updated upstream
-def test_login_route_rejects_invalid_credentials(test_client, test_app):
-    """Ensure that login with invalid credentials returns an error."""
-=======
 
 def test_login_rejects_invalid_credentials(test_client, test_app):
->>>>>>> Stashed changes
     with test_app.app_context():
         u = User(username="tester2", email="t2@t.com")
         u.set_password("password456")
@@ -96,130 +74,25 @@ def test_login_rejects_invalid_credentials(test_client, test_app):
     assert data["error"] == "Invalid credentials"
 
 
-<<<<<<< Updated upstream
-def test_login_nonexistent_user(test_client):
-    """Ensure that login with a nonexistent user fails."""
-    response = test_client.post("/api/login", json={
-        "username": "ghostuser",
-        "password": "whatever"
-    })
-
-    assert response.status_code == 401
-    data = response.get_json()
-    assert data["error"] == "Invalid credentials"
-
-
-def test_login_missing_fields(test_client):
-    """Ensure missing login fields return a 400 or 401 error."""
-    response = test_client.post("/api/login", json={"username": "tester"})
-    assert response.status_code in (400, 401)
-
-
-def test_login_returns_admin_flag(test_client, test_app):
-    """Verify that admin flag is correctly returned after login."""
-=======
 def test_logout_clears_session(test_client, test_app):
     """Ensure logout actually logs the user out."""
     # 1. Create User
->>>>>>> Stashed changes
     with test_app.app_context():
         u = User(username="adminuser", email="a@a.com", is_admin=True)
         u.set_password("adminpass")
         db.session.add(u)
         db.session.commit()
 
-<<<<<<< Updated upstream
-    response = test_client.post("/api/login", json={
-        "username": "adminuser",
-        "password": "adminpass"
-    })
-=======
     # 2. Login
     test_client.post("/api/login", json={"username": "logoutuser", "password": "pass"})
 
     # Verify we are logged in
     assert test_client.get("/dashboard").status_code == 200
->>>>>>> Stashed changes
 
     data = response.get_json()
     assert response.status_code == 200
     assert data["is_admin"] is True
 
-<<<<<<< Updated upstream
-
-# --------------------------------------------------------------------------
-# Session Management Tests
-# --------------------------------------------------------------------------
-
-def test_session_set_after_login(test_client, test_app):
-    """Ensure user_id is added to session after successful login."""
-    with test_app.app_context():
-        u = User(username="sessionuser", email="s@s.com")
-        u.set_password("password123")
-        db.session.add(u)
-        db.session.commit()
-
-    with test_client as c:
-        response = c.post("/api/login", json={
-            "username": "sessionuser",
-            "password": "password123"
-        })
-
-        assert response.status_code == 200
-        with c.session_transaction() as sess:
-            assert "user_id" in sess
-            assert sess["user_id"] is not None
-
-
-def test_logout_clears_session(test_client, test_app):
-    """Ensure logout clears the user session."""
-    with test_app.app_context():
-        u = User(username="logoutuser", email="l@l.com")
-        u.set_password("password123")
-        db.session.add(u)
-        db.session.commit()
-
-    with test_client as c:
-        c.post("/api/login", json={"username": "logoutuser", "password": "password123"})
-        with c.session_transaction() as sess:
-            assert "user_id" in sess
-
-        c.post("/api/logout")
-        with c.session_transaction() as sess:
-            assert "user_id" not in sess
-
-
-# --------------------------------------------------------------------------
-# Session Status Endpoint Tests
-# --------------------------------------------------------------------------
-
-def test_check_session_logged_in(test_client, test_app):
-    """Verify that /api/check-session reports correct login status."""
-    with test_app.app_context():
-        u = User(username="checkuser", email="c@c.com", is_admin=True)
-        u.set_password("password123")
-        db.session.add(u)
-        db.session.commit()
-
-    with test_client as c:
-        c.post("/api/login", json={"username": "checkuser", "password": "password123"})
-        response = c.get("/api/check-session")
-
-        data = response.get_json()
-        assert response.status_code == 200
-        assert data["logged_in"] is True
-        assert data["is_admin"] is True
-
-
-def test_check_session_logged_out(test_client):
-    """Verify that /api/check-session returns logged_in=False when logged out."""
-    response = test_client.get("/api/check-session")
-    data = response.get_json()
-
-    assert response.status_code == 200
-    assert data["logged_in"] is False
-=======
     # 4. Verify we are logged out (Dashboard redirects to login)
     resp = test_client.get("/dashboard")
     assert resp.status_code == 302  # Redirects to /assistant-login
->>>>>>> Stashed changes

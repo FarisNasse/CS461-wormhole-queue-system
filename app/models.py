@@ -16,32 +16,20 @@ from typing import Optional
 
 import jwt
 import sqlalchemy as sa
-<<<<<<< Updated upstream
-from sqlalchemy import orm
-from werkzeug.security import generate_password_hash, check_password_hash
-=======
 from flask import current_app
 from flask_login import UserMixin  # [NEW] Required for Flask-Login
 from sqlalchemy import orm
 from werkzeug.security import check_password_hash, generate_password_hash
->>>>>>> Stashed changes
 
 from app import db
 
 
-<<<<<<< Updated upstream
-class User(db.Model):
-    __tablename__ = 'users'
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
-    username: orm.Mapped[str] = orm.mapped_column(sa.String(100))
-=======
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
     username: orm.Mapped[str] = orm.mapped_column(
         sa.String(100), unique=True, index=True
     )
->>>>>>> Stashed changes
     email: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
     password_hash: orm.Mapped[str | None] = orm.mapped_column(sa.String(128))
     is_admin: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
@@ -66,13 +54,10 @@ class User(UserMixin, db.Model):
             ticket.assign_to(self)
             return True
         return False
-<<<<<<< Updated upstream
-=======
 
     # [Flask-Login] Optional explicit override (UserMixin does this by default, but this is safe)
     def get_id(self):
         return str(self.id)
->>>>>>> Stashed changes
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
@@ -115,8 +100,6 @@ class Ticket(db.Model):
         back_populates="tickets"
     )
 
-<<<<<<< Updated upstream
-=======
     # --- COMPATIBILITY LAYER (Shims for Legacy Templates) ---
     # These properties allow old templates to use old names without breaking.
 
@@ -134,7 +117,6 @@ class Ticket(db.Model):
 
     # --------------------------------------------------------
 
->>>>>>> Stashed changes
     def __repr__(self) -> str:
         return f"<Ticket(id={self.id}, student_name={self.student_name}, status={self.status})>"
 
@@ -159,27 +141,3 @@ class Ticket(db.Model):
         """Assign ticket to a user."""
         self.wa_id = user.id
         db.session.commit()
-<<<<<<< Updated upstream
-    
-# Old models for reference
-
-# class Ticket(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     student_name = db.Column(db.String(80))
-#     table_number = db.Column(db.String(10))
-#     class_name = db.Column(db.String(50))
-#     status = db.Column(db.String(50), default="Open")
-#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-#     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-#     deactivated_at = db.Column(db.DateTime, nullable=True)
-#     num_students = db.Column(db.Integer, nullable=True)
-#     current_ta = db.Column(db.String(80), nullable=True)
-
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(64), unique=True, nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=False)
-#     password_hash = db.Column(db.String(128), nullable=False)
-#     is_admin = db.Column(db.Boolean, default=False)
-=======
->>>>>>> Stashed changes
