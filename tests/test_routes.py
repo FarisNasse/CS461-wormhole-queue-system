@@ -1,10 +1,17 @@
+<<<<<<< Updated upstream
 # tests/test_routes.py
+=======
+from app import db
+from app.models import User
+
+>>>>>>> Stashed changes
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
-    response = test_client.get("/health") 
+    response = test_client.get("/health")
     assert response.status_code == 200
     assert response.get_json() == {"message": "Wormhole Queue System API is running"}
+
 
 def test_home_page_loads(test_client):
     """
@@ -15,6 +22,7 @@ def test_home_page_loads(test_client):
     assert response.status_code == 200
     # Check for text specific to your index.html file
     assert b"Physics Collaboration and Help Center" in response.data
+
 
 def test_assistant_login_page_loads(test_client):
     """
@@ -27,12 +35,14 @@ def test_assistant_login_page_loads(test_client):
     assert b"System Login" in response.data
     assert b"Sign In" in response.data
 
+
 def test_dashboard_is_protected(test_client):
     """
     Verify that '/dashboard' blocks users who are NOT logged in.
     Should return 401 (Unauthorized).
     """
     response = test_client.get("/dashboard")
+<<<<<<< Updated upstream
     assert response.status_code == 401
     # Check that we get the JSON error from your @login_required decorator
     assert response.get_json() == {"error": "Authentication required"}
@@ -46,6 +56,23 @@ def test_dashboard_access_granted(test_client):
     with test_client.session_transaction() as sess:
         sess['user_id'] = 1  # Fake user ID
         sess['is_admin'] = False
+=======
+    assert response.status_code == 302
+    assert "/assistant-login" in response.location
+
+
+def test_dashboard_access_granted(test_client, test_app):
+    """Verify logged-in user can access dashboard."""
+    with test_app.app_context():
+        u = User(username="dash_user", email="d@d.com", is_admin=False)
+        u.set_password("password")
+        db.session.add(u)
+        db.session.commit()
+
+    test_client.post(
+        "/api/login", json={"username": "dash_user", "password": "password"}
+    )
+>>>>>>> Stashed changes
 
     # 2. Try to access the dashboard
     response = test_client.get("/dashboard")
@@ -54,9 +81,11 @@ def test_dashboard_access_granted(test_client):
     assert response.status_code == 200
     assert b"Welcome! You are logged in" in response.data
 
+
 def test_404_for_unknown_route(test_client):
     response = test_client.get("/notreal")
     assert response.status_code == 404
+<<<<<<< Updated upstream
 
 # tests/test_auth.py
 def test_login_route_exists(test_client):
@@ -66,3 +95,5 @@ def test_login_route_exists(test_client):
     })
     assert response.status_code in [200, 401]  # Valid route, even if logic incomplete
 
+=======
+>>>>>>> Stashed changes

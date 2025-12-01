@@ -1,0 +1,58 @@
+# -------------------------
+# Black Configuration
+# -------------------------
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+exclude = """
+(
+  /migrations
+  | /venv
+  | /env
+  | __pycache__
+)
+"""
+
+# -------------------------
+# Ruff Root Configuration
+# -------------------------
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+# -------------------------
+# Ruff Lint Configuration
+# -------------------------
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+    "E501",  # Line length handled by Black
+]
+
+exclude = [
+    "migrations",
+    "venv",
+    "env",
+    "__pycache__",
+]
+
+# -------------------------
+# Ruff Formatting Configuration
+# -------------------------
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+exclude = [
+    "migrations",
+    "venv",
+    "env",
+    "__pycache__",
+]
+
+# -------------------------
+# Ruff Import Sorting (isort)
+# -------------------------
+[tool.ruff.lint.isort]
+force-single-line = false
+lines-after-imports = 2

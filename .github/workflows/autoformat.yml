@@ -1,0 +1,35 @@
+name: Autoformat
+
+on:
+  push:
+    branches:
+      - main
+      - "**"
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install tools
+        run: pip install black ruff
+
+      - name: Run Black
+        run: black .
+
+      - name: Run Ruff (auto-fix)
+        run: ruff check . --fix
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Autoformat with Black & Ruff" || echo "No changes"
+          git push

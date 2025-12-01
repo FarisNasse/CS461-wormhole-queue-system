@@ -1,15 +1,18 @@
-#run.py
+# run.py
 import sqlalchemy as sa
 from sqlalchemy import orm
 
 from app import create_app, db
-from app.models import User, Ticket
+from app.models import Ticket, User
+
 
 app = create_app()
 
+
 @app.shell_context_processor
 def make_shell_context():
-    return {'sa': sa, 'orm': orm, 'db': db, 'User': User, 'Ticket': Ticket}
+    return {"sa": sa, "orm": orm, "db": db, "User": User, "Ticket": Ticket}
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
