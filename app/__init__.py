@@ -1,28 +1,22 @@
-# app/__init__.py
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
 from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager()
 
 # --- REQUIRED IMPORTS ---
-# We import these at the top level. If they fail (e.g., syntax error or missing file),
-# the application will crash immediately with a helpful traceback.
 from app.routes.auth import auth_bp
 from app.routes.tickets import tickets_bp
+from app.routes.error import error_bp
+
 
 def create_app(testing=False):
     """
     Creates and configures the Flask application instance.
-    
-    Args:
-        testing (bool): If True, configures the app for testing with an
-            in-memory SQLite database.
-            
-    Returns:
-        Flask: The configured Flask application instance.
     """
     app = Flask(__name__)
 
@@ -34,7 +28,6 @@ def create_app(testing=False):
     if testing:
         app.config["TESTING"] = True
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-        app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
 
     # ---------------------------------------------------
@@ -43,8 +36,13 @@ def create_app(testing=False):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Import models to register them with SQLAlchemy (needed for db setup)
-    from app import models 
+    # Initialize LoginManager
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.assistant_login"
+    login_manager.login_message_category = "info"
+
+    # Import models to register them with SQLAlchemy
+    from app import models
 
     # ---------------------------------------------------
     # Health Check Route
@@ -56,8 +54,8 @@ def create_app(testing=False):
     # ---------------------------------------------------
     # Register Blueprints
     # ---------------------------------------------------
-    # The imports happened at the top of the file, so we just register them here.
     app.register_blueprint(auth_bp)
     app.register_blueprint(tickets_bp)
+    app.register_blueprint(error_bp)
 
     return app

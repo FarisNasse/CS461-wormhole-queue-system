@@ -18,6 +18,7 @@ from app import db
 # User Model Tests
 # --------------------------------------------------------------------------
 
+
 def test_user_password_hashing(test_app):
     """Ensure password hashing and verification work correctly."""
     with test_app.app_context():
@@ -38,6 +39,7 @@ def test_user_password_hashing(test_app):
 # Login Route Tests
 # --------------------------------------------------------------------------
 
+
 def test_login_route_accepts_credentials(test_client, test_app):
     """Verify that valid credentials return a successful login response."""
     with test_app.app_context():
@@ -46,10 +48,9 @@ def test_login_route_accepts_credentials(test_client, test_app):
         db.session.add(u)
         db.session.commit()
 
-    response = test_client.post("/api/login", json={
-        "username": "tester",
-        "password": "password123"
-    })
+    response = test_client.post(
+        "/api/login", json={"username": "tester", "password": "password123"}
+    )
 
     assert response.status_code == 200
     assert "Login successful" in response.get_data(as_text=True)
@@ -63,10 +64,9 @@ def test_login_route_rejects_invalid_credentials(test_client, test_app):
         db.session.add(u)
         db.session.commit()
 
-    response = test_client.post("/api/login", json={
-        "username": "tester2",
-        "password": "wrongpassword"
-    })
+    response = test_client.post(
+        "/api/login", json={"username": "tester2", "password": "wrongpassword"}
+    )
 
     assert response.status_code == 401
     data = response.get_json()
@@ -75,10 +75,9 @@ def test_login_route_rejects_invalid_credentials(test_client, test_app):
 
 def test_login_nonexistent_user(test_client):
     """Ensure that login with a nonexistent user fails."""
-    response = test_client.post("/api/login", json={
-        "username": "ghostuser",
-        "password": "whatever"
-    })
+    response = test_client.post(
+        "/api/login", json={"username": "ghostuser", "password": "whatever"}
+    )
 
     assert response.status_code == 401
     data = response.get_json()
@@ -99,10 +98,9 @@ def test_login_returns_admin_flag(test_client, test_app):
         db.session.add(u)
         db.session.commit()
 
-    response = test_client.post("/api/login", json={
-        "username": "adminuser",
-        "password": "adminpass"
-    })
+    response = test_client.post(
+        "/api/login", json={"username": "adminuser", "password": "adminpass"}
+    )
 
     data = response.get_json()
     assert response.status_code == 200
@@ -113,6 +111,7 @@ def test_login_returns_admin_flag(test_client, test_app):
 # Session Management Tests
 # --------------------------------------------------------------------------
 
+
 def test_session_set_after_login(test_client, test_app):
     """Ensure user_id is added to session after successful login."""
     with test_app.app_context():
@@ -122,15 +121,14 @@ def test_session_set_after_login(test_client, test_app):
         db.session.commit()
 
     with test_client as c:
-        response = c.post("/api/login", json={
-            "username": "sessionuser",
-            "password": "password123"
-        })
+        response = c.post(
+            "/api/login", json={"username": "sessionuser", "password": "password123"}
+        )
 
         assert response.status_code == 200
         with c.session_transaction() as sess:
-            assert "user_id" in sess
-            assert sess["user_id"] is not None
+            assert "_user_id" in sess
+            assert sess["_user_id"] is not None
 
 
 def test_logout_clears_session(test_client, test_app):
@@ -144,16 +142,17 @@ def test_logout_clears_session(test_client, test_app):
     with test_client as c:
         c.post("/api/login", json={"username": "logoutuser", "password": "password123"})
         with c.session_transaction() as sess:
-            assert "user_id" in sess
+            assert "_user_id" in sess
 
         c.post("/api/logout")
         with c.session_transaction() as sess:
-            assert "user_id" not in sess
+            assert "_user_id" not in sess
 
 
 # --------------------------------------------------------------------------
 # Session Status Endpoint Tests
 # --------------------------------------------------------------------------
+
 
 def test_check_session_logged_in(test_client, test_app):
     """Verify that /api/check-session reports correct login status."""

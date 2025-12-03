@@ -7,7 +7,7 @@ This module provides two reusable Flask decorators:
     - @login_required  → ensures that the user is authenticated
     - @admin_required  → ensures that the user is both authenticated and an admin
 
-These decorators reduce repeated logic across route handlers, enforce 
+These decorators reduce repeated logic across route handlers, enforce
 consistent error responses, and support security-related requirements:
 
     • REQ-021: Login/Logout (system must restrict privileged actions)
@@ -45,9 +45,10 @@ def login_required(f):
             ...
 
     Why important:
-        All WA/Admin routes must restrict access to authenticated users to 
+        All WA/Admin routes must restrict access to authenticated users to
         protect student ticket data (FERPA-related) and satisfy REQ-021.
     """
+
     @wraps(f)
     def wrapper(*args, **kwargs):
         if "user_id" not in session:
@@ -82,9 +83,10 @@ def admin_required(f):
             • Creating WA accounts (REQ-003)
             • Viewing admin dashboards and logs (REQ-022/025)
 
-        This prevents privilege escalation and ensures consistent security behavior 
+        This prevents privilege escalation and ensures consistent security behavior
         across all admin features.
     """
+
     @wraps(f)
     def wrapper(*args, **kwargs):
         # Step 1: Must be logged in

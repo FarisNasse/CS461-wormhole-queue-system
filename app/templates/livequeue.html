@@ -1,91 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Live Queue</title>
-        <link rel="stylesheet" href="../static/styles.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    </head>
+{% extends "base.html" %}
 
-    <body>
-        <header id="live-queue-header">
+{% block title %}Live Queue{% endblock %}
 
-            <nav class="nav-bar">
-                <ul>
-                    <li>
-                        <a href="{{ url_for('auth.index') }}">Home Page</a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('tickets.createticket') }}">
-                            Submit Help Request
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('tickets.livequeue') }}">
-                            Live Queue
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('auth.assistant_login') }}">Wormhole Assistants</a>
-                    </li>
-                </ul>
-            </nav>
+{% block content %}
+<div class="page live-queue-page">
 
-        </header>
+    <h1 class="page-title" style="text-align: center;">Open Tickets</h1>
+    <hr>
 
-        <h2>Live Queue</h2>
+    <div id="queue-container">
+        <table id="queue-table" style="width:100%; text-align:center;">
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Name</th>
+                    <th>Table</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody id="queue-body">
+                <!-- Rows inserted dynamically -->
+            </tbody>
+        </table>
+    </div>
 
-        <div id="queue-container">
-            <table id="queue-table">
-                <thead>
-                    <tr>
-                        <th>Index</th>
-                        <th>Name</th>
-                        <th>Table</th>
-                        <th>Class</th>
-                    </tr>
-                </thead>
-                <tbody id="queue-body">
-                    <!-- Queue entries dynamically inserted here -->
-                </tbody>
-            </table>
-        </div>
+    <p align="center">Last Refresh Time: <span id="refresh_time"></span></p>
 
-        <!-- Live Queue Update Script -->
-        <script>
-            async function loadQueue() {
-                try {
-                    const response = await fetch("/api/opentickets");
-                    const tickets = await response.json();
+</div>
+{% endblock %}
 
-                    const tbody = document.getElementById("queue-body");
-                    tbody.innerHTML = ""; // Clear current rows
+{% block scripts %}
+<script>
+    async function loadQueue() {
+        try {
+            const response = await fetch("{{ url_for('api.opentickets') }}");
+            const tickets = await response.json();
 
-                    tickets.forEach((ticket, index) => {
-                        const row = document.createElement("tr");
+            const tbody = document.getElementById("queue-body");
+            tbody.innerHTML = ""; // Clear table
 
-                        row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${ticket.student_name}</td>
-                            <td>${ticket.table}</td>
-                            <td>${ticket.physics_course}</td>
-                        `;
+            tickets.forEach((ticket, index) => {
+                const row = document.createElement("tr");
 
-                        tbody.appendChild(row);
-                    });
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${ticket.student_name}</td>
+                    <td>${ticket.table}</td>
+                    <td>${ticket.physics_course}</td>
+                `;
 
-                } catch (error) {
-                    console.error("Error loading queue:", error);
-                }
-            }
+                tbody.appendChild(row);
+            });
 
-            // Refresh queue every 3 seconds
-            setInterval(loadQueue, 3000);
+            // Update timestamp
+            const now = new Date();
+            document.getElementById("refresh_time").textContent =
+                now.toLocaleTimeString();
 
-            // Load immediately on page load
-            loadQueue();
-        </script>
+        } catch (error) {
+            console.error("Error loading queue:", error);
+        }
+    }
 
-    </body>
-</html>
+    // Refresh every 3 seconds
+    setInterval(loadQueue, 3000);
+
+    // Load immediately on page load
+    loadQueue();
+</script>
+{% endblock %}

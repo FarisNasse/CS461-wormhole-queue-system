@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }}</title>
+        {% else %}
+        <title>Wormhole Help Requests</title>
+        {% endif %}
+
+        {% block scripts %}{% endblock %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" type="text/css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    </head>
+
+    <body>
+        <div class="page">
+            <div class="header">
+                <h1 style="color:#FFFFFF;text-align:center">OSU Physics Wormhole <br> Queue</h1>
+
+                <div class="navbar">
+                    <p>
+                        <a href="{{ url_for('auth.index') }}" style="color:#FFFFFF">Home</a>
+                        <a href="{{ url_for('tickets.livequeue') }}" style="color:#FFFFFF">Live Queue</a>
+                        <a href="{{ url_for('tickets.createticket') }}" style="color:#FFFFFF">Submit a Help Request</a>
+
+                        <div class="dropdown">
+                            <button class="dropbtn">User</button>
+                            <div class="dropdown-content">
+                                {% if current_user.is_admin %}
+                                    Administrator:
+                                    <!-- Admin routes will be added later -->
+                                {% endif %}
+
+                                {% if current_user.is_anonymous %}
+                                    <a href="{{ url_for('auth.assistant_login') }}" style="color:#FFFFFF">Log In</a>
+                                {% else %}
+                                    <span style="color:#FFFFFF">Logged in</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="section message">
+            <ul>
+            {% for ms in messages %}
+                <li>{{ ms }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </body>
+</html>

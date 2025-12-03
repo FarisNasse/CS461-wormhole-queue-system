@@ -1,0 +1,25 @@
+name: Ruff (Lint & Format)
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+          
+      - name: Install Ruff
+        run: pip install ruff
+
+      # 1. Check if the code is formatted correctly (Black style)
+      - name: Check Formatting
+        run: ruff format --check .
+
+      # 2. Check for logical errors (unused imports, etc.)
+      - name: Run Linter
+        run: ruff check .

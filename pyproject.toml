@@ -1,0 +1,13 @@
+[tool.ruff]
+# Same line length as Black
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`), pycodestyle (`E`, `W`), isort (`I`), and more
+select = ["E", "F", "I", "W", "UP"]
+ignore = []
+
+[tool.ruff.format]
+# Use single quotes for strings (optional, but common)
+quote-style = "double"

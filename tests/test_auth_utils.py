@@ -1,4 +1,4 @@
-#tests/test_auth_utils.py
+# tests/test_auth_utils.py
 
 import pytest
 from flask import Flask, jsonify
@@ -7,6 +7,7 @@ from app.auth_utils import login_required, admin_required
 # --------------------------------------------------------------------------
 # Fixtures
 # --------------------------------------------------------------------------
+
 
 @pytest.fixture
 def auth_test_client():
@@ -19,7 +20,7 @@ def auth_test_client():
     app.secret_key = "test_secret"
 
     # Register routes ONCE here, instead of inside every test function
-    
+
     @app.route("/protected-login")
     @login_required
     def protected_login():
@@ -37,6 +38,7 @@ def auth_test_client():
 # Login Required Tests
 # --------------------------------------------------------------------------
 
+
 def test_login_required_blocks_unauthenticated(auth_test_client):
     """Ensure users without a session are rejected."""
     res = auth_test_client.get("/protected-login")
@@ -49,7 +51,7 @@ def test_login_required_allows_authenticated(auth_test_client):
     # Create a valid user session
     with auth_test_client.session_transaction() as sess:
         sess["user_id"] = 123
-    
+
     res = auth_test_client.get("/protected-login")
     assert res.status_code == 200
     assert res.get_json()["message"] == "ok"
@@ -58,6 +60,7 @@ def test_login_required_allows_authenticated(auth_test_client):
 # --------------------------------------------------------------------------
 # Admin Required Tests
 # --------------------------------------------------------------------------
+
 
 def test_admin_required_blocks_unauthenticated(auth_test_client):
     """Ensure users without a session are rejected from admin routes."""
@@ -88,4 +91,3 @@ def test_admin_required_allows_admin(auth_test_client):
     res = auth_test_client.get("/protected-admin")
     assert res.status_code == 200
     assert res.get_json()["message"] == "ok"
-
