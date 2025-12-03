@@ -12,7 +12,7 @@ login_manager = LoginManager()
 # --- REQUIRED IMPORTS ---
 from app.routes.auth import auth_bp
 from app.routes.error import error_bp
-from app.routes.tickets import tickets_html_bp, tickets_api_bp
+from app.routes.tickets import tickets_api_bp, tickets_html_bp
 
 
 def create_app(testing=False):

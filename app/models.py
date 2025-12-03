@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def get_reset_password_token(self, expires_in=3600): # Changed 600 -> 3600
+    def get_reset_password_token(self, expires_in=3600):  # Changed 600 -> 3600
         return jwt.encode(
             {"reset_password": self.id, "exp": time() + expires_in},
             current_app.config["SECRET_KEY"],
@@ -32,13 +32,12 @@ class User(UserMixin, db.Model):
     def verify_reset_password_token(token):
         try:
             user_id = jwt.decode(  # Changed 'id' -> 'user_id'
-                token,
-                current_app.config["SECRET_KEY"],
-                algorithms=["HS256"]
+                token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
             )["reset_password"]
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
             return None
-        return db.session.get(User, user_id) # Changed 'id' -> 'user_id'
+        return db.session.get(User, user_id)  # Changed 'id' -> 'user_id'
+
 
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
