@@ -2,7 +2,8 @@
 
 import pytest
 from flask import Flask, jsonify
-from app.auth_utils import login_required, admin_required
+
+from app.auth_utils import admin_required, login_required
 
 # --------------------------------------------------------------------------
 # Fixtures

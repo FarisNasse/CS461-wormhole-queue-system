@@ -1,6 +1,5 @@
-import pytest
-from app.models import Ticket
 from app import db
+from app.models import Ticket
 
 
 def test_create_ticket_success(test_client, test_app):

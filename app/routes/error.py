@@ -1,7 +1,6 @@
 # app/routes/error.py
-from flask import Blueprint, request, jsonify, session, render_template
-from werkzeug.security import check_password_hash
-from app.models import User
+from flask import Blueprint, render_template
+
 from app import db
 
 error_bp = Blueprint("error", __name__)

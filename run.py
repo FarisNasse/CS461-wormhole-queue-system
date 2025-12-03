@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 
 from app import create_app, db
-from app.models import User, Ticket
+from app.models import Ticket, User
 
 app = create_app()
 

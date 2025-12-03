@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_health_check_route(test_client):
     """Verify the health check endpoint returns 200 OK."""
     response = test_client.get("/health")

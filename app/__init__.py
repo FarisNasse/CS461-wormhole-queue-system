@@ -1,7 +1,8 @@
 from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+
 from config import Config
 
 db = SQLAlchemy()
@@ -10,8 +11,8 @@ login_manager = LoginManager()
 
 # --- REQUIRED IMPORTS ---
 from app.routes.auth import auth_bp
-from app.routes.tickets import tickets_bp
 from app.routes.error import error_bp
+from app.routes.tickets import tickets_bp
 
 
 def create_app(testing=False):

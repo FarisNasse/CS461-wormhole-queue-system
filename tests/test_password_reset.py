@@ -6,26 +6,20 @@ def test_reset_request_page_loads(test_client):
 
 
 def test_reset_request_submission(test_client, test_app):
-    """
-    Stage 1: Ensure submitting a valid email flashes the success message.
-    """
-    # FAANG Trick: Temporarily disable CSRF validation for this specific test
-    # so we can focus on testing the Business Logic (Email flow) without
-    # needing to parse HTML tokens.
-    test_app.config["WTF_CSRF_ENABLED"] = False
+    try:
+        # Disable for this specific interaction
+        test_app.config["WTF_CSRF_ENABLED"] = False
 
-    response = test_client.post(
-        "/reset_password_request",
-        data={"email": "nonexistent@example.com"},
-        follow_redirects=True,
-    )
-
-    assert response.status_code == 200
-    # Security check: The message should be generic to avoid user enumeration
-    assert b"Check your email" in response.data
-
-    # Good practice: Re-enable it afterwards (though pytest fixture cleanup usually handles this)
-    test_app.config["WTF_CSRF_ENABLED"] = True
+        response = test_client.post(
+            "/reset_password_request",
+            data={"email": "nonexistent@example.com"},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        assert b"Check your email" in response.data
+    finally:
+        # Always restore security settings, even if assertion fails
+        test_app.config["WTF_CSRF_ENABLED"] = True
 
 
 def test_reset_password_route_requires_token(test_client):

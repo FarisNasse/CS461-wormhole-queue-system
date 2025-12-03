@@ -1,5 +1,6 @@
 # /app/routes/tickets.py
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, render_template, request
+
 from app import db
 from app.models import Ticket
 

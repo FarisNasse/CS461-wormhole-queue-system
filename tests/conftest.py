@@ -1,6 +1,8 @@
 import os
 import sys
+
 import pytest
+
 from app.models import User
 
 # Add project root to PYTHONPATH

@@ -1,40 +1,15 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required, current_user
-from app.models import User
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
+
 from app import db
 
-# --- WTForms Configuration ---
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo
-
-
-# 1. Login Form
-class LoginForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    remember_me = BooleanField("Remember Me")
-    submit = SubmitField("Sign In")
-
-
-# 2. Request Password Reset Form (Stage 1) <-- THIS WAS MISSING
-class ResetPasswordRequestForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired(), Email()])
-    submit = SubmitField("Request Password Reset")
-
-
-# 3. Reset Password Form (Stage 2)
-class ResetPasswordForm(FlaskForm):
-    password = PasswordField("Password", validators=[DataRequired()])
-    password2 = PasswordField(
-        "Repeat Password", validators=[DataRequired(), EqualTo("password")]
-    )
-    submit = SubmitField("Request Password Reset")
-
-
-# --- Routes ---
+# FAANG Standard: Import forms from the dedicated module
+from app.forms import LoginForm, ResetPasswordForm, ResetPasswordRequestForm
+from app.models import User
 
 auth_bp = Blueprint("auth", __name__)
+
+# --- HTML Routes ---
 
 
 @auth_bp.route("/")
@@ -101,8 +76,8 @@ def login():
 
 
 @auth_bp.route("/api/logout", methods=["POST"])
-@login_required
 def logout():
+    # Note: Removed @login_required to make logout idempotent (safe to call even if already logged out)
     logout_user()
     return jsonify({"message": "Logged out successfully"}), 200
 
@@ -114,7 +89,9 @@ def check_session():
     return jsonify({"logged_in": False}), 200
 
 
-# --- STAGE 1: Request the Reset (Enter Email) ---
+# --- Password Reset Flow ---
+
+
 @auth_bp.route("/reset_password_request", methods=["GET", "POST"])
 def reset_password_request():
     if current_user.is_authenticated:
@@ -125,8 +102,8 @@ def reset_password_request():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            # In a real app, send email here
-            print(f"DEBUG: Reset requested for {user.email}")
+            # TODO: Integrate email sending service here
+            print(f"DEBUG: Password reset requested for {user.email}")
         flash("Check your email for the instructions to reset your password")
         return redirect(url_for("auth.assistant_login"))
 
@@ -135,14 +112,11 @@ def reset_password_request():
     )
 
 
-# --- STAGE 2: Perform the Reset (Enter New Password) ---
 @auth_bp.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for("auth.index"))
 
-    # NOTE: This line will cause the NEXT error because 'verify_reset_password_token'
-    # is not yet defined in your User model. This is expected!
     user = User.verify_reset_password_token(token)
     if not user:
         return redirect(url_for("auth.index"))

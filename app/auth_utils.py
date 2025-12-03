@@ -23,7 +23,8 @@ They should be applied to any route that requires authentication, such as:
 """
 
 from functools import wraps
-from flask import session, jsonify
+
+from flask import jsonify, session
 
 
 def login_required(f):

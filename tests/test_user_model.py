@@ -10,9 +10,8 @@ This module contains integration and unit tests for:
 - Session management and admin flag behavior
 """
 
-from app.models import User
 from app import db
-
+from app.models import User
 
 # --------------------------------------------------------------------------
 # User Model Tests

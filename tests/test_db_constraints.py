@@ -1,7 +1,8 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
-from app.models import User
+
 from app import db
+from app.models import User
 
 
 def test_prevent_duplicate_emails(test_app):

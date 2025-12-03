@@ -1,9 +1,11 @@
 from time import time
-import jwt  # Needs 'pip install pyjwt'
+
+import jwt
 from flask import current_app
-from app import db, login_manager
 from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app import db, login_manager
 
 
 class User(UserMixin, db.Model):
@@ -19,15 +21,7 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    # ---------------------------------------------------------
-    # FAANG-Standard Stateless Token Logic
-    # ---------------------------------------------------------
-
     def get_reset_password_token(self, expires_in=600):
-        """
-        Generates a signed JWT that encodes the user's ID.
-        expires_in: Default is 600 seconds (10 minutes).
-        """
         return jwt.encode(
             {"reset_password": self.id, "exp": time() + expires_in},
             current_app.config["SECRET_KEY"],
@@ -36,21 +30,13 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def verify_reset_password_token(token):
-        """
-        Decodes the token.
-        - If valid and unexpired: Returns the User object.
-        - If invalid or expired: Returns None.
-        """
         try:
             id = jwt.decode(
-                token,
-                current_app.config["SECRET_KEY"],
-                algorithms=["HS256"]
+                token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
             )["reset_password"]
-        except Exception:
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
             return None
-            
-        return User.query.get(id)
+        return db.session.get(User, id)  # Modern SQLAlchemy 2.0 syntax
 
 
 class Ticket(db.Model):
@@ -72,4 +58,4 @@ class Ticket(db.Model):
 
 @login_manager.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    return db.session.get(User, int(id))  # Modern SQLAlchemy 2.0 syntax
