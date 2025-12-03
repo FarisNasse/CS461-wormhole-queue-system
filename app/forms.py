@@ -21,3 +21,10 @@ class ResetPasswordForm(FlaskForm):
         "Repeat Password", validators=[DataRequired(), EqualTo("password")]
     )
     submit = SubmitField("Request Password Reset")
+
+class CreateTicketForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    phClass = StringField("Class", validators=[DataRequired()])
+    # In the future, table_number could be an IntegerField
+    submit = SubmitField("Submit Request")
+

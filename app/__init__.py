@@ -12,7 +12,7 @@ login_manager = LoginManager()
 # --- REQUIRED IMPORTS ---
 from app.routes.auth import auth_bp
 from app.routes.error import error_bp
-from app.routes.tickets import tickets_bp
+from app.routes.tickets import tickets_html_bp, tickets_api_bp
 
 
 def create_app(testing=False):
@@ -56,7 +56,8 @@ def create_app(testing=False):
     # Register Blueprints
     # ---------------------------------------------------
     app.register_blueprint(auth_bp)
-    app.register_blueprint(tickets_bp)
+    app.register_blueprint(tickets_html_bp)
+    app.register_blueprint(tickets_api_bp)
     app.register_blueprint(error_bp)
 
     return app
