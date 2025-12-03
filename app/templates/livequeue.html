@@ -33,7 +33,7 @@
 <script>
     async function loadQueue() {
         try {
-            const response = await fetch("{{ url_for('api.opentickets') }}");
+            const response = await fetch("{{ url_for('tickets_api.get_open_tickets') }}");
             const tickets = await response.json();
 
             const tbody = document.getElementById("queue-body");

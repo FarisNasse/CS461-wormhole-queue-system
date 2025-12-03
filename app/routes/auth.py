@@ -103,7 +103,7 @@ def reset_password_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             # TODO: Integrate email sending service here
-            print(f"DEBUG: Password reset requested for {user.email}")
+            pass
         flash("Check your email for the instructions to reset your password")
         return redirect(url_for("auth.assistant_login"))
 
