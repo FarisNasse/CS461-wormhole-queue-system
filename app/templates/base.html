@@ -2,11 +2,7 @@
 
 <html>
     <head>
-        {% if title %}
-        <title>{{ title }}</title>
-        {% else %}
-        <title>Wormhole Help Requests</title>
-        {% endif %}
+        <title>{% block title %}Wormhole Help Requests{% endblock %}</title>
 
         {% block scripts %}{% endblock %}
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" type="text/css">
@@ -29,8 +25,7 @@
                             <div class="dropdown-content">
                                 {% if current_user.is_admin %}
                                     Administrator:
-                                    <!-- Admin routes will be added later -->
-                                {% endif %}
+                                    {% endif %}
 
                                 {% if current_user.is_anonymous %}
                                     <a href="{{ url_for('auth.assistant_login') }}" style="color:#FFFFFF">Log In</a>

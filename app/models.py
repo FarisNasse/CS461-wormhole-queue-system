@@ -68,12 +68,15 @@ class Ticket(db.Model):
         return {
             "id": self.id,
             "student_name": self.student_name,
-            "table_number": self.table,
-            "class_name": self.physics_course,
+            # Updated to match model attributes for consistency
+            "table": self.table,
+            "physics_course": self.physics_course,
             "status": self.status,
             "created_at": self.created_at.isoformat() if self.created_at else None,
+            # Keeping legacy keys for backward compatibility if needed by frontend
+            "table_number": self.table, 
+            "class_name": self.physics_course,
         }
-
 
 @login_manager.user_loader
 def load_user(id):

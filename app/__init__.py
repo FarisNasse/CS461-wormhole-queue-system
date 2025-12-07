@@ -17,7 +17,17 @@ from app.routes.tickets import tickets_api_bp, tickets_html_bp
 
 def create_app(testing=False):
     """
-    Creates and configures the Flask application instance.
+    Create and configure the Flask application instance.
+    
+    Initializes extensions (SQLAlchemy, Migrate, LoginManager), registers blueprints,
+    and sets up configuration. If `testing` is True, configures the app for testing
+    with an in-memory SQLite database and a test secret key.
+
+    Args:
+        testing (bool): If True, configure the app for testing.
+
+    Returns:
+        Flask: The configured Flask application instance.
     """
     app = Flask(__name__)
 
