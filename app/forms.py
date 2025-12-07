@@ -26,5 +26,6 @@ class ResetPasswordForm(FlaskForm):
 class CreateTicketForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     phClass = StringField("Class", validators=[DataRequired()])
-    # In the future, table_number could be an IntegerField
+    # FIXED: Added table field so validation passes and DB constraint isn't violated
+    table = StringField("Table (or 'Online')", validators=[DataRequired()])
     submit = SubmitField("Submit Request")

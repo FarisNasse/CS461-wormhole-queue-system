@@ -1,3 +1,6 @@
+# tests/test_routes.py
+
+
 def test_health_check_route(test_client):
     """Verify the health check endpoint returns 200 OK."""
     response = test_client.get("/health")
@@ -16,8 +19,8 @@ def test_assistant_login_page_loads(test_client):
     """Verify '/assistant-login' loads the Login Page with Form."""
     response = test_client.get("/assistant-login")
     assert response.status_code == 200
-    # Check for the CSRF token to ensure the FlaskForm loaded correctly
-    assert b'name="csrf_token"' in response.data
+    # FIX: Check for the username field instead of CSRF token (since CSRF is disabled in tests)
+    assert b'name="username"' in response.data
 
 
 def test_dashboard_is_protected(test_client):

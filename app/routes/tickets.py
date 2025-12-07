@@ -1,5 +1,5 @@
 # /app/routes/tickets.py
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
 from app import db
 from app.forms import CreateTicketForm
@@ -9,9 +9,23 @@ from app.models import Ticket
 tickets_html_bp = Blueprint("tickets_html", __name__)
 
 
-@tickets_html_bp.route("/createticket")
+@tickets_html_bp.route("/createticket", methods=["GET", "POST"])  # FIXED: Added POST
 def createticket():
-    form = CreateTicketForm()  # Instantiate the form
+    form = CreateTicketForm()
+
+    # FIXED: Added submission logic
+    if form.validate_on_submit():
+        ticket = Ticket(
+            student_name=form.name.data,
+            physics_course=form.phClass.data,
+            table=form.table.data,  # Uses new form field
+            status="Open",
+        )
+        db.session.add(ticket)
+        db.session.commit()
+        flash("Help request submitted successfully!")
+        return redirect(url_for("tickets_html.livequeue"))
+
     return render_template("createticket.html", form=form)
 
 

@@ -13,37 +13,32 @@
         <form method="POST" novalidate>
             {{ form.hidden_tag() }}
 
-            <!-- Name -->
             <div style="margin-bottom:1rem;">
                 {{ form.name.label }}
-                {{ form.name(
-                    style="width:100%; padding:10px; margin-top:5px; 
-                           border:1px solid #ddd; border-radius:4px;"
-                ) }}
+                {{ form.name(style="width:100%; padding:10px; margin-top:5px; border:1px solid #ddd; border-radius:4px;") }}
                 {% for er in form.name.errors %}
                     <div style="color:red; font-size:0.9rem;">{{ er }}</div>
                 {% endfor %}
             </div>
 
-            <!-- Course -->
+            <div style="margin-bottom:1rem;">
+                {{ form.table.label }}
+                {{ form.table(style="width:100%; padding:10px; margin-top:5px; border:1px solid #ddd; border-radius:4px;") }}
+                {% for er in form.table.errors %}
+                    <div style="color:red; font-size:0.9rem;">{{ er }}</div>
+                {% endfor %}
+            </div>
+
             <div style="margin-bottom:1rem;">
                 {{ form.phClass.label }}
-                {{ form.phClass(
-                    style="width:100%; padding:10px; margin-top:5px; 
-                           border:1px solid #ddd; border-radius:4px;"
-                ) }}
+                {{ form.phClass(style="width:100%; padding:10px; margin-top:5px; border:1px solid #ddd; border-radius:4px;") }}
                 {% for er in form.phClass.errors %}
                     <div style="color:red; font-size:0.9rem;">{{ er }}</div>
                 {% endfor %}
             </div>
 
-            <!-- Submit -->
             <div>
-                {{ form.submit(
-                    style="width:100%; padding:10px; background-color:#007bff; 
-                           color:white; border:none; border-radius:4px; 
-                           cursor:pointer; font-size:16px;"
-                ) }}
+                {{ form.submit(style="width:100%; padding:10px; background-color:#007bff; color:white; border:none; border-radius:4px; cursor:pointer; font-size:16px;") }}
             </div>
         </form>
 

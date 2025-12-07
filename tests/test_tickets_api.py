@@ -1,3 +1,4 @@
+# tests/test_tickets_api.py
 from app import db
 from app.models import Ticket
 
@@ -9,7 +10,7 @@ def test_create_ticket_success(test_client, test_app):
     payload = {
         "student_name": "Isaac Newton",
         "class_name": "PH 211",
-        "table_number": 42,
+        "table_number": 42,  # Sending int is fine, but DB stores as String
         "location": "Library",
     }
 
@@ -21,11 +22,12 @@ def test_create_ticket_success(test_client, test_app):
     assert data["student_name"] == "Isaac Newton"
     assert data["status"] == "Open"
 
-    # 2. Check Database Integrity (The "Side Effect")
+    # 2. Check Database Integrity
     with test_app.app_context():
         ticket = Ticket.query.filter_by(student_name="Isaac Newton").first()
         assert ticket is not None
-        assert ticket.table == 42
+        # FIXED: Compare against string because DB column is String(50)
+        assert ticket.table == "42"
 
 
 def test_create_ticket_validation_error(test_client):
@@ -47,10 +49,10 @@ def test_get_tickets_returns_list(test_client, test_app):
     # Setup: Create a ticket manually in the DB
     with test_app.app_context():
         t1 = Ticket(
-            student_name="Alice", physics_course="PH 211", table=1, status="Open"
+            student_name="Alice", physics_course="PH 211", table="1", status="Open"
         )
         t2 = Ticket(
-            student_name="Bob", physics_course="PH 212", table=2, status="Closed"
+            student_name="Bob", physics_course="PH 212", table="2", status="Closed"
         )
         db.session.add_all([t1, t2])
         db.session.commit()
@@ -70,12 +72,12 @@ def test_get_open_tickets_filter(test_client, test_app):
     """
     with test_app.app_context():
         t1 = Ticket(
-            student_name="Open User", physics_course="PH 211", table=1, status="Open"
+            student_name="Open User", physics_course="PH 211", table="1", status="Open"
         )
         t2 = Ticket(
             student_name="Closed User",
             physics_course="PH 212",
-            table=2,
+            table="2",
             status="Closed",
         )
         db.session.add_all([t1, t2])
@@ -86,3 +88,20 @@ def test_get_open_tickets_filter(test_client, test_app):
 
     assert len(data) == 1
     assert data[0]["student_name"] == "Open User"
+
+
+def test_create_ticket_missing_table(test_client):
+    """
+    Negative Test: API should reject requests missing the 'table_number' field.
+    """
+    payload = {
+        "student_name": "No Table User",
+        "class_name": "PH 211",
+        # 'table_number' is missing
+    }
+
+    response = test_client.post("/api/tickets", json=payload)
+
+    # Expecting 400 Bad Request
+    assert response.status_code == 400
+    assert "error" in response.get_json()
