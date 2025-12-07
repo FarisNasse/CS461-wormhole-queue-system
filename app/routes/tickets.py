@@ -1,6 +1,6 @@
 # /app/routes/tickets.py
 from flask import Blueprint, jsonify, request, render_template
-from app import db
+from app import db, socketio
 from app.models import Ticket
 
 tickets_bp = Blueprint('tickets', __name__, url_prefix='/api')
@@ -45,6 +45,8 @@ def create_ticket():
     # Add and commit the new ticket to the database
     db.session.add(new_ticket)
     db.session.commit()
+
+    socketio.emit("queue_update")
 
     return jsonify(new_ticket.to_dict()), 201
 
