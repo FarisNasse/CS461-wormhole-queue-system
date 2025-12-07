@@ -53,7 +53,10 @@
         </div>
 
         <!-- Live Queue Update Script -->
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
         <script>
+            const socket = io();
+            
             async function loadQueue() {
                 try {
                     const response = await fetch("/api/opentickets");
@@ -80,8 +83,10 @@
                 }
             }
 
-            // Refresh queue every 3 seconds
-            setInterval(loadQueue, 3000);
+            // listen for queue updates from server
+            socket.on("queue_update", () => {
+                loadQueue();
+            });
 
             // Load immediately on page load
             loadQueue();
