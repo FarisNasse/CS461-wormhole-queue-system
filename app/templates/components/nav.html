@@ -1,0 +1,31 @@
+<nav id="main-nav">
+    <ul>
+        <li>
+            <a href="{{ url_for('tickets.createticket') }}">
+                <i class="fa-solid fa-bolt"></i>
+                Submit a Help Request
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('tickets.livequeue') }}">
+                <i class="fa-solid fa-users"></i>
+                Live Queue
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('auth.assistant_login') }}">
+                <i class="fa-solid fa-gear"></i>
+                Wormhole Assistants
+            </a>
+        </li>
+
+        <li>
+            <a href="https://oregonstate.zoom.us/j/95601298258">
+                <i class="fa-solid fa-video"></i>
+                Zoom Meeting
+            </a>
+        </li>
+    </ul>
+</nav>
