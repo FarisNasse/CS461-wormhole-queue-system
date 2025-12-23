@@ -27,7 +27,7 @@ class User(db.Model):
     email: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
     password_hash: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(128))
     is_admin: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
-    time_created: orm.Mapped[datetime] = orm.mapped_column(
+    created_at: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
     tickets: orm.WriteOnlyMapped['Ticket'] = orm.relationship(back_populates="wormhole_assistant")
@@ -40,7 +40,7 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
     def claim_ticket(self, ticket: 'Ticket') -> bool:
         if ticket.wa_id is None:
             ticket.assign_to(self)
@@ -53,13 +53,16 @@ class Ticket(db.Model):
     student_name: orm.Mapped[str] = orm.mapped_column(sa.String(100))
     table: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     physics_course: orm.Mapped[str] = orm.mapped_column(sa.String(50))
-    status: orm.Mapped[str] = orm.mapped_column(sa.String(20), index=True, default='live')
+    status: orm.Mapped[str] = orm.mapped_column(sa.String(20), default='live')
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    time_resolved: orm.Mapped[Optional[datetime]] = orm.mapped_column(
+    closed_at: orm.Mapped[Optional[datetime]] = orm.mapped_column(
         default=None
     )
+    closed_reason: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(20), default=None)
+    # closed reason can be 'helped', 'no_show', 'duplicate', 'flushed'
+    
     number_of_students: orm.Mapped[Optional[int]] = orm.mapped_column(default=1)
     wa_id: orm.Mapped[Optional[int]] = orm.mapped_column(
         sa.ForeignKey('users.id'), default=None, index=True
@@ -77,13 +80,17 @@ class Ticket(db.Model):
             "physics_course": self.physics_course,
             "status": self.status,
             "created_at": self.created_at,
+            "closed_at": self.closed_at,
+            "closed_reason": self.closed_reason,
+            "number_of_students": self.number_of_students,
+            "wa_id": self.wa_id,
         }
     
-    def mark_resolved(self, user: Optional['User'] = None):
-        self.status = 'resolved'
+    def close_ticket(self, closed_reason, num_students: Optional[int] = 1):
+        self.status = 'closed'
+        self.number_of_students = num_students
+        self.closed_reason = closed_reason
         self.time_resolved = datetime.now(timezone.utc)
-        if user and self.wa_id is None:
-            self.assign_to(user)
         db.session.commit()
 
     def assign_to(self, user: 'User'):
