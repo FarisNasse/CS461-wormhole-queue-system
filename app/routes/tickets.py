@@ -39,7 +39,7 @@ def create_ticket():
         student_name = student_name,
         table = table,
         physics_course = physics_course,
-        status = "Open"
+        status = "live"
     )
 
     # Add and commit the new ticket to the database
@@ -51,5 +51,5 @@ def create_ticket():
 # GET: API route to get all open tickets
 @tickets_bp.route('/opentickets', methods=['GET'])
 def get_open_tickets():
-    tickets = Ticket.query.filter_by(status="Open").all()
+    tickets = Ticket.query.filter_by(status="live").all()
     return jsonify([t.to_dict() for t in tickets])

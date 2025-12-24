@@ -1,32 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Help Request</title>
-        <link rel="stylesheet" href="../static/styles.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    </head>
+{% extends "base.html" %}
 
-    <body>
-        <header id="ticket-creation-header">
-            <nav class="nav-bar">
-                <ul>
-                    <li>
-                        <a href = "{{ url_for('auth.index')}}">
-                            Home Page</a>
-                    </li>
-                    <li>
-                        <a href = "{{ url_for('tickets.createticket') }}">
-                            Submit Help Request</a>
-                    </li>
-                    <li><a href="{{ url_for('tickets.livequeue') }}">
-                            Live Queue</a>
-                    </li>
-                    <li><a href="{{ url_for('auth.assistant_login') }}">Wormhole Assistants</a></li>
-                </ul>
-            </nav>
-        </header>
+{% block title %}Ticket Form | The Wormhole{% endblock %}
+
+{% block content %}
 
         <h2>Create Help Request</h2>
 
@@ -94,6 +70,4 @@
         });
         </script>
 
-
-    </body>
-</html>
+{% endblock %}

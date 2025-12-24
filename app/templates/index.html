@@ -1,63 +1,13 @@
-<!--
-    This page is the home page for the wormhole. It includes:
-        - Navigation to help requests, live queue, assistant login, zoom meeting, and microsoft teams
-        - The Wormhole schedule
-        - Wormhole assistant availability
-        - Information about the Wormhole
-        - How to access the virtual Wormhole
-        - How to request assistance
-        - Code of Conduct
--->
+{% extends "base_home.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>The Wormhole</title>
-        <link rel="stylesheet" href="../static/styles.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% block title %}Home | The Wormhole{% endblock %}
 
-    </head>
-    <body>
-        <header id = "main-header">
-            <h1>The Wormhole</h1>
-            <h2>Physics Collaboration and Help Center</h2>
-            <p>Offering a collaborative workspace and assistance for all
-                introductory physics courses, both on campus and ecampus.
-            </p>
-            <p>Located on the third floor of the 
-                <a href="https://library.oregonstate.edu/valley">Valley Library</a>.
-            </p>
-        </header>
-        <nav id="main-nav">
-            <ul>
-                <li><a href="{{ url_for('tickets.createticket') }}">
-                    <i class="fa-solid fa-bolt"></i>
-                    Submit a Help Request</a>
-                </li>
+{% block content %}
 
-                <li><a href="{{ url_for('tickets.livequeue') }}">
-                    <i class="fa-solid fa-users"></i>
-                    Live Queue</a>
-                </li>
-                <li><a href="{{ url_for('auth.assistant_login') }}">
-                    <i class = "fa-solid fa-gear"></i>
-                    Wormhole Assistants</a>
-                </li>
-                <li><a href="https://oregonstate.zoom.us/j/95601298258">
-                    <i class = "fa-solid fa-video"></i>
-                    Zoom Meeting <br>(pw: Wormhole)</a>
-                </li>
-                <li><a href="https://teams.microsoft.com/l/team/19%3APpRY4AEqZdtH64xvUccyQZUEtPyXkb98oJB3Mvxjtzk1%40thread.tacv2/conversations?groupId=8aef2617-21c6-493e-8ae5-42e11a9c9875&tenantId=ce6d05e1-3c5e-4d62-87a8-4c4a2713c113">
-                    <i class = "fa-brands fa-microsoft"></i>
-                    Microsoft Teams</a></li>
-            </ul>
-        </nav>
         <section id="schedule-section">
             <h2>Wormhole Schedule</h2>
             <h3>
-                The Wormhole is open for Fall 2025! <br>
+                The Wormhole is open for Winter 2026! <br>
                 Wormhole Assistants will be available 9 AM - 5 PM, Monday - Friday.
             </h3>
             <p>Please note the Wormhole is closed at 4 PM Mondays for Departmental Colloquia.</p>
@@ -164,15 +114,9 @@
                     not to do the problem or to tell you the answer.</li>
                 <li>Assistants will try to help everyone, but be patient when they 
                     aren't familiar with the problem in your course.</li>
-                <li>The Wormhole get crowded. If you're not working on physics, please 
+                <li>The Wormhole gets crowded. If you're not working on physics, please 
                     give up your space to those who are.</li>
             </ul>
         </section>
-    </body>
-                
 
-                
-
-
-
-</html>
+{% endblock %}
