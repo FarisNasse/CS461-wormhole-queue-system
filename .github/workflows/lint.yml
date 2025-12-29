@@ -30,7 +30,7 @@ jobs:
         run: pip install djlint
 
       - name: Lint HTML with djLint
-        run: djlint app/templates templates
+        run: djlint app/templates
 
       - name: Lint CSS
-        run: npx stylelint "app/static/**/*.css" "static/**/*.css"
+        run: npx stylelint "app/static/**/*.css"
