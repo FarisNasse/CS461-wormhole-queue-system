@@ -1,11 +1,11 @@
             <nav class="nav-bar">
                 <ul>
+                            <li>
+                                <a href="{{ url_for('auth.index') }}">
+                                    Home Page</a>
+                            </li>
                     <li>
-                        <a href = "{{ url_for('auth.index')}}">
-                            Home Page</a>
-                    </li>
-                    <li>
-                        <a href = "{{ url_for('tickets.createticket') }}">
+                                <a href="{{ url_for('tickets.createticket') }}">
                             Submit Help Request</a>
                     </li>
                     <li><a href="{{ url_for('tickets.livequeue') }}">

@@ -1,43 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>500 Error Ocurred</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fafafa;
-            text-align: center;
-            padding-top: 10%;
-        }
-        .container {
-            max-width: 500px;
-            margin: auto;
-        }
-        h1 {
-            font-size: 72px;
-            margin-bottom: 0;
-            color: #e74c3c;
-        }
-        p {
-            font-size: 20px;
-            color: #555;
-        }
-        a {
-            text-decoration: none;
-            color: #3498db;
-            font-weight: bold;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>500 Error</h1>
-        <p>An unexpected error ocurred. Contact the system administrator for assistance resolving this issue.</p>
-        <p><a href="/home.html">Return to Home</a></p>
+{% extends "base.html" %}
+
+{% block title %}{{ title or (error_code ~ ' Error') }}{% endblock title %}
+
+{% block content %}
+    <div class="container" style="text-align:center; padding-top:6rem; max-width:720px;">
+        <h1 style="font-size:4.5rem; color:#e74c3c; margin-bottom:0;">{{ error_code or 500 }} Error</h1>
+        <p style="font-size:1.25rem; color:#555;">{{ message or 'An unexpected error occurred. Contact the system administrator for assistance.' }}</p>
+
+        <p>
+            {% if home_url %}
+                <a href="{{ home_url }}">Return to Home</a>
+            {% else %}
+                <a href="{{ url_for('index') }}">Return to Home</a>
+            {% endif %}
+        </p>
+
+        {% if debug and traceback %}
+            <section style="text-align:left; margin-top:2rem; background:#fff; padding:1rem; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+                <h2 style="font-size:1rem; color:#333;">Traceback (debug)</h2>
+                <pre style="white-space:pre-wrap; font-size:0.85rem; color:#111;">{{ traceback }}</pre>
+            </section>
+        {% endif %}
     </div>
-</body>
-</html>
+{% endblock content %}
