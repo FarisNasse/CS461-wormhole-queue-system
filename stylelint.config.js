@@ -3,7 +3,6 @@ module.exports = {
   rules: {
     "no-duplicate-selectors": true,
     "color-no-invalid-hex": true,
-    "indentation": null,
     "comment-empty-line-before": null
   }
 };
