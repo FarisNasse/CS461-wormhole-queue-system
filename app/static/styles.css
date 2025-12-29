@@ -119,14 +119,14 @@
   letter-spacing: 0.03em;
 }
 
+.tick-info p {
+  padding-top: 1.5cm;
+}
+
 #main-header p {
   margin-top: 0.5rem;
   font-size: 1.1rem;
   color: #d6d6d6;
-}
-
-.tick-info p {
-  padding-top: 1.5cm;
 }
 
 /* ============================== */
