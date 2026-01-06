@@ -1,18 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title or (error_code ~ ' Not Found') }}{% endblock title %}
 
 {% block content %}
-    <div class="container" style="text-align:center; padding-top:6rem; max-width:720px;">
-        <h1 style="font-size:4.5rem; color:#e74c3c; margin-bottom:0;">{{ error_code or 404 }} Error</h1>
-        <p style="font-size:1.25rem; color:#555;">{{ message or 'The page you\u2019re looking for doesn\u2019t exist.' }}</p>
-
-        <p>
-            {% if home_url %}
-                <a href="{{ home_url }}">Return to Home</a>
-            {% else %}
-                <a href="{{ url_for('index') }}">Return to Home</a>
-            {% endif %}
-        </p>
-    </div>
-{% endblock content %}
+<div class="page"><div class="section Tickets">
+    <br />
+    <h2>File Not Found</h2>
+    <p>The page you are looking for was not found.</p>
+</div></div>
+{% endblock %}

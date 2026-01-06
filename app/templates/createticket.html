@@ -1,73 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Ticket Form | The Wormhole{% endblock title %}
-
 {% block content %}
-
-        <h2>Create Help Request</h2>
-
-        <form id="ticketForm">
-            <label for="name">Name (No spaces):</label><br>
-            <input type="text" id="name" name="student_name" required pattern="\S+"><br><br>
-
-            <label for="class">Select Class</label><br>
-            <select id="class" name="class_name" required>
-                <option value="">-- Please choose --</option>
-                <option value="Physics211">Physics 211</option>
-                <option value="Physics212">Physics 212</option>
-                <option value="Physics213">Physics 213</option>
-                <option value="Physics20x">Physics 20x</option>
-                <option value="Physics20xEcampus">Physics 20x Ecampus</option>
-                <option value="Physics21xEcampus">Physics 21x Ecampus</option>
-            </select><br><br>
-
-            <label for="location">Select Location…</label><br>
-            <select id="location" name="location" required>
-                <option value="">-- Please choose --</option>
-                <option value="Teams">Teams</option>
-                <option value="Zoom">Zoom</option>
-            </select><br><br>
-
-            <!-- Hidden table number placeholder -->
-            <input type="hidden" name="table_number" value="0">
-
-            <button type="submit">Submit</button>
+<div class='page'>
+    <div class='section create-ticket'>
+        <h2 style="text-align:center">Create Help Request</h2>
+        <form align="center" action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p style="text-align:center">
+            {{ form.name.label }} {{ form.name(size=32) }}
+            {% for er in form.name.errors %}
+                <span style="color: red;">[{{ er }}]</span>
+            {% endfor %}
+        </p>
+        <p style="text-align:center">
+            {{ form.table.label }} {{ form.table(size=32) }}
+            {% for er in form.table.errors %}
+                <span style="color: red;">[{{ er }}]</span>
+            {% endfor %}
+        </p>
+        <p style="text-align:center">
+            {{ form.numStds.label }} {{ form.numStds(size=4) }}
+            {% for er in form.numStds.errors %}
+                <span style="color: red;">[{{ er }}]</span>
+            {% endfor %}
+        </p>
+        <p style="text-align:center">
+            {{ form.phClass.label }} {{ form.phClass(size=32) }}
+            {% for er in form.phClass.errors %}
+                <span style="color: red;">[{{ er }}]</span>
+            {% endfor %}
+        </p>
+        <p align="center">{{ form.submit() }}</p>
         </form>
-
-        <div id="result" style="margin-top:20px; font-weight:bold;"></div>
-
-        <script>
-        document.getElementById("ticketForm").addEventListener("submit", async function (e) {
-            e.preventDefault(); // stop page reload
-
-            const form = new FormData(this);
-
-            // Convert FormData → JSON object
-            const data = {
-                student_name: form.get("student_name"),
-                class_name: form.get("class_name"),
-                table_number: form.get("table_number"),
-                location: form.get("location")
-            };
-
-            const response = await fetch("/api/tickets", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                // Redirect after successful creation
-                window.location.href = "./livequeue";
-            } else {
-                document.getElementById("result").innerText =
-                    "Error: " + result.error;
-            }
-        });
-        </script>
-
-{% endblock content %}
+    </div>
+</div>
+{% endblock %}
