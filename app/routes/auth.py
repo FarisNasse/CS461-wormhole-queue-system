@@ -1,50 +1,12 @@
 # app/routes/auth.py
-from flask import Blueprint, request, jsonify, session, render_template
+from flask import Blueprint, request, jsonify, session, render_template, flash, redirect, url_for
 from werkzeug.security import check_password_hash
 from app.models import User
 from app import db
 from app.auth_utils import login_required
+from app.forms import ResetPasswordRequestForm, ResetPasswordForm
 
 auth_bp = Blueprint('auth', __name__)
-
-# -------------------------------
-# GET / (Student Home Page)
-# -------------------------------
-@auth_bp.route("/")
-@auth_bp.route("/index", endpoint = "index")
-def index():
-    # [FIX] Now renders your existing main home page
-    return render_template("index.html")
-
-# -------------------------------
-# GET / (Live Queue)
-# -------------------------------
-@auth_bp.route("/livequeue")
-def student():
-    return render_template("livequeue.html")
-
-# -------------------------------
-# GET / (Help Request Creation)
-# -------------------------------
-@auth_bp.route("/createticket")
-def create_ticket_page():
-    return render_template("createticket.html")
-
-# -------------------------------
-# GET /assistant-login (Assistant Login Page)
-# -------------------------------
-@auth_bp.route("/assistant-login")
-def assistant_login():
-    # [FIX] Renders the login form specifically at this URL
-    return render_template("login.html")
-
-# -------------------------------
-# GET /dashboard (Protected Area)
-# -------------------------------
-@auth_bp.route("/dashboard")
-@login_required
-def dashboard():
-    return "<h1>Welcome! You are logged in to the Wormhole System.</h1>", 200
 
 # -------------------------------
 # POST /api/login (The Logic)
@@ -90,3 +52,30 @@ def check_session():
         }), 200
 
     return jsonify({'logged_in': False}), 200
+
+# -------------------------------
+# GET /reset_password_request (Render a simple reset request form)
+# -------------------------------
+@auth_bp.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    form = ResetPasswordRequestForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            email = form.email.data
+        flash('If an account with that email exists, check your inbox for reset instructions.', 'info')
+        return redirect(url_for('views.assistant_login'))
+    return render_template('reset_password_request.html', form=form)
+
+# -------------------------------
+# GET /reset_password/<token> (Render password reset form)
+# -------------------------------
+@auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    form = ResetPasswordForm()
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            flash('Passwords do not match or are invalid.', 'error')
+            return render_template('reset_password.html', form=form)
+        flash('Your password has been reset. You may now sign in.', 'success')
+        return redirect(url_for('views.assistant_login'))
+    return render_template('reset_password.html', form=form)

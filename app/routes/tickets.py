@@ -1,19 +1,10 @@
 # /app/routes/tickets.py
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, request
 from app import db
 from app.models import Ticket
+from app.routes.queue_events import broadcast_ticket_update
 
 tickets_bp = Blueprint('tickets', __name__, url_prefix='/api')
-
-# Route to render the create ticket page
-@tickets_bp.route("/createticket", endpoint="createticket")
-def createticket():
-    return render_template("createticket.html")
-
-# Route to render the live queue page
-@tickets_bp.route("/livequeue", endpoint="livequeue")
-def livequeue():
-    return render_template("livequeue.html")
 
 # GET: API route to get all tickets
 @tickets_bp.route('/tickets', methods=['GET'])
@@ -45,6 +36,9 @@ def create_ticket():
     # Add and commit the new ticket to the database
     db.session.add(new_ticket)
     db.session.commit()
+
+    # Broadcast the new ticket to all connected queue clients
+    broadcast_ticket_update(new_ticket.id)
 
     return jsonify(new_ticket.to_dict()), 201
 
