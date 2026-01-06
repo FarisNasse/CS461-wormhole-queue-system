@@ -1,0 +1,63 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, TextAreaField
+from wtforms.validators import DataRequired, Email, EqualTo, Optional, NumberRange
+
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember Me')
+    submit = SubmitField('Sign In')
+
+
+class TicketForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    table = StringField('Table', validators=[DataRequired()])
+    numStds = IntegerField('Number of Students', validators=[Optional(), NumberRange(min=1)])
+    phClass = StringField('Class', validators=[DataRequired()])
+    submit = SubmitField('Create')
+
+
+class RegisterForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Re-enter Password', validators=[DataRequired(), EqualTo('password')])
+    is_admin = BooleanField('Administrator')
+    submit = SubmitField('Register')
+
+
+class RegisterBatchForm(FlaskForm):
+    emailcsv = TextAreaField('Emails', validators=[DataRequired()])
+    submit = SubmitField('Register Batch')
+
+
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Reset')
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired()])
+    password2 = PasswordField('Re-enter Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Change Password')
+
+
+class DeleteUserForm(FlaskForm):
+    confirm = StringField('Type "confirm" to delete', validators=[DataRequired()])
+    submit = SubmitField('Delete User')
+
+
+class ChangePassForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    old_password = PasswordField('Old Password', validators=[DataRequired()])
+    password = PasswordField('New Password', validators=[DataRequired()])
+    password2 = PasswordField('Re-enter New Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Change Password')
+
+
+class PastTicketForm(FlaskForm):
+    numStds = IntegerField('Number of Students', validators=[Optional(), NumberRange(min=1)])
+    submit = SubmitField('Submit')
+ 
