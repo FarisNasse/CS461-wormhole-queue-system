@@ -53,6 +53,7 @@ def livequeue():
 # GET /queue (New Queue Page)
 # -------------------------------
 @views_bp.route("/queue")
+@login_required
 def queue():
     # Fetch current queue data
     open_tickets = Ticket.query.filter_by(status='live', wa_id=None).order_by(Ticket.created_at).all()
@@ -70,6 +71,7 @@ def queue():
 # GET /flush (Flush Queue)
 # -------------------------------
 @views_bp.route("/flush")
+@login_required
 def flush():
     # Placeholder for flushing/clearing the queue
     flash('Queue flushed', 'info')
@@ -80,6 +82,7 @@ def flush():
 # GET /anonymize (Anonymize Closed Tickets)
 # -------------------------------
 @views_bp.route("/anonymize")
+@login_required
 def anonymize():
     # Placeholder for anonymizing closed tickets
     flash('Closed tickets anonymized', 'info')
@@ -93,12 +96,11 @@ def anonymize():
 def create_ticket_page():
     form = TicketForm()
     if form.validate_on_submit():
-        nst = form.numStds.data or 1
         t = Ticket(
             student_name=form.name.data,
-            table=form.table.data,
+            table=form.location.data,
             physics_course=form.phClass.data,
-            number_of_students=nst,
+            number_of_students=1,
             status='live'
         )
         db.session.add(t)
@@ -112,7 +114,7 @@ def create_ticket_page():
             pass
 
         flash('Ticket created — thank you!', 'success')
-        return redirect(url_for('views.queue'))
+        return redirect(url_for('views.livequeue'))
 
     return render_template("createticket.html", form=form)
 
@@ -154,8 +156,8 @@ def assistant_login():
             session['user_id'] = user.id
             session['is_admin'] = user.is_admin
             if user.is_admin:
-                return redirect(url_for('views.user_list'))
-            return redirect(url_for('views.dashboard'))
+                return redirect(url_for('views.hardware_list'))
+            return redirect(url_for('views.hardware_list'))
 
         flash('Invalid username or password.', 'error')
         return render_template('login.html', form=form)
@@ -170,6 +172,17 @@ def assistant_login():
 @login_required
 def dashboard():
     return "<h1>Welcome! You are logged in to the Wormhole System.</h1>", 200
+
+
+# -------------------------------
+# GET /hardware_list (Hardware List)
+# -------------------------------
+@views_bp.route("/hardware_list")
+@login_required
+def hardware_list():
+    # Placeholder for hardware list - will be populated with actual data
+    boxes = []
+    return render_template('hardware_list.html', boxes=boxes)
 
 
 @views_bp.route('/logout')

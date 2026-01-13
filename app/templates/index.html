@@ -7,10 +7,13 @@
         <br/>
         <h2 style="text-align:center">For Students</h2>
         <p style="text-align:center"><a href="{{ url_for('views.create_ticket_page') }}">Submit a Help Request</a></p>
+        <p style="text-align:center"><a href="https://oregonstate.zoom.us/j/95601298258">Zoom Meeting</a></p>
+        <p style="text-align:center"><a href="https://teams.microsoft.com/l/team/19%3APpRY4AEqZdtH64xvUccyQZUEtPyXkb98oJB3Mvxjtzk1%40thread.tacv2/conversations?groupId=8aef2617-21c6-493e-8ae5-42e11a9c9875&tenantId=ce6d05e1-3c5e-4d62-87a8-4c4a2713c113">Microsoft Teams</a></p>
+
     </div>
     <div class="section ta-home">
         <br/>
-        <h2 style="text-align:center">For Teaching Assistants</h2>
+        <h2 style="text-align:center">For Wormhole Assistants</h2>
         {% if current_user.is_anonymous %}
             <p style="text-align:center"><a href="{{ url_for('views.assistant_login') }}">Log In</a></p>
         {% else %}

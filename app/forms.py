@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, Optional, NumberRange
 
 
@@ -12,9 +12,18 @@ class LoginForm(FlaskForm):
 
 class TicketForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    table = StringField('Table', validators=[DataRequired()])
-    numStds = IntegerField('Number of Students', validators=[Optional(), NumberRange(min=1)])
-    phClass = StringField('Class', validators=[DataRequired()])
+    phClass = SelectField('Class', choices=[
+        ('Physics 211', 'Physics 211'),
+        ('Physics 212', 'Physics 212'),
+        ('Physics 213', 'Physics 213'),
+        ('Physics 20x', 'Physics 20x'),
+        ('Physics 20x Ecampus', 'Physics 20x Ecampus'),
+        ('Physics 21x Ecampus', 'Physics 21x Ecampus')
+    ], validators=[DataRequired()])
+    location = SelectField('Location', choices=[
+        ('Teams', 'Teams'),
+        ('Zoom', 'Zoom')
+    ], validators=[DataRequired()])
     submit = SubmitField('Create')
 
 

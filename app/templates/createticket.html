@@ -13,20 +13,14 @@
             {% endfor %}
         </p>
         <p style="text-align:center">
-            {{ form.table.label }} {{ form.table(size=32) }}
-            {% for er in form.table.errors %}
-                <span style="color: red;">[{{ er }}]</span>
-            {% endfor %}
-        </p>
-        <p style="text-align:center">
-            {{ form.numStds.label }} {{ form.numStds(size=4) }}
-            {% for er in form.numStds.errors %}
-                <span style="color: red;">[{{ er }}]</span>
-            {% endfor %}
-        </p>
-        <p style="text-align:center">
-            {{ form.phClass.label }} {{ form.phClass(size=32) }}
+            {{ form.phClass.label }} {{ form.phClass() }}
             {% for er in form.phClass.errors %}
+                <span style="color: red;">[{{ er }}]</span>
+            {% endfor %}
+        </p>
+        <p style="text-align:center">
+            {{ form.location.label }} {{ form.location() }}
+            {% for er in form.location.errors %}
                 <span style="color: red;">[{{ er }}]</span>
             {% endfor %}
         </p>

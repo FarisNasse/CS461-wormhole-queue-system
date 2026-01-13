@@ -35,6 +35,7 @@
                             {% else %}
                             <a href="{{ url_for('views.userpage', username=current_user.username) }}" style="color:#FFFFFF">
                                 Profile</a>
+                            <a href="{{ url_for('views.hardware_list') }}" style="color:#FFFFFF">Hardware List</a>
                             <a href="{{ url_for('views.logout') }}" style="color:#FFFFFF">Log Out</a>
                             {% endif %}
                         </div>
