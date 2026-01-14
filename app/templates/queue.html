@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    <!-- Use Socket.IO client from CDN to avoid missing static copy -->
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/queue.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="container">
+        <div class="section open">
+            <h1>Open Queue</h1>
+            <ul>
+                {% for tk in ol %}
+                    <li><a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue')) }}">{{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})</a></li>
+                {% endfor %}
+            </ul>
+            <p><a href="{{ url_for('views.flush') }}">Click me to flush queue</a></p>
+        </div>
+        <div class="section current">    
+            <h1>Current Queue</h1>
+            <ul>
+                {% for tk in cul %}
+                    <!--<li><a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue')) }}">{{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})</a></li>-->
+                    <li><a>{{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="section closed">    
+        <h1>Closed Queue</h1>
+        <p align="center"><a href="{{ url_for('views.anonymize') }}">Click me to anonymize closed tickets</a></p>
+        <ul>
+                {% for tk in cll %}
+                	<li><a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue')) }}">{{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

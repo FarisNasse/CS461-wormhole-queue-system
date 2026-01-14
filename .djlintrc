@@ -1,0 +1,14 @@
+{
+  "indent": 2,
+  "blank_indent": false,
+  "profile": "jinja",
+  "extension": "html",
+  "format_css": false,
+  "format_js": false,
+  "line_break_after_multiline_tag": true,
+  "preserve_blank_lines": false,
+  
+  "ignore": "H006,H030,H021",
+  "quiet": false,
+  "src": "app/templates"
+}

@@ -24,7 +24,7 @@ def test_assistant_login_page_loads(test_client):
     response = test_client.get("/assistant-login")
     assert response.status_code == 200
     # Check for the specific form title or button in login.html
-    assert b"System Login" in response.data
+    assert b"Assistant Login" in response.data
     assert b"Sign In" in response.data
 
 def test_dashboard_is_protected(test_client):

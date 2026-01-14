@@ -1,3 +1,46 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/livequeue.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+<div class="page">
+    <div class="section live-queue">
+        <h1 style="text-align:center">Live Queue</h1>
+        <!--
+        <form id="refresh" method='POST' action='#'>
+            <input type='submit' value='Refresh'>
+        </form>
+        -->
+        <hr>
+        <table id="tickets" style="width: 100%; text-align: center">
+            <tr>
+                <th>Index</th>
+                <th>Name</th>
+                <th>Table</th>
+                <th>Class</th>
+            </tr>
+            {% for tk in ol %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ tk.name }}</td>
+                <td>{{ tk.table }}</td>
+                <td>{{ tk.phClass }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <!--
+        <hr>
+        <h1>Term Log</h1>
+        <ul id="log"></ul>
+        -->
+    </div>
+</div>
+<p align="center">Last Refresh Time: <span align="center" id="refresh_time"></span></p>
+{% endblock %}
 <!DOCTYPE html>
 <html lang="en">
     <head>

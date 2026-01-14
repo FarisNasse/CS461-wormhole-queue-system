@@ -3,6 +3,7 @@ from flask import Flask, jsonify
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_socketio import SocketIO
 from config import Config
 
 db = SQLAlchemy()
@@ -13,7 +14,9 @@ socketio = SocketIO()
 # We import these at the top level. If they fail (e.g., syntax error or missing file),
 # the application will crash immediately with a helpful traceback.
 from app.routes.auth import auth_bp
+from app.routes.views import views_bp
 from app.routes.tickets import tickets_bp
+from app.routes import queue_events  # Import SocketIO events
 
 def create_app(testing=False):
     """
@@ -61,6 +64,33 @@ def create_app(testing=False):
     # ---------------------------------------------------
     # The imports happened at the top of the file, so we just register them here.
     app.register_blueprint(auth_bp)
+    app.register_blueprint(views_bp)
     app.register_blueprint(tickets_bp)
+
+    # ---------------------------------------------------
+    # Template context processors
+    # ---------------------------------------------------
+    from types import SimpleNamespace
+
+    @app.context_processor
+    def inject_current_user():
+        from flask import session
+        try:
+            if 'user_id' in session:
+                from app.models import User
+                u = User.query.get(session['user_id'])
+                if u:
+                    return {
+                        'current_user': SimpleNamespace(
+                            is_admin=bool(u.is_admin),
+                            is_anonymous=False,
+                            username=u.username,
+                        )
+                    }
+        except Exception:
+            # keep silent on DB errors; fall back to anonymous
+            pass
+
+        return {'current_user': SimpleNamespace(is_admin=False, is_anonymous=True, username='')}
 
     return app
