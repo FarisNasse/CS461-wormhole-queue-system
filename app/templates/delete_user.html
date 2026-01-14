@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page"><div class="section Generic">
+<h1>Delete User: {{ user.username }}</h1>
+    <form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+    This page can be used to delete the user {{ user.username }}. Please
+    triple check that you do, in fact, want to delete this user. If you
+    are ABSOLUTELY SURE, then type the word 'confirm' below and hit the
+    button.
+    </p>
+    <p>
+        {{ form.confirm.label }}
+        {{ form.confirm(size=12) }}<br>
+        {% for er in form.confirm.errors %}
+            <span style="color: red;">[{{ er }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.submit() }}
+    </p>
+    </form>
+</div></div>
+
+{% endblock %}

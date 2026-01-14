@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        {% if title %}
+        <title>{{title}}</title>
+        {% else %}
+        <title>Wormhole Help Requests</title>
+        {% endif %}
+        {% block scripts %} {% endblock %}
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='Wormhole.png') }}">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='Wormhole.png') }}" />
+    	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}" type="text/css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    </head>
+    <body>
+        <div class = "page">
+            <div class = "header">
+                <h1 style="color:#FFFFFF;text-align:center">OSU Physics Wormhole <br> Queue</h1>
+                <div class = "navbar">
+                <p>
+                    <a href="{{ url_for('views.index') }}" style="color:#FFFFFF">Home</a>
+                    <a href="{{ url_for('views.livequeue') }}" style="color:#FFFFFF">Live Queue</a>
+                    <div class="dropdown">
+                        <button class="dropbtn">User</button>
+                        <div class="dropdown-content">
+                            {% if current_user.is_admin %}
+                                Administrator: 
+                                <a href="{{ url_for('views.register') }}">Register New User</a>
+                                <a href="{{ url_for('views.queue') }}">Queue</a>
+                                <a href="{{ url_for('views.archive') }}">Archive</a>
+                            {% endif %}
+                            {% if current_user.is_anonymous %}
+                            <a href="{{ url_for('views.assistant_login') }}" style="color:#FFFFFF">Log In</a>
+                            {% else %}
+                            <a href="{{ url_for('views.userpage', username=current_user.username) }}" style="color:#FFFFFF">
+                                Profile</a>
+                            <a href="{{ url_for('views.hardware_list') }}" style="color:#FFFFFF">Hardware List</a>
+                            <a href="{{ url_for('views.logout') }}" style="color:#FFFFFF">Log Out</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </p>
+                </div>
+            </div>
+        </div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class ="section message">
+                <ul>
+                    {% for ms in messages %}
+                        <li>{{ ms }}</li>
+                    {% endfor %}
+                </ul>
+                </div>
+                {% endif %}
+                {% endwith %}
+                {% block content%} {% endblock %}
+    </body>
+</html>
