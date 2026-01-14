@@ -108,8 +108,12 @@
 }
 .live-queue{
     background:#FFFFFF;
-    padding: 10px;
-    height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 25px;
+    height: auto;
     max-width: 961px;
     border-radius: 50px;
 }
@@ -135,6 +139,19 @@
     min-height: 350px;
     text-indent: 10px;
     padding: 15px;
+}
+.Wormhole-Content {
+  padding: 25px;
+  margin-top: 30px;
+  border: dashed 2px #000;
+  border-radius: 20px;
+}
+.subsection {
+  margin-bottom: 25px;
+}
+
+.subsection:last-child {
+  margin-bottom: 0;
 }
 .profile{
     background: #BBA0CA;
