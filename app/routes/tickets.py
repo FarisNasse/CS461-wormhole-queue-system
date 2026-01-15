@@ -37,8 +37,6 @@ def create_ticket():
     db.session.add(new_ticket)
     db.session.commit()
 
-    socketio.emit("queue_update")
-
     # Broadcast the new ticket to all connected queue clients
     broadcast_ticket_update(new_ticket.id)
 

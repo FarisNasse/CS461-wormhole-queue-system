@@ -4,8 +4,7 @@ SocketIO events for real-time queue updates.
 Handles broadcasting ticket updates to connected clients.
 """
 
-from flask_socketio import emit
-from app import socketio, db
+from app import socketio
 from app.models import Ticket
 
 

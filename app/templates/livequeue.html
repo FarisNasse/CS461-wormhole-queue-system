@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 
-{% block scripts %}
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/livequeue.js') }}"></script>
-{% endblock %}
-
-
 {% block content %}
 <div class="page">
     <div class="section live-queue">
@@ -17,20 +11,24 @@
         -->
         <hr>
         <table id="tickets" style="width: 100%; text-align: center">
-            <tr>
-                <th>Index</th>
-                <th>Name</th>
-                <th>Table</th>
-                <th>Class</th>
-            </tr>
-            {% for tk in ol %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ tk.name }}</td>
-                <td>{{ tk.table }}</td>
-                <td>{{ tk.phClass }}</td>
-            </tr>
-            {% endfor %}
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Name</th>
+                    <th>Table</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tk in ol %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ tk.name }}</td>
+                    <td>{{ tk.table }}</td>
+                    <td>{{ tk.phClass }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
         <!--
         <hr>
@@ -41,99 +39,9 @@
 </div>
 <p align="center">Last Refresh Time: <span align="center" id="refresh_time"></span></p>
 {% endblock %}
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Live Queue</title>
-        <link rel="stylesheet" href="../static/styles.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    </head>
 
-    <body>
-        <header id="live-queue-header">
+{% block scripts %}
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/livequeue.js') }}"></script>
+{% endblock %}
 
-            <nav class="nav-bar">
-                <ul>
-                    <li>
-                        <a href="{{ url_for('auth.index') }}">Home Page</a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('tickets.createticket') }}">
-                            Submit Help Request
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('tickets.livequeue') }}">
-                            Live Queue
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('auth.assistant_login') }}">Wormhole Assistants</a>
-                    </li>
-                </ul>
-            </nav>
-
-        </header>
-
-        <h2>Live Queue</h2>
-
-        <div id="queue-container">
-            <table id="queue-table">
-                <thead>
-                    <tr>
-                        <th>Index</th>
-                        <th>Name</th>
-                        <th>Table</th>
-                        <th>Class</th>
-                    </tr>
-                </thead>
-                <tbody id="queue-body">
-                    <!-- Queue entries dynamically inserted here -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Live Queue Update Script -->
-        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-        <script>
-            const socket = io();
-            
-            async function loadQueue() {
-                try {
-                    const response = await fetch("/api/opentickets");
-                    const tickets = await response.json();
-
-                    const tbody = document.getElementById("queue-body");
-                    tbody.innerHTML = ""; // Clear current rows
-
-                    tickets.forEach((ticket, index) => {
-                        const row = document.createElement("tr");
-
-                        row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${ticket.student_name}</td>
-                            <td>${ticket.table}</td>
-                            <td>${ticket.physics_course}</td>
-                        `;
-
-                        tbody.appendChild(row);
-                    });
-
-                } catch (error) {
-                    console.error("Error loading queue:", error);
-                }
-            }
-
-            // listen for queue updates from server
-            socket.on("queue_update", () => {
-                loadQueue();
-            });
-
-            // Load immediately on page load
-            loadQueue();
-        </script>
-
-    </body>
-</html>
