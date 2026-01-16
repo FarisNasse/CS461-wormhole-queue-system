@@ -1,3 +1,5 @@
+// app/static/js/livequeue.js
+
 const socket = io('/queue');
 
 socket.on('connect', function() {

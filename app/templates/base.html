@@ -7,7 +7,6 @@
         {% else %}
         <title>Wormhole Queue System</title>
         {% endif %}
-        {% block scripts %} {% endblock %}
         <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='Wormhole.png') }}">
         <link rel="shortcut icon" href="{{ url_for('static', filename='Wormhole.png') }}" />
     	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}" type="text/css">
@@ -57,4 +56,5 @@
                 {% endwith %}
                 {% block content%} {% endblock %}
     </body>
+    {% block scripts %} {% endblock %}
 </html>
