@@ -12,7 +12,8 @@ def test_app():
     app = create_app(testing=True)
 
     with app.app_context():
-        db.create_all()  # Now definitely creates tables in test.db
+        
+        db.create_all()  
         
         yield app  # Run the test
         

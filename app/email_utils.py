@@ -1,3 +1,4 @@
+from flask import current_app
 from flask_mail import Message
 from app import mail, db
 from app.models import Ticket, User
@@ -25,7 +26,7 @@ def send_unclosed_ticket_reminders():
     # 3. Email TAs about their specific 'current' tickets
     for email, tickets in reminders.items():
         msg = Message("Action Required: Unclosed Wormhole Tickets",
-                      sender="noreply@wormhole.osu.edu",
+                      sender=current_app.config['MAIL_DEFAULT_SENDER'],
                       recipients=[email])
         
         student_list = "\n".join([f"- {t.student_name}" for t in tickets])
@@ -41,7 +42,7 @@ def send_unclosed_ticket_reminders():
         all_ta_emails = [u.email for u in User.query.filter_by(is_admin=True).all()]
         if all_ta_emails:
             msg = Message("Alert: New Tickets in Queue",
-                          sender="noreply@wormhole.osu.edu",
+                          sender=current_app.config['MAIL_DEFAULT_SENDER'],
                           recipients=all_ta_emails)
             msg.body = f"There are {len(unassigned_tickets)} tickets currently waiting in the live queue."
             mail.send(msg)

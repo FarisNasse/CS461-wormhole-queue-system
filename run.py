@@ -15,7 +15,6 @@ def make_shell_context():
 @app.cli.command("send-reminders")
 def send_reminders_command():
     """Run the unclosed ticket reminder logic."""
-    # Copilot Fix: Explicit context wrapper
     with app.app_context():
         send_unclosed_ticket_reminders()
         print("Reminders sent successfully.")

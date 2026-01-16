@@ -9,7 +9,15 @@ class Config:
     
     MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
+    
+    # Robust boolean check for TLS
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in ['true', '1', 'yes']
+    
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    ADMINS = ['admin@example.com']
+    
+    # Use config for default sender to avoid hardcoding in multiple files
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@wormhole.osu.edu')
+    
+    # Consistency with test domains
+    ADMINS = [os.environ.get('ADMIN_EMAIL', 'admin@example.edu')]
