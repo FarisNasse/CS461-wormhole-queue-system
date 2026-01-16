@@ -16,8 +16,14 @@ def make_shell_context():
 def send_reminders_command():
     """Run the unclosed ticket reminder logic."""
     with app.app_context():
-        send_unclosed_ticket_reminders()
-        print("Reminders sent successfully.")
+        try:
+            count = send_unclosed_ticket_reminders()
+            if count > 0:
+                print(f"Successfully sent {count} reminder email(s).")
+            else:
+                print("No unclosed tickets found. No emails sent.")
+        except Exception as e:
+            print(f"Error while sending reminders: {e}")
 
 if __name__ == '__main__':
     app.run(debug=True)
