@@ -18,6 +18,9 @@ from app.routes.auth import auth_bp
 from app.routes.views import views_bp
 from app.routes.tickets import tickets_bp
 from app.routes import queue_events  # Import SocketIO events
+from flask_mail import Mail
+
+mail = Mail()
 
 def create_app(testing=False):
     """
@@ -39,9 +42,10 @@ def create_app(testing=False):
 
     if testing:
         app.config["TESTING"] = True
-        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
+        app.config["MAIL_SUPPRESS_SEND"] = True
 
     # ---------------------------------------------------
     # Initialize Extensions
@@ -49,6 +53,7 @@ def create_app(testing=False):
     db.init_app(app)
     migrate.init_app(app, db)
     socketio.init_app(app)
+    mail.init_app(app)
 
     # Import models to register them with SQLAlchemy (needed for db setup)
     from app import models 
