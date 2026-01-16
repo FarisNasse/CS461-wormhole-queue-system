@@ -45,6 +45,7 @@ def create_app(testing=False):
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
+        app.config["MAIL_SUPPRESS_SEND"] = True
 
     # ---------------------------------------------------
     # Initialize Extensions

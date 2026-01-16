@@ -6,8 +6,6 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app import create_app, db
-# IMPORTANT: Import models here to register them with SQLAlchemy
-from app.models import User, Ticket 
 
 @pytest.fixture()
 def test_app():
@@ -26,6 +24,8 @@ def test_app():
         try:
             os.remove("test.db")
         except PermissionError:
+            # Ignore if the test database file cannot be removed (e.g., still in use or locked);
+            # this is best-effort cleanup and should not cause tests to fail.
             pass
 
 @pytest.fixture()

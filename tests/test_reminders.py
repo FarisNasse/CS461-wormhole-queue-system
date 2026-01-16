@@ -1,4 +1,3 @@
-import pytest
 from app import db, mail
 from app.models import User, Ticket
 from app.email_utils import send_unclosed_ticket_reminders 
