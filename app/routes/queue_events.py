@@ -36,6 +36,7 @@ def broadcast_ticket_update(ticket_id):
             'status': t.status,
         }
         socketio.emit('new_ticket', ticket_data, namespace='/queue', broadcast=True)
+        print(f'Broadcasted ticket update for ticket ID {ticket_id}')
 
 
 def broadcast_queue_refresh():
