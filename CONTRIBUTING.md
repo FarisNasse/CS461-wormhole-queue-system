@@ -18,7 +18,29 @@ Team communication occurs primarily through **Discord** and weekly in-person mee
 
 **Setup (to be finalized after development begins)**
 ```bash
-git clone https://github.com/FarisNasse/CS461-wormhole-queue-system
-cd CS461-wormhole-queue-system
-pip install -r requirements.txt
-python -m compileall .
+1. Clone the Repository:
+   git clone <your-repo-url>
+   cd <your-repo-name>
+
+2. Create and Activate a Virtual Environment:
+   python -m venv venv
+   On macOS/Linux:
+       source venv/bin/activate
+   On Windows:
+       venv\Scripts\activate
+
+3. Install Dependencies:
+   pip install -r requirements.txt
+   (If requirements.txt is empty, you can install manually using:)
+   pip install flask pytest flask_sqlalchemy
+
+Database Setup
+--------------
+If running locally, initialize your database with:
+   flask db upgrade
+
+Running the Application
+-----------------------
+Start the Flask development server:
+   flask run
+The app will be available at http://localhost:5000 by default.
