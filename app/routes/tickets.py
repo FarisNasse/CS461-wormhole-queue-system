@@ -1,5 +1,5 @@
 # /app/routes/tickets.py
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session
 from app import db
 from app.models import Ticket
 from app.routes.queue_events import broadcast_ticket_update
@@ -53,6 +53,8 @@ def get_open_tickets():
 def get_next_ticket():
     ticket = Ticket.query.filter_by(status="live").order_by(Ticket.created_at).first()
     if ticket:
-        return jsonify(ticket.to_dict())
+        current_user = session.get('user_id')
+        ticket.assign_to(current_user)
+        return jsonify(ticket.to_dict()), 200
     else:
         return jsonify({"message": "No open tickets"}), 404
