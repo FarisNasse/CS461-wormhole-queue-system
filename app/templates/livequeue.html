@@ -17,20 +17,17 @@
         -->
         <hr>
         <table id="tickets" style="width: 100%; text-align: center">
-            <tr>
-                <th>Index</th>
-                <th>Name</th>
-                <th>Table</th>
-                <th>Class</th>
-            </tr>
-            {% for tk in ol %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ tk.name }}</td>
-                <td>{{ tk.table }}</td>
-                <td>{{ tk.phClass }}</td>
-            </tr>
-            {% endfor %}
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Name</th>
+                    <th>Table</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Ticket rows will be dynamically inserted here -->
+            </tbody>
         </table>
         <!--
         <hr>
@@ -39,5 +36,5 @@
         -->
     </div>
 </div>
-<p align="center">Last Refresh Time: <span align="center" id="refresh_time"></span></p>
+<p align="center">Last Refresh Time: <span align="center" id="refresh-time"></span></p>
 {% endblock %}
