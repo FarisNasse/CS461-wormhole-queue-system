@@ -20,7 +20,7 @@
     justify-content: center;
     align-content: center;
     border: dashed;
-    border-color: #002148;
+    border-color: #002147;
     border-width: 2px;
     border-radius: 10px;
     background: #000000;
@@ -80,20 +80,23 @@
     display: none;
     position: absolute;
     background-color: #000000;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-    z-index: 1;
+    padding: 8px;
+    white-space: nowrap;
 }
 .dropdown-content a {
-    /*float: none;*/
+    display: inline-block;
     color: white;
-    padding: 6px 6px;
+    padding: 6px 12px;
     text-decoration: none;
-    display: block;
-    text-align: center;
-    float: left;
     font-size: 17px;
-    width: 33.33%;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.admin-links{
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 .page{
     display: flex;
