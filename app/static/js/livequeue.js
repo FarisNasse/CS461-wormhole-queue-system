@@ -1,3 +1,4 @@
+document
 const socket = io('/queue');
 
 socket.on('connect', function() {
