@@ -50,6 +50,14 @@ def livequeue():
 
 
 # -------------------------------
+# GET /wiki (Wiki Page)
+# -------------------------------
+@views_bp.route("/wiki")
+def wiki():
+    return render_template("wiki.html")
+
+
+# -------------------------------
 # GET /queue (New Queue Page)
 # -------------------------------
 @views_bp.route("/queue")
