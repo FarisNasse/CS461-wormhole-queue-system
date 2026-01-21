@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     socket.on('new_ticket', function(data) {
         console.log('New ticket event (userpage):', data);
         updateTicketCount();
-        refreshUserPage();
     });
 
     socket.on('queue_refresh', function(data) {
