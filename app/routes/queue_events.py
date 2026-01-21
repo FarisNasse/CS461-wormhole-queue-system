@@ -36,7 +36,7 @@ def broadcast_ticket_update(ticket_id):
             'created_at': t.created_at.isoformat() if t.created_at else None,
             'status': t.status,
         }
-        socketio.emit('new_ticket', ticket_data, namespace='/queue', broadcast=True)
+        socketio.emit('new_ticket', ticket_data, namespace='/queue')
 
 
 def broadcast_queue_refresh():
@@ -44,4 +44,4 @@ def broadcast_queue_refresh():
     Broadcast a refresh signal to all connected clients.
     Triggers the client to refetch the queue.
     """
-    socketio.emit('queue_refresh', {}, namespace='/queue', broadcast=True)
+    socketio.emit('queue_refresh', {}, namespace='/queue')
