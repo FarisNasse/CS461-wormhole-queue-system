@@ -21,6 +21,7 @@
                 <p>
                     <a href="{{ url_for('views.index') }}" style="color:#FFFFFF">Home</a>
                     <a href="{{ url_for('views.livequeue') }}" style="color:#FFFFFF">Live Queue</a>
+                    <a href="{{ url_for('views.wiki') }}" style="color:#FFFFFF">Wiki</a>
                     <div class="dropdown">
                         <button class="dropbtn">User</button>
                         <div class="dropdown-content">
@@ -57,4 +58,5 @@
                 {% endwith %}
                 {% block content%} {% endblock %}
     </body>
+    {% block scripts %} {% endblock %}
 </html>

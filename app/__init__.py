@@ -1,15 +1,13 @@
 # app/__init__.py
 from flask import Flask, jsonify
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_socketio import SocketIO
 from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
-socketio = SocketIO(cors_allowed_origins="*")
-
-
+socketio = SocketIO()
 
 # --- REQUIRED IMPORTS ---
 # We import these at the top level. If they fail (e.g., syntax error or missing file),
@@ -48,7 +46,7 @@ def create_app(testing=False):
     # ---------------------------------------------------
     db.init_app(app)
     migrate.init_app(app, db)
-    socketio.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*")
 
     # Import models to register them with SQLAlchemy (needed for db setup)
     from app import models 
