@@ -13,12 +13,12 @@ class LoginForm(FlaskForm):
 class TicketForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     phClass = SelectField('Class', choices=[
-        ('Physics 211', 'Physics 211'),
-        ('Physics 212', 'Physics 212'),
-        ('Physics 213', 'Physics 213'),
-        ('Physics 20x', 'Physics 20x'),
-        ('Physics 20x Ecampus', 'Physics 20x Ecampus'),
-        ('Physics 21x Ecampus', 'Physics 21x Ecampus')
+        ('Ph 211', 'Ph 211'),
+        ('Ph 212', 'Ph 212'),
+        ('Ph 213', 'Ph 213'),
+        ('Ph 20x', 'Ph 20x'),
+        ('Ph 20x Ecampus', 'Ph 20x Ecampus'),
+        ('Ph 21x Ecampus', 'Ph 21x Ecampus')
     ], validators=[DataRequired()])
     location = SelectField('Location', choices=[
         ('Teams', 'Teams'),
@@ -67,6 +67,14 @@ class ChangePassForm(FlaskForm):
 
 
 class PastTicketForm(FlaskForm):
-    numStds = IntegerField('Number of Students', validators=[Optional(), NumberRange(min=1)])
-    submit = SubmitField('Submit')
+    numStds = IntegerField(
+        'Number of Students',
+        validators=[Optional(), NumberRange(min=1)]
+    )
+
+    solved_new = SubmitField('Solved: Get New Ticket')
+    solved_profile = SubmitField('Solved: Return to Profile')
+    return_queue = SubmitField('Return to Queue')
+    no_show = SubmitField('No Show')
+    mark_redundant = SubmitField('Mark Redundant')
  

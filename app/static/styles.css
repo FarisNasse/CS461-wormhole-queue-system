@@ -16,29 +16,33 @@
 }
 .header{
     width: 100%;
-    min-height: 180px;
+    min-height: 100px;
     justify-content: center;
     align-content: center;
     border: dashed;
-    border-color: #000000;
+    border-color: #002148;
     border-width: 2px;
     border-radius: 10px;
     background: #000000;
     height: auto;
 }
 .navbar{
-    width:100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    padding: 0 40px;
     background-color:#000000;
-    overflow:auto;
 }
 .navbar a {
     float: left;
-    padding: 12px;
+    padding: 5px;
     color: white;
-    font-size: 17 px;
-    width: 33.33%;
+    font-size: 17px;
     text-align: center;
     text-decoration: none;
+    white-space: nowrap;
 }
 .message{
     max-width: 960px;
@@ -88,7 +92,7 @@
     display: block;
     text-align: center;
     float: left;
-    font-size: 17 px;
+    font-size: 17px;
     width: 33.33%;
 }
 .page{
@@ -99,7 +103,7 @@
     background: #FFFFFF;
 }
 .ta-home {
-    background-color: #BBA0CA;
+    background-color: #a2ceff;
 }
 .create-ticket {
     background: #FFFFFF;
@@ -226,6 +230,13 @@
 .dropdown-content a:hover {background-color:f1f1f1}
 .dropdown:hover .dropdown-content{
     display: block;
+}
+
+.resolve-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 
