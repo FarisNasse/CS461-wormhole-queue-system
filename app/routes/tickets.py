@@ -47,14 +47,3 @@ def create_ticket():
 def get_open_tickets():
     tickets = Ticket.query.filter_by(status="live").all()
     return jsonify([t.to_dict() for t in tickets])
-
-# GET: API route to get next open ticket in line
-@tickets_bp.route('/nextticket', methods=['GET'])
-def get_next_ticket():
-    ticket = Ticket.query.filter_by(status="live").order_by(Ticket.created_at).first()
-    if ticket:
-        current_user = session.get('user_id')
-        ticket.assign_to(current_user)
-        return jsonify(ticket.to_dict()), 200
-    else:
-        return jsonify({"message": "No open tickets"}), 404
