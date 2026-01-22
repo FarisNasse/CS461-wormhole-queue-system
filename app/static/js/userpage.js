@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     socket.on('connect', function() {
         console.log('Connected to queue namespace (userpage)');
+        updateTicketCount();
+        console.log('Initial ticket count updated (userpage)');
     });
 
     socket.on('new_ticket', function(data) {
         console.log('New ticket event (userpage):', data);
-        refreshUserPage();
+        updateTicketCount();
     });
 
     socket.on('queue_refresh', function(data) {
@@ -22,5 +24,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function refreshUserPage() {
         location.reload();
+    }
+
+    function updateTicketCount() {
+        console.log('fetching ticket count...');
+        fetch('/api/opentickets')
+            .then(response => {
+            return response.json();
+        })
+            .then(data => {
+                const ticketCountElem = document.getElementById('ticket-count');
+                if (ticketCountElem) {
+                    ticketCountElem.textContent = data.length;
+                    console.log('Ticket count updated to:', data.length);
+                }
+            })
+            .catch(error => console.error('Error fetching ticket count:', error));
     }
 });

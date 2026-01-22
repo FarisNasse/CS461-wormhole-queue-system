@@ -3,6 +3,8 @@ from flask import Blueprint, jsonify, request, render_template
 from app import db, socketio
 from app.models import Ticket
 from app.routes.queue_events import broadcast_ticket_update
+from app.forms import ResolveTicketForm
+from app.routes.views import currentticket
 
 tickets_bp = Blueprint('tickets', __name__, url_prefix='/api')
 
@@ -47,3 +49,21 @@ def create_ticket():
 def get_open_tickets():
     tickets = Ticket.query.filter_by(status="live").all()
     return jsonify([t.to_dict() for t in tickets])
+
+# API route to handle ticket resolution form submission
+@tickets_bp.route('/resolveticket/<int:ticket_id>', methods=['POST'])
+def resolve_ticket(ticket_id):
+    form = ResolveTicketForm()
+    if form.validate_on_submit():
+        ticket = Ticket.query.get(ticket_id)
+        if ticket:
+            ticket.status = "resolved"
+            ticket.num_students = form.numStds.data
+            ticket.resolve_reason = form.resolveReason.data
+            db.session.commit()
+            broadcast_ticket_update(ticket.id)
+            return jsonify({"message": "Ticket resolved successfully"}), 200
+        else:
+            return jsonify({"error": "Ticket not found"}), 404
+    else:
+        return currentticket(tktid=ticket_id), 400

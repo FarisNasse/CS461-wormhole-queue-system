@@ -66,7 +66,17 @@ class ChangePassForm(FlaskForm):
     submit = SubmitField('Change Password')
 
 
-class PastTicketForm(FlaskForm):
+class ResolveTicketForm(FlaskForm):
     numStds = IntegerField('Number of Students', validators=[Optional(), NumberRange(min=1)])
+    resolveReason = SelectField(
+        'Resolution Reason',
+        choices=[
+            ('', 'Select a reason'),
+            ('helped', 'Helped'),
+            ('no_show', 'No Show'),
+            ('duplicate', 'Duplicate')
+        ], 
+        validators=[DataRequired(message="Please select a reason.")]
+    )
     submit = SubmitField('Submit')
  
