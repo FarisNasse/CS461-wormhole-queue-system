@@ -118,10 +118,10 @@
     border-radius: 50px;
 }
 .refresh{
-    background: #6B4C9A;
+    background: #002147;
     height: 80px;
     border: dashed;
-    border-color: #6B4C9A;
+    border-color: #002147;
     border-width: 2px;
     max-width: 961px;
 }
@@ -232,7 +232,7 @@
 /* Mobile Styles */
 @media only screen and (max-width:400px) {
   body {
-    background-color: #6B4C9A;
+    background-color: #002147;
   }
   .col {
       display: block;
@@ -243,14 +243,14 @@
 /* Tablet Styles */
 @media only screen and (min-width:401px) and (max-width: 960px) {
   body {
-    background-color: #6B4C9A;
+    background-color: #002147;
   }
 }
 
 /* Desktop Styles */
 @media only screen and (min-width:961px) {
   body {
-    background-color: #6B4C9A;
+    background-color: #002147;
   }
   .page {
     width: 960px;

@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 
-{% block scripts %}
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/livequeue.js') }}"></script>
-{% endblock %}
-
-
 {% block content %}
 <div class="page">
     <div class="section live-queue">
@@ -36,5 +30,11 @@
         -->
     </div>
 </div>
-<p align="center">Last Refresh Time: <span align="center" id="refresh-time"></span></p>
+<p align="center">Last Refresh Time: <span align="center" id="refresh_time"></span></p>
 {% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/livequeue.js') }}"></script>
+{% endblock %}
+

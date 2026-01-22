@@ -1,6 +1,6 @@
 # /app/routes/tickets.py
-from flask import Blueprint, jsonify, request, session
-from app import db
+from flask import Blueprint, jsonify, request, render_template
+from app import db, socketio
 from app.models import Ticket
 from app.routes.queue_events import broadcast_ticket_update
 from app.forms import ResolveTicketForm
