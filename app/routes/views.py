@@ -11,7 +11,7 @@ from app.forms import (
     RegisterBatchForm,
     DeleteUserForm,
     ChangePassForm,
-    PastTicketForm,
+    ResolveTicketForm,
 )
 
 views_bp = Blueprint('views', __name__)
@@ -337,7 +337,7 @@ def currentticket(tktid):
     t = Ticket.query.get(tktid)
     if not t:
         abort(404)
-    form = PastTicketForm()
+    form = ResolveTicketForm()
     ticket_ns = _ticket_to_ns(t)
     return render_template('currentticket.html', ticket=ticket_ns, form=form)
 
