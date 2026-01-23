@@ -8,6 +8,7 @@ from config import Config
 db = SQLAlchemy()
 migrate = Migrate()
 socketio = SocketIO()
+mail = Mail()
 
 # --- REQUIRED IMPORTS ---
 # We import these at the top level. If they fail (e.g., syntax error or missing file),
@@ -45,6 +46,7 @@ def create_app(testing=False):
     # Initialize Extensions
     # ---------------------------------------------------
     db.init_app(app)
+    mail.init_app(app)
     migrate.init_app(app, db)
     socketio.init_app(app, cors_allowed_origins="*")
 
@@ -91,5 +93,10 @@ def create_app(testing=False):
             pass
 
         return {'current_user': SimpleNamespace(is_admin=False, is_anonymous=True, username='')}
+
+    return app
+
+    from app.routes.auth import auth_bp
+    app.register_blueprint(auth_bp)
 
     return app
