@@ -45,17 +45,17 @@
                 </div>
             </div>
         </div>
-                {% with messages = get_flashed_messages() %}
+                <div class="flash-container" style="text-align:center; margin: 10px auto; width: 80%;">
+                {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                <div class ="section message">
-                <ul>
-                    {% for ms in messages %}
-                        <li>{{ ms }}</li>
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="padding: 10px; background-color: #f0f0f0; border: 1px solid #ccc; margin-bottom: 5px;">
+                            {{ message }}
+                        </div>
                     {% endfor %}
-                </ul>
-                </div>
                 {% endif %}
                 {% endwith %}
-                {% block content%} {% endblock %}
+            </div>
+            {% block content%} {% endblock %}
     </body>
 </html>
