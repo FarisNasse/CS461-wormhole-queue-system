@@ -3,6 +3,8 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_mail import Mail
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from config import Config
 
 # 1. Initialize Extensions Globally (Unbound)
@@ -11,6 +13,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 socketio = SocketIO()
 mail = Mail()
+limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])
 
 def create_app(testing=False):
     """
@@ -32,7 +35,7 @@ def create_app(testing=False):
     migrate.init_app(app, db)
     mail.init_app(app)
     socketio.init_app(app, cors_allowed_origins="*")
-
+    limiter.init_app(app)
     # 4. Register Blueprints (The "Routes")
     # We import them INSIDE the function to avoid "Circular Import" errors
     from app.routes.auth import auth_bp
@@ -68,8 +71,9 @@ def create_app(testing=False):
     def inject_current_user():
         try:
             if 'user_id' in session:
+                from app.models import User
                 # Use db.session.get for modern SQLAlchemy compatibility
-                u = db.session.get(models.User, session['user_id'])
+                u = db.session.get(User, session['user_id'])
                 if u:
                     return {
                         'current_user': SimpleNamespace(
@@ -87,6 +91,7 @@ def create_app(testing=False):
     # Allows you to type 'flask shell' and have 'db' and 'User' ready to use
     @app.shell_context_processor
     def make_shell_context():
-        return {'db': db, 'User': models.User, 'mail': mail}
+        from app.models import User
+        return {'db': db, 'User': User, 'mail': mail}
 
     return app
