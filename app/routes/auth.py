@@ -2,11 +2,22 @@
 from flask import Blueprint, request, jsonify, session, render_template, flash, redirect, url_for
 from werkzeug.security import check_password_hash
 from app.models import User
-from app import db
+from app import db, mail
+from flask_mail import Message
 from app.auth_utils import login_required
 from app.forms import ResetPasswordRequestForm, ResetPasswordForm
 
 auth_bp = Blueprint('auth', __name__)
+
+def send_password_reset_email(user: User):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request', recipients=[user.email])
+
+    link = url_for('auth.reset_password', token=token, _external=True)
+    msg.body = f'''To reset your password, visit the following link: {link}
+
+If you did not make this request, simply ignore this email.'''
+    mail.send(msg)
 
 # -------------------------------
 # POST /api/login (The Logic)

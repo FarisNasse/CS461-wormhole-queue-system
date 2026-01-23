@@ -19,7 +19,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
 from flask import current_app
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 
 
 class User(db.Model):
@@ -49,22 +49,20 @@ class User(db.Model):
             return True
         return False
     
-    def get_reset_token(self) -> str:
-        """Generate a password reset token (stub implementation)."""
-        # In a real implementation, you would use a library like itsdangerous
-        # to generate a secure token that can be sent via email.
-        s = Serializer(current_app.config['SECRET_KEY'], expires_in=3600)
+    def get_reset_token(self, expires_sec=1800):
+        """Generate a secure token valid for 30 minutes for password reset."""
+        s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'user_id': self.id}, salt='password-reset-salt')
     
     @staticmethod
-    def verify_reset_token(token: str):
+    def verify_reset_token(token):
         """Verify a password reset token and return the associated user (stub implementation)."""
-        s = Serializer(current_app.config['SECRET_KEY'], salt='password-reset-salt')
+        s = Serializer(current_app.config['SECRET_KEY'])
         try:
             user_id = s.loads(token, salt='password-reset-salt', max_age=1800)['user_id']
-        except Exception:
+        except:
             return None
-        return User.query.get(user_id)
+        return db.session.get(User, user_id)
     
 class Ticket(db.Model):
     __tablename__ = 'tickets'
