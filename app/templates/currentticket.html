@@ -26,8 +26,11 @@
             </tr>
         </table>
         
-            <p style="text-align:center; vertical-align:bottom;">Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b></p>
+        <p style="text-align:center; vertical-align:bottom;">
+            Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b>
+        </p>
     </div>
+
     <div class="section tick_resol">
         <h3 style="text-align:center">Resolve As:</h3>
 	<form id="resolve-form" action="/api/resolveticket/{{ ticket.id }}" method="post" novalidate>
