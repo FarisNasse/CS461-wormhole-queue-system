@@ -55,7 +55,7 @@ def test_reset_email_sending(test_client, test_app):
             # 3. Assertions
             assert response.status_code == 200
             assert len(outbox) == 1  # Verify one email was sent
-            assert outbox[0].subject == "Reset Your Password"
+            assert outbox[0].subject == "Password Reset Request"
             assert outbox[0].recipients == ["sendme@example.com"]
             
             # Check if the body contains a link (basic check)
@@ -83,17 +83,17 @@ def test_reset_password_workflow(test_client, test_app):
     # 1. Access the reset page with the token
     response = test_client.get(f'/reset_password/{token}', follow_redirects=True)
     assert response.status_code == 200
-    assert b'Reset Password' in response.data
+    assert b'Reset Your Password' in response.data
 
     # 2. Post new password
     response = test_client.post(f'/reset_password/{token}', data={
         'password': 'new_secure_password',
-        'confirm_password': 'new_secure_password'
+        'password2': 'new_secure_password'
     }, follow_redirects=True)
 
     assert response.status_code == 200
     # Should be redirected to login page with success message
-    assert b'Your password has been updated' in response.data
+    assert b'Your password has been reset. You may now sign in.' in response.data
 
     # 3. Verify Database Update
     with test_app.app_context():
@@ -111,7 +111,7 @@ def test_reset_with_invalid_email(test_client, test_app):
         # Should still redirect to login to prevent "Email Enumeration"
         # (i.e. don't tell the hacker "This email doesn't exist")
         assert response.status_code == 200
-        assert b'Check your email' in response.data
+        assert b'If an account with that email exists, check your inbox for reset instructions.' in response.data
         
         # Crucial: Ensure NO email was sent
         assert len(outbox) == 0
