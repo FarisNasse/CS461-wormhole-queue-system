@@ -3,6 +3,7 @@ from flask import Flask, jsonify
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_mail import Mail
 from config import Config
 
 db = SQLAlchemy()
@@ -52,6 +53,8 @@ def create_app(testing=False):
 
     # Import models to register them with SQLAlchemy (needed for db setup)
     from app import models 
+    from app.routes.auth import auth_bp
+    app.register_blueprint(auth_bp)
 
     # ---------------------------------------------------
     # Health Check Route
@@ -93,10 +96,5 @@ def create_app(testing=False):
             pass
 
         return {'current_user': SimpleNamespace(is_admin=False, is_anonymous=True, username='')}
-
-    return app
-
-    from app.routes.auth import auth_bp
-    app.register_blueprint(auth_bp)
 
     return app
