@@ -72,7 +72,9 @@ def reset_password_request():
     form = ResetPasswordRequestForm()
     if request.method == 'POST':
         if form.validate_on_submit():
-            email = form.email.data
+            user = User.query.filter_by(email=form.email.data).first()
+            if user:
+                send_password_reset_email(user)
         flash('If an account with that email exists, check your inbox for reset instructions.', 'info')
         return redirect(url_for('views.assistant_login'))
     return render_template('reset_password_request.html', form=form)
@@ -87,6 +89,12 @@ def reset_password(token):
         if not form.validate_on_submit():
             flash('Passwords do not match or are invalid.', 'error')
             return render_template('reset_password.html', form=form)
+        user = User.verify_reset_token(token)
+        if not user:
+            flash('The reset link is invalid or has expired.', 'error')
+            return redirect(url_for('auth.reset_password_request'))
+        user.set_password(form.password.data)
+        db.session.commit()
         flash('Your password has been reset. You may now sign in.', 'success')
         return redirect(url_for('views.assistant_login'))
     return render_template('reset_password.html', form=form)
