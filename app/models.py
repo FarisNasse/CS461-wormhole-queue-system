@@ -96,6 +96,7 @@ class Ticket(db.Model):
     def assign_to(self, user: 'User'):
         """Assign ticket to a user."""
         self.wa_id = user.id
+        self.status = 'in_progress'
         db.session.commit()
     
 # Old models for reference

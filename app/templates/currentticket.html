@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJ+YRFb2v3l+6Gk5bQ5f5Q5h5Yt1lV9l8a5Qg=" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/currentticket.js') }}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="page">
     <div class="section tick_info">
@@ -27,29 +33,23 @@
 
     <div class="section tick_resol">
         <h3 style="text-align:center">Resolve As:</h3>
-
-        <form action="" method="post" novalidate>
-            {{ form.hidden_tag() }}
-
-            {{ form.numStds.label }} {{ form.numStds(size=4) }}<br>
-            {% for er in form.numStds.errors %}
-                <span style="color:red;">[{{ er }}]</span>
-            {% endfor %}
-
-            <table id="tickets"
-                   style="margin-left:15px; width: 100%; text-align: left;
-                          border-collapse:separate; border-spacing:30px;">
-                <tr>
-                    <td class = "resolve-buttons">
-                        {{ form.solved_new() }}
-                        {{ form.solved_profile() }}
-                        {{ form.return_queue() }}
-                        {{ form.no_show() }}
-                        {{ form.mark_redundant() }}
-                    </td>
-                </tr>
-            </table>
-        </form>
+	<form id="resolve-form" action="/api/resolveticket/{{ ticket.id }}" method="post" novalidate>
+	{{ form.hidden_tag() }}
+	{{ form.numStds.label }}  {{ form.numStds(size=4) }}<br>
+		{% for er in form.numStds.errors %}
+			<span style="color:red;">[{{ er }}]</span>
+		{% endfor %}
+        <table id="tickets" style="margin-left:15px; width: 100%; text-align: left; border-collapse:separate; border-spacing:30px;">
+            <tr>
+                <td>
+                {{ form.resolveReason.label }} {{ form.resolveReason() }}<br>
+                    {% for er in form.resolveReason.errors %}
+                        <span style="color:red;">[{{ er }}]</span>
+                    {% endfor %}
+                {{ form.submit() }}
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 {% endblock %}

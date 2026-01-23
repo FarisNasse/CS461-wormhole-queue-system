@@ -10,7 +10,7 @@
 {% block content %}
 <div class="page">
     <div class="section Tickets">
-        <h2 style="text-align:center">Tickets (<span id='queue_length'></span>)</h2>
+        <h2 style="text-align:center">Tickets (<span id='ticket-count'></span>)</h2>
         
         {% if user.tkt == None %}
         <h4 style="text-align:center"><a href="{{ url_for('views.getnewticket', username=user.username) }}">Get Next Request</a></h4>
