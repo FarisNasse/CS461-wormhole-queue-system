@@ -1,17 +1,15 @@
 from flask import Blueprint, request, jsonify, session, render_template, flash, redirect, url_for
 from werkzeug.security import check_password_hash
 from app.models import User
-from app import db, mail
+from app import db, mail, limiter
 from flask_mail import Message
 from app.auth_utils import login_required
 from app.forms import ResetPasswordRequestForm, ResetPasswordForm
-from app import limiter  # Ensure Limiter is imported
 
 auth_bp = Blueprint('auth', __name__)
 
 def send_password_reset_email(user: User):
     token = user.get_reset_token()
-    # Subject updated to match standard practices
     msg = Message('Reset Your Password', recipients=[user.email])
 
     link = url_for('auth.reset_password', token=token, _external=True)
@@ -70,14 +68,13 @@ def check_session():
 # GET /reset_password_request
 # -------------------------------
 @auth_bp.route('/reset_password_request', methods=['GET', 'POST'])
-@limiter.limit("5 per minute")  # Rate limiting applied here
+@limiter.limit("5 per minute")
 def reset_password_request():
     if 'user_id' in session:
         return redirect(url_for('views.index'))
 
     form = ResetPasswordRequestForm()
     
-    # LOGIC FIX: success code is now INSIDE the if block
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:

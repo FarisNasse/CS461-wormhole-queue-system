@@ -41,6 +41,10 @@ def create_app(testing=False):
     from app.routes.auth import auth_bp
     from app.routes.views import views_bp
     from app.routes.tickets import tickets_bp
+
+    # import error handlers and socketio events
+    from app.routes import error  # Ensure error handlers are registered
+    from app.routes import queue_events  # Ensure SocketIO events are registered
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(views_bp)
@@ -49,12 +53,6 @@ def create_app(testing=False):
     # 5. Import Non-Blueprint Logic
     # These files need to be imported so their code "runs" and registers with the app
     with app.app_context():
-        # Import error handlers (404, 500 pages)
-        from app.routes import error
-        
-        # Import SocketIO events so the server listens for them
-        from app.routes import queue_events 
-
         # Import models so Alembic/SQLAlchemy 'knows' about them for migrations
         from app import models
 

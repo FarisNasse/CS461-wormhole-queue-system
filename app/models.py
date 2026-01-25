@@ -63,9 +63,6 @@ class User(db.Model):
         except (SignatureExpired, BadSignature):
             return None
         return db.session.get(User, user_id)
-
-    def __repr__(self):
-        return f'<User {self.username}>'
     
 class Ticket(db.Model):
     __tablename__ = 'tickets'
