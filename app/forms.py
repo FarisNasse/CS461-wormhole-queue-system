@@ -71,7 +71,6 @@ class ResolveTicketForm(FlaskForm):
     resolveReason = SelectField(
         'Resolution Reason',
         choices=[
-            ('', 'Select a reason'),
             ('helped', 'Helped'),
             ('no_show', 'No Show'),
             ('duplicate', 'Duplicate')
