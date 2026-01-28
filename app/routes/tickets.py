@@ -47,7 +47,7 @@ def create_ticket():
 # GET: API route to get all open tickets
 @tickets_bp.route('/opentickets', methods=['GET'])
 def get_open_tickets():
-    tickets = Ticket.query.filter_by(status="live").all()
+    tickets = Ticket.query.filter_by(Ticket.status.in_(["live", 'in_progress'])).all()
     return jsonify([t.to_dict() for t in tickets])
 
 # API route to handle ticket resolution form submission
