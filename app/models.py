@@ -98,6 +98,12 @@ class Ticket(db.Model):
         self.wa_id = user.id
         self.status = 'in_progress'
         db.session.commit()
+
+    def return_to_queue(self):
+        """Return ticket to the queue."""
+        self.wa_id = None
+        self.status = 'live'
+        db.session.commit()
     
 # Old models for reference
 
