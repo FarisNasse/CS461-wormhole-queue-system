@@ -17,18 +17,7 @@
         {% else %}
         <h4 style="text-align:center"><a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}">Check Current Request</a></h2>
         {% endif %}
-        <!--<h2><a>Check Closed Requests</a></h2>-->
-        <h3>Recently Archived Tickets</h3>
-        <ul>
-        {% for ass in user.all_tkt_assoc_sorted() %}
-            {% if ass.tkt.TA == None %}
-                <li><a href="{{ url_for('views.pastticket', username=ass.TA.username, tktid=ass.tkt.id) }}">{{ ass.tkt.info_print() }}</a></li>
-            {% else %}
-                <li><a>{{ ass.tkt.info_print() }}</a></li>
-            {% endif %}
-        {% endfor %}
-        </ul>
-        <p style="text-align:center">Last Refresh Time: <span id="refresh_time"></span></p>
+
     </div>
     <div class="section profile">    
         <h2 style="text-align:center">Profile</h2>
