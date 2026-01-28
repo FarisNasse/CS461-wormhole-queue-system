@@ -12,6 +12,7 @@ from app.forms import (
     DeleteUserForm,
     ChangePassForm,
     ResolveTicketForm,
+    ReturnToQueueForm,
 )
 
 views_bp = Blueprint('views', __name__)
@@ -346,8 +347,9 @@ def currentticket(tktid):
     if not t:
         abort(404)
     form = ResolveTicketForm()
+    qform = ReturnToQueueForm()
     ticket_ns = _ticket_to_ns(t)
-    return render_template('currentticket.html', ticket=ticket_ns, form=form)
+    return render_template('currentticket.html', ticket=ticket_ns, form=form , qform=qform)
 
 
 @views_bp.route('/pastticket/<username>/<int:tktid>')

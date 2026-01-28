@@ -71,3 +71,17 @@ def resolve_ticket(ticket_id):
     else:
         flash("There was a problem resolving the ticket.", "error")
         return redirect(url_for('views.currentticket', tktid=ticket_id))
+    
+# API route to handle return to queue form submission
+@tickets_bp.route('/returntoqueue/<int:ticket_id>', methods=['POST'])
+def return_to_queue(ticket_id):
+    user = User.query.get(session['user_id'])
+    ticket = Ticket.query.get(ticket_id)
+    if ticket:
+        ticket.return_to_queue()
+        broadcast_ticket_update(ticket.id)
+        flash("Ticket returned to queue successfully", "success")
+        return redirect(url_for('views.userpage', username = user.username))
+    else:
+        flash("Ticket not found", "error")
+        return redirect(url_for('views.currentticket', tktid=ticket_id))
