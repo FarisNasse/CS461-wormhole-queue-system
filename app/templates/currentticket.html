@@ -49,7 +49,7 @@
         Resolve As:
       </h3>
       <form id="resolve-form"
-            action="/api/resolveticket/{{ ticket.id }}"
+            action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
             method="post"
             novalidate>
         {{ form.hidden_tag() }}
