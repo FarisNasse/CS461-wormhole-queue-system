@@ -14,7 +14,7 @@ def not_found_error(error):
             "404.html",
             error_code=404,
             message=str(error),
-            home_url=url_for("index"),
+            home_url=url_for("views.index"),
             debug=debug,
         ),
         404,

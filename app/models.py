@@ -96,7 +96,7 @@ class Ticket(db.Model):
         self.status = "closed"
         self.number_of_students = num_students
         self.closed_reason = closed_reason
-        self.time_resolved = datetime.now(timezone.utc)
+        self.closed_at = datetime.now(timezone.utc)
         db.session.commit()
 
     def assign_to(self, user: "User"):
