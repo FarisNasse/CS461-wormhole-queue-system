@@ -23,7 +23,8 @@ from app import db
 class User(db.Model):
     __tablename__ = "users"
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
-    username: orm.Mapped[str] = orm.mapped_column(sa.String(100))
+    name: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(100), nullable=True)
+    username: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True)
     email: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
     password_hash: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(128))
     is_admin: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)

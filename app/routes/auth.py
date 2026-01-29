@@ -69,8 +69,9 @@ def reset_password_request():
     form = ResetPasswordRequestForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            # Retrieve email to satisfy form logic, even if unused for now
-            _email = form.email.data
+            # Variable assignment removed to satisfy Ruff F841 (unused variable)
+            # Actual email sending logic would be implemented here
+            pass
         flash(
             "If an account with that email exists, check your inbox for reset instructions.",
             "info",
