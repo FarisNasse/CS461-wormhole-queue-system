@@ -4,14 +4,16 @@ import sys
 
 import pytest
 
-from app import create_app, db
-
-# Add project root to PYTHONPATH
+# 1. Path modification MUST come before importing 'app'
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# 2. Use '# noqa: E402' to tell Ruff this order is intentional
+from app import create_app, db  # noqa: E402
 
 
 @pytest.fixture()
 def test_app():
+    """Creates a Flask app instance for testing."""
     app = create_app(testing=True)
 
     with app.app_context():
@@ -23,4 +25,5 @@ def test_app():
 
 @pytest.fixture()
 def test_client(test_app):
+    """A test client for the app."""
     return test_app.test_client()
