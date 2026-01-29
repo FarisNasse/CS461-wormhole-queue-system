@@ -36,7 +36,7 @@ def internal_error(error):
             "500.html",
             error_code=500,
             message=str(error),
-            home_url=url_for("index"),
+            home_url=url_for("views.index"),
             debug=debug,
             traceback=tb,
         ),
