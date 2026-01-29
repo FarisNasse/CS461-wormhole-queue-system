@@ -14,7 +14,19 @@ socketio = SocketIO()
 
 def create_app(testing=False):
     """
-    Creates and configures the Flask application instance.
+    Create and configure the Flask application instance.
+
+    Parameters
+    ----------
+    testing : bool, optional
+        If True, configure the application for testing. This enables
+        Flask's testing mode, uses an in-memory SQLite database, disables
+        CSRF protection, and sets a deterministic secret key.
+
+    Returns
+    -------
+    Flask
+        The configured Flask application instance.
     """
     app = Flask(__name__)
 
@@ -45,12 +57,14 @@ def create_app(testing=False):
     from app import models  # noqa: F401
     from app.routes import queue_events  # noqa: F401
     from app.routes.auth import auth_bp
+    from app.routes.error import error_bp
     from app.routes.tickets import tickets_bp
     from app.routes.views import views_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(views_bp)
     app.register_blueprint(tickets_bp)
+    app.register_blueprint(error_bp)
 
     # ---------------------------------------------------
     # Health Check Route

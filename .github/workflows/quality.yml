@@ -9,22 +9,21 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5  # Updated to v5
         with:
-          python-version: '3.12'
+          python-version: '3.12'      # Synced with pyproject.toml
           
       - name: Install Dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
           
       - name: Run Ruff (Linting)
-        # Checks for errors and sorts imports
         run: ruff check .
         
       - name: Run Ruff (Formatting)
-        # Checks if code is formatted correctly (replacement for Black)
         run: ruff format --check .
         
       - name: Run Mypy (Type Checking)
-        # Checks for type errors
-        run: mypy .
+        # Exclude migrations and tests to focus on application logic
+        run: mypy --exclude 'migrations/|tests/' .

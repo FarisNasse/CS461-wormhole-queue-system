@@ -69,7 +69,8 @@ def reset_password_request():
     form = ResetPasswordRequestForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            pass
+            # Retrieve email to satisfy form logic, even if unused for now
+            _email = form.email.data
         flash(
             "If an account with that email exists, check your inbox for reset instructions.",
             "info",
