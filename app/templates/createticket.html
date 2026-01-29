@@ -1,34 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class='page'>
-    <div class='section create-ticket'>
-      <h2 style="text-align:center">
-        Create Help Request
-      </h2>
-      <form align="center" action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p style="text-align:center">
-          {{ form.name.label }} {{ form.name(size=32) }}
-          {% for er in form.name.errors %}
-            <span style="color: red;">[{{ er }}]</span>
-          {% endfor %}
-        </p>
-        <p style="text-align:center">
-          {{ form.phClass.label }} {{ form.phClass() }}
-          {% for er in form.phClass.errors %}
-            <span style="color: red;">[{{ er }}]</span>
-          {% endfor %}
-        </p>
-        <p style="text-align:center">
-          {{ form.location.label }} {{ form.location() }}
-          {% for er in form.location.errors %}
-            <span style="color: red;">[{{ er }}]</span>
-          {% endfor %}
-        </p>
-        <p align="center">
-          {{ form.submit() }}
-        </p>
-      </form>
+    <div class='page'>
+        <div class='section create-ticket'>
+            <h2 style="text-align:center">
+                Create Help Request
+            </h2>
+            <form align="center" action="" method="post" novalidate>
+                {{ form.hidden_tag() }}
+                <p style="text-align:center">
+                    {{ form.name.label }} {{ form.name(size=32) }}
+                    {% for er in form.name.errors %}
+                        <span style="color: red;">[{{ er }}]</span>
+                    {% endfor %}
+                </p>
+                <p style="text-align:center">
+                    {{ form.phClass.label }} {{ form.phClass() }}
+                    {% for er in form.phClass.errors %}
+                        <span style="color: red;">[{{ er }}]</span>
+                    {% endfor %}
+                </p>
+                <p style="text-align:center">
+                    {{ form.location.label }} {{ form.location() }}
+                    {% for er in form.location.errors %}
+                        <span style="color: red;">[{{ er }}]</span>
+                    {% endfor %}
+                </p>
+                <p align="center">
+                    {{ form.submit() }}
+                </p>
+            </form>
+        </div>
     </div>
-  </div>
 {% endblock %}
