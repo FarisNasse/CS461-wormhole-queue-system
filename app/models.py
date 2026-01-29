@@ -47,10 +47,8 @@ class User(Base):
     )
 
     # Relationships
-    tickets: Mapped["Ticket"] = orm.relationship(
-        back_populates="wormhole_assistant",
-        # Use WriteOnlyMapped for large collections if preferred,
-        # but strict 2.0 often uses standard Mapped with select()
+    tickets: orm.WriteOnlyMapped["Ticket"] = orm.relationship(
+        back_populates="wormhole_assistant"
     )
 
     def __repr__(self) -> str:
