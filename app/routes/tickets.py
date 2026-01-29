@@ -1,5 +1,5 @@
 # /app/routes/tickets.py
-from flask import Blueprint, jsonify, redirect, request, render_template, flash, session, url_for
+from flask import Blueprint, jsonify, redirect, request, render_template, flash, session, url_for, abort
 from app import db, socketio
 from app.models import Ticket, User
 from app.routes.queue_events import broadcast_ticket_update
@@ -85,3 +85,21 @@ def return_to_queue(ticket_id):
     else:
         flash("Ticket not found", "error")
         return redirect(url_for('views.currentticket', tktid=ticket_id))
+    
+@tickets_bp.route('/getnextticket/<username>')
+def getnextticket(username):
+    # Assign the next available live ticket to the given user and redirect
+    u = User.query.filter_by(username=username).first()
+    if not u:
+        abort(404)
+
+    # find the oldest live unassigned ticket
+    t = Ticket.query.filter_by(status='live', wa_id=None).order_by(Ticket.created_at).first()
+    if not t:
+        # no tickets available; redirect back to user page
+        flash('No available tickets to claim.', 'info')
+        return redirect(url_for('views.userpage', username=username))
+
+    t.assign_to(u)
+    broadcast_ticket_update(t.id)
+    return redirect(url_for('views.currentticket', tktid=t.id))

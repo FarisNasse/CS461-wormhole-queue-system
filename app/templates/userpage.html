@@ -13,7 +13,7 @@
         <h2 style="text-align:center">Tickets (<span id='ticket-count'></span>)</h2>
         
         {% if user.tkt == None %}
-        <h4 style="text-align:center"><a href="{{ url_for('views.getnewticket', username=user.username) }}">Get Next Request</a></h4>
+        <h4 style="text-align:center"><a href="{{ url_for('tickets.getnextticket', username=user.username) }}">Get Next Request</a></h4>
         {% else %}
         <h4 style="text-align:center"><a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}">Check Current Request</a></h2>
         {% endif %}

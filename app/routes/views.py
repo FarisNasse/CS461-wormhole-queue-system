@@ -229,23 +229,7 @@ def userpage(username):
     return render_template('userpage.html', user=user_ns, current_user=current_user)
 
 
-@views_bp.route('/getnewticket/<username>')
-@login_required
-def getnewticket(username):
-    # Assign the next available live ticket to the given user and redirect
-    u = User.query.filter_by(username=username).first()
-    if not u:
-        abort(404)
 
-    # find the oldest live unassigned ticket
-    t = Ticket.query.filter_by(status='live', wa_id=None).order_by(Ticket.created_at).first()
-    if not t:
-        # no tickets available; redirect back to user page
-        flash('No available tickets to claim.', 'info')
-        return redirect(url_for('views.userpage', username=username))
-
-    t.assign_to(u)
-    return redirect(url_for('views.currentticket', tktid=t.id))
 
 
 @views_bp.route('/user_list')
