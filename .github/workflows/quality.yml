@@ -25,5 +25,5 @@ jobs:
         run: ruff format --check .
         
       - name: Run Mypy (Type Checking)
-        # Exclude migrations and tests to focus on application logic
-        run: mypy --exclude migrations --exclude tests .
+        # Uses a regex pattern to correctly skip both directories
+        run: mypy --exclude 'migrations|tests' .

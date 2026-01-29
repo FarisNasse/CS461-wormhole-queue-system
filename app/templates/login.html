@@ -1,35 +1,39 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class='page'>
+  <div class='page'>
     <div class='section create-ticket'>
-        <h2 style="text-align:center">Assistant Login</h2>
-        <h3 style="text-align:center">Sign In</h3>
-        <form align="center" action="" method="post" novalidate>
+      <h2 style="text-align:center">
+        Assistant Login
+      </h2>
+      <h3 style="text-align:center">
+        Sign In
+      </h3>
+      <form align="center" action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p style="text-align:center">
-            {{ form.username.label }}  {{ form.username(size=32) }}<br>
-            {% for er in form.username.errors %}
-                <span style="color: red;">[{{ er }}]</span>
-            {% endfor %}
+          {{ form.username.label }}  {{ form.username(size=32) }}
+          <br>
+          {% for er in form.username.errors %}
+            <span style="color: red;">[{{ er }}]</span>
+          {% endfor %}
         </p>
         <p style="text-align:center">
-            {{ form.password.label }}  {{ form.password(size=32) }}<br>
-            {% for er in form.password.errors %}
-                <span style="color: red;">[{{ er }}]</span>
-            {% endfor %}
+          {{ form.password.label }}  {{ form.password(size=32) }}
+          <br>
+          {% for er in form.password.errors %}
+            <span style="color: red;">[{{ er }}]</span>
+          {% endfor %}
         </p>
         <p style="text-align:center">
-            {{ form.remember_me() }} {{ form.remember_me.label }}
+          {{ form.remember_me() }} {{ form.remember_me.label }}
         </p>
         <p style="text-align:center">
-            {{ form.submit() }}
-        </p>        
-        <p style="text-align:center">
-            <a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a>
+          {{ form.submit() }}
         </p>
-
-        </form>
+        <p style="text-align:center">
+          <a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a>
+        </p>
+      </form>
     </div>
-</div>
+  </div>
 {% endblock %}
