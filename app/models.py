@@ -1,4 +1,4 @@
-#app/models.py
+# app/models.py
 """
 Module Name: models.py
 
@@ -15,13 +15,13 @@ from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy import orm
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
 
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = "users"
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
     username: orm.Mapped[str] = orm.mapped_column(sa.String(100))
     email: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
@@ -30,48 +30,53 @@ class User(db.Model):
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    tickets: orm.WriteOnlyMapped['Ticket'] = orm.relationship(back_populates="wormhole_assistant")
+    tickets: orm.WriteOnlyMapped["Ticket"] = orm.relationship(
+        back_populates="wormhole_assistant"
+    )
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
-    
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def claim_ticket(self, ticket: 'Ticket') -> bool:
+    def claim_ticket(self, ticket: "Ticket") -> bool:
         if ticket.wa_id is None:
             ticket.assign_to(self)
             return True
         return False
 
+
 class Ticket(db.Model):
-    __tablename__ = 'tickets'
+    __tablename__ = "tickets"
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
     student_name: orm.Mapped[str] = orm.mapped_column(sa.String(100))
     table: orm.Mapped[str] = orm.mapped_column(sa.String(50))
     physics_course: orm.Mapped[str] = orm.mapped_column(sa.String(50))
-    status: orm.Mapped[str] = orm.mapped_column(sa.String(20), default='live')
+    status: orm.Mapped[str] = orm.mapped_column(sa.String(20), default="live")
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    closed_at: orm.Mapped[Optional[datetime]] = orm.mapped_column(
-        default=None
+    closed_at: orm.Mapped[Optional[datetime]] = orm.mapped_column(default=None)
+    closed_reason: orm.Mapped[Optional[str]] = orm.mapped_column(
+        sa.String(20), default=None
     )
-    closed_reason: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(20), default=None)
     # closed reason can be 'helped', 'no_show', 'duplicate', 'flushed'
-    
+
     number_of_students: orm.Mapped[Optional[int]] = orm.mapped_column(default=1)
     wa_id: orm.Mapped[Optional[int]] = orm.mapped_column(
-        sa.ForeignKey('users.id'), default=None, index=True
+        sa.ForeignKey("users.id"), default=None, index=True
     )
-    wormhole_assistant: orm.Mapped[Optional[User]] = orm.relationship(back_populates="tickets")
+    wormhole_assistant: orm.Mapped[Optional[User]] = orm.relationship(
+        back_populates="tickets"
+    )
 
     def __repr__(self) -> str:
         return f"<Ticket(id={self.id}, student_name={self.student_name}, status={self.status})>"
-    
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -85,20 +90,21 @@ class Ticket(db.Model):
             "number_of_students": self.number_of_students,
             "wa_id": self.wa_id,
         }
-    
+
     def close_ticket(self, closed_reason, num_students: Optional[int] = 1):
-        self.status = 'closed'
+        self.status = "closed"
         self.number_of_students = num_students
         self.closed_reason = closed_reason
         self.time_resolved = datetime.now(timezone.utc)
         db.session.commit()
 
-    def assign_to(self, user: 'User'):
+    def assign_to(self, user: "User"):
         """Assign ticket to a user."""
         self.wa_id = user.id
-        self.status = 'in_progress'
+        self.status = "in_progress"
         db.session.commit()
-    
+
+
 # Old models for reference
 
 # class Ticket(db.Model):
