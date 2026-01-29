@@ -23,7 +23,6 @@ def create_ticket():
     student_name = data.get("student_name")
     physics_course = data.get("class_name")
     table = data.get("table_number")
-    location = data.get("location")
 
     # Validate required fields
     if not student_name or not physics_course or table is None:

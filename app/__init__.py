@@ -6,28 +6,15 @@ from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
 
+# Extensions are initialized at the top level
 db = SQLAlchemy()
 migrate = Migrate()
 socketio = SocketIO()
-
-# --- REQUIRED IMPORTS ---
-# We import these at the top level. If they fail (e.g., syntax error or missing file),
-# the application will crash immediately with a helpful traceback.
-from app.routes.auth import auth_bp
-from app.routes.tickets import tickets_bp
-from app.routes.views import views_bp
 
 
 def create_app(testing=False):
     """
     Creates and configures the Flask application instance.
-
-    Args:
-        testing (bool): If True, configures the app for testing with an
-            in-memory SQLite database.
-
-    Returns:
-        Flask: The configured Flask application instance.
     """
     app = Flask(__name__)
 
@@ -49,7 +36,21 @@ def create_app(testing=False):
     migrate.init_app(app, db)
     socketio.init_app(app, cors_allowed_origins="*")
 
-    # Import models to register them with SQLAlchemy (needed for db setup)
+    # ---------------------------------------------------
+    # Internal Imports & Registration
+    # ---------------------------------------------------
+    # Moving these inside create_app prevents circular imports and E402 errors.
+    # The '# noqa: F401' tells Ruff that although the import isn't used directly
+    # in this file, it is intentional (for registering models and events).
+    from app import models  # noqa: F401
+    from app.routes import queue_events  # noqa: F401
+    from app.routes.auth import auth_bp
+    from app.routes.tickets import tickets_bp
+    from app.routes.views import views_bp
+
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(views_bp)
+    app.register_blueprint(tickets_bp)
 
     # ---------------------------------------------------
     # Health Check Route
@@ -57,14 +58,6 @@ def create_app(testing=False):
     @app.route("/health")
     def health_check():
         return jsonify({"message": "Wormhole Queue System API is running"}), 200
-
-    # ---------------------------------------------------
-    # Register Blueprints
-    # ---------------------------------------------------
-    # The imports happened at the top of the file, so we just register them here.
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(views_bp)
-    app.register_blueprint(tickets_bp)
 
     # ---------------------------------------------------
     # Template context processors
