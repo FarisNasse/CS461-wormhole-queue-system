@@ -1,12 +1,14 @@
 # tests/conftest.py
 import os
 import sys
+
 import pytest
 
 # Add project root to PYTHONPATH
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app import create_app, db
+
 
 @pytest.fixture()
 def test_app():
@@ -17,6 +19,7 @@ def test_app():
         yield app
         db.session.remove()
         db.drop_all()
+
 
 @pytest.fixture()
 def test_client(test_app):

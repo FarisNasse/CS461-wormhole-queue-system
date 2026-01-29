@@ -3,8 +3,8 @@
 line-length = 88
 indent-width = 4
 
-# Target Python 3.13.
-target-version = "py313"
+# Target Python 3.12.
+target-version = "py312"
 
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
@@ -32,7 +32,7 @@ line-ending = "auto"
 
 [tool.mypy]
 # Mypy configuration
-python_version = "3.13"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true

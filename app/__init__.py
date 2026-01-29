@@ -1,8 +1,9 @@
 # app/__init__.py
 from flask import Flask, jsonify
+from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+
 from config import Config
 
 db = SQLAlchemy()
@@ -13,18 +14,18 @@ socketio = SocketIO()
 # We import these at the top level. If they fail (e.g., syntax error or missing file),
 # the application will crash immediately with a helpful traceback.
 from app.routes.auth import auth_bp
-from app.routes.views import views_bp
 from app.routes.tickets import tickets_bp
-from app.routes import queue_events  # Import SocketIO events
+from app.routes.views import views_bp
+
 
 def create_app(testing=False):
     """
     Creates and configures the Flask application instance.
-    
+
     Args:
         testing (bool): If True, configures the app for testing with an
             in-memory SQLite database.
-            
+
     Returns:
         Flask: The configured Flask application instance.
     """
@@ -49,7 +50,6 @@ def create_app(testing=False):
     socketio.init_app(app, cors_allowed_origins="*")
 
     # Import models to register them with SQLAlchemy (needed for db setup)
-    from app import models 
 
     # ---------------------------------------------------
     # Health Check Route
@@ -74,13 +74,15 @@ def create_app(testing=False):
     @app.context_processor
     def inject_current_user():
         from flask import session
+
         try:
-            if 'user_id' in session:
+            if "user_id" in session:
                 from app.models import User
-                u = User.query.get(session['user_id'])
+
+                u = User.query.get(session["user_id"])
                 if u:
                     return {
-                        'current_user': SimpleNamespace(
+                        "current_user": SimpleNamespace(
                             is_admin=bool(u.is_admin),
                             is_anonymous=False,
                             username=u.username,
@@ -90,6 +92,10 @@ def create_app(testing=False):
             # keep silent on DB errors; fall back to anonymous
             pass
 
-        return {'current_user': SimpleNamespace(is_admin=False, is_anonymous=True, username='')}
+        return {
+            "current_user": SimpleNamespace(
+                is_admin=False, is_anonymous=True, username=""
+            )
+        }
 
     return app
