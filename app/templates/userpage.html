@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content %}
   <div class="page">
-    <div class="section Tickets">
+    <div class="section tickets">
       <h2 style="text-align:center">
         Tickets (<span id='ticket-count'></span>)
       </h2>
@@ -19,7 +19,7 @@
       {% else %}
         <h4 style="text-align:center">
           <a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}">Check Current Request</a>
-        </h2>
+        </h4>
       {% endif %}
     </div>
     <div class="section profile">
@@ -32,7 +32,7 @@
         <br>
         <b>Email: </b>{{ user.email }}
         <br>
-        <b>Adminstrator: </b>{{ user.is_admin }}
+        <b>Administrator: </b>{{ user.is_admin }}
         <br>
         {% if current_user.username==user.username or current_user.is_admin %}
           <a href="{{ url_for('views.changepass') }}">Change Password</a>

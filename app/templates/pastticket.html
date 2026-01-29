@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
   <div class="page">
-    <div class="section tick_info">
+    <div class="section tick-info">
       <h3 style="text-align:center">
         Previous Help Request
       </h3>
@@ -37,13 +37,13 @@
         Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b>
       </p>
     </div>
-    <div class="section tick_resol">
+    <div class="section tick-resol">
       <h3 style="text-align:center">
         Resolve As:
       </h3>
       <form action="" method="post" nonvalidate>
         {{ form.hidden_tag() }}
-        {{ form.numStds.label }}  {{ form.numStds(size=4) }}
+        {{ form.numStds.label }} {{ form.numStds(size=4) }}
         <br>
         {% for er in form.numStds.errors %}
           <span style="color:red;">[{{ er }}]</span>
@@ -64,6 +64,7 @@
             </td>
           </tr>
         </table>
-      </div>
+      </form>
     </div>
-  {% endblock %}
+  </div>
+{% endblock %}
