@@ -15,24 +15,42 @@ from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy import orm
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
 
 
-class User(db.Model):
+class Base(DeclarativeBase):
+    """
+    Base class for all models.
+
+    We explicitly bind this to db.metadata so Flask-Migrate can detect changes.
+    We also add the query property so legacy queries (User.query.filter...) work.
+    """
+
+    metadata = db.metadata
+    query = db.session.query_property()
+
+
+class User(Base):
     __tablename__ = "users"
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
-    name: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(100), nullable=True)
-    username: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True)
-    email: orm.Mapped[str] = orm.mapped_column(sa.String(100), unique=True, index=True)
-    password_hash: orm.Mapped[Optional[str]] = orm.mapped_column(sa.String(128))
-    is_admin: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
-    created_at: orm.Mapped[datetime] = orm.mapped_column(
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[Optional[str]] = mapped_column(sa.String(100), nullable=True)
+    username: Mapped[str] = mapped_column(sa.String(100), unique=True)
+    email: Mapped[str] = mapped_column(sa.String(100), unique=True, index=True)
+    password_hash: Mapped[Optional[str]] = mapped_column(sa.String(128))
+    is_admin: Mapped[bool] = mapped_column(sa.Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    tickets: orm.WriteOnlyMapped["Ticket"] = orm.relationship(
-        back_populates="wormhole_assistant"
+
+    # Relationships
+    tickets: Mapped["Ticket"] = orm.relationship(
+        back_populates="wormhole_assistant",
+        # Use WriteOnlyMapped for large collections if preferred,
+        # but strict 2.0 often uses standard Mapped with select()
     )
 
     def __repr__(self) -> str:
@@ -51,27 +69,29 @@ class User(db.Model):
         return False
 
 
-class Ticket(db.Model):
+class Ticket(Base):
     __tablename__ = "tickets"
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, autoincrement=True)
-    student_name: orm.Mapped[str] = orm.mapped_column(sa.String(100))
-    table: orm.Mapped[str] = orm.mapped_column(sa.String(50))
-    physics_course: orm.Mapped[str] = orm.mapped_column(sa.String(50))
-    status: orm.Mapped[str] = orm.mapped_column(sa.String(20), default="live")
-    created_at: orm.Mapped[datetime] = orm.mapped_column(
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    student_name: Mapped[str] = mapped_column(sa.String(100))
+    table: Mapped[str] = mapped_column(sa.String(50))
+    physics_course: Mapped[str] = mapped_column(sa.String(50))
+    status: Mapped[str] = mapped_column(sa.String(20), default="live")
+    created_at: Mapped[datetime] = mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    closed_at: orm.Mapped[Optional[datetime]] = orm.mapped_column(default=None)
-    closed_reason: orm.Mapped[Optional[str]] = orm.mapped_column(
-        sa.String(20), default=None
-    )
-    # closed reason can be 'helped', 'no_show', 'duplicate', 'flushed'
+    closed_at: Mapped[Optional[datetime]] = mapped_column(default=None)
+    closed_reason: Mapped[Optional[str]] = mapped_column(sa.String(20), default=None)
 
-    number_of_students: orm.Mapped[Optional[int]] = orm.mapped_column(default=1)
-    wa_id: orm.Mapped[Optional[int]] = orm.mapped_column(
+    number_of_students: Mapped[Optional[int]] = mapped_column(default=1)
+
+    # Foreign Keys
+    wa_id: Mapped[Optional[int]] = mapped_column(
         sa.ForeignKey("users.id"), default=None, index=True
     )
-    wormhole_assistant: orm.Mapped[Optional[User]] = orm.relationship(
+
+    # Relationships
+    wormhole_assistant: Mapped[Optional["User"]] = orm.relationship(
         back_populates="tickets"
     )
 
