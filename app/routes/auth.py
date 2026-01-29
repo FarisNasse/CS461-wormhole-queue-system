@@ -1,6 +1,7 @@
 # app/routes/auth.py
 from flask import (
     Blueprint,
+    current_app,
     flash,
     jsonify,
     redirect,
@@ -71,7 +72,8 @@ def reset_password_request():
         if form.validate_on_submit():
             # Variable assignment removed to satisfy Ruff F841 (unused variable)
             # Actual email sending logic would be implemented here
-            pass
+            _email = form.email.data
+            current_app.logger.info(f"Password reset requested for: {_email}")
         flash(
             "If an account with that email exists, check your inbox for reset instructions.",
             "info",
