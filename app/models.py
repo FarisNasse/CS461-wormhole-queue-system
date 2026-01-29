@@ -70,7 +70,7 @@ class Ticket(db.Model):
     wormhole_assistant: orm.Mapped[Optional[User]] = orm.relationship(back_populates="tickets")
 
     def __repr__(self) -> str:
-        return f"<Ticket(id={self.id}, student_name={self.student_name}, status={self.status})>"
+        return f"<Ticket(id={self.id}, student_name={self.student_name}, status={self.status}, wa_id={self.wa_id})>"
     
     def to_dict(self):
         return {
@@ -97,6 +97,12 @@ class Ticket(db.Model):
         """Assign ticket to a user."""
         self.wa_id = user.id
         self.status = 'in_progress'
+        db.session.commit()
+
+    def return_to_queue(self):
+        """Return ticket to the queue."""
+        self.wa_id = None
+        self.status = 'live'
         db.session.commit()
     
 # Old models for reference
