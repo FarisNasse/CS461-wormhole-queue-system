@@ -21,6 +21,18 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 
 
+class _ModelQueryProperty:
+    """
+    Descriptor that provides the legacy-style `Model.query` attribute.
+    Ensures that User.query and Ticket.query continue to work with DeclarativeBase.
+    """
+
+    def __get__(self, instance, owner):
+        if owner is None:
+            return self
+        return db.session.query(owner)
+
+
 class Base(DeclarativeBase):
     """
     Base class for all models.
