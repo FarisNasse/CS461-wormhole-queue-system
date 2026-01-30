@@ -42,7 +42,7 @@ class Base(DeclarativeBase):
     """
 
     metadata = db.metadata
-    query = db.session.query_property()
+    query = _ModelQueryProperty()
 
 
 class User(Base):
