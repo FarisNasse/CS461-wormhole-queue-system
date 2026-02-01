@@ -30,7 +30,7 @@ class User(db.Model):
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    tickets: orm.WriteOnlyMapped['Ticket'] = orm.relationship(back_populates="wormhole_assistant")
+    tickets: orm.WriteOnlyMapped['Ticket'] = orm.relationship(back_populates="wormhole_assistant", passive_deletes=True) 
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
@@ -65,7 +65,7 @@ class Ticket(db.Model):
     
     number_of_students: orm.Mapped[Optional[int]] = orm.mapped_column(default=1)
     wa_id: orm.Mapped[Optional[int]] = orm.mapped_column(
-        sa.ForeignKey('users.id'), default=None, index=True
+        sa.ForeignKey('users.id', ondelete="SET NULL"), default=None, index=True
     )
     wormhole_assistant: orm.Mapped[Optional[User]] = orm.relationship(back_populates="tickets")
 

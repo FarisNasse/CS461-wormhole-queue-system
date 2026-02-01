@@ -92,4 +92,7 @@ def create_app(testing=False):
 
         return {'current_user': SimpleNamespace(is_admin=False, is_anonymous=True, username='')}
 
+    from app.routes.users import user_bp
+    app.register_blueprint(user_bp)
+
     return app
