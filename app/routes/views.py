@@ -256,32 +256,11 @@ def user_list():
     return render_template('user_list.html', new_users=new_users, old_users=old_users)
 
 
-@views_bp.route('/register', methods=['GET', 'POST'])
+@views_bp.route('/users_add', methods=['GET'])
 @admin_required
-def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        name = form.name.data
-        username = form.username.data
-        email = form.email.data
-        password = form.password.data
-
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists.', 'error')
-            return render_template('register.html', form=form)
-
-        if User.query.filter_by(email=email).first():
-            flash('Email already registered.', 'error')
-            return render_template('register.html', form=form)
-
-        from werkzeug.security import generate_password_hash
-        user = User(name=name, username=username, email=email, password_hash=generate_password_hash(password))
-        db.session.add(user)
-        db.session.commit()
-        flash(f'User {username} registered successfully!', 'success')
-        return redirect(url_for('views.user_list'))
-
-    return render_template('register.html', form=form)
+def users_add():
+    form = RegisterForm() 
+    return render_template('users_add.html', form=form)
 
 
 @views_bp.route('/register_batch', methods=['GET', 'POST'])
