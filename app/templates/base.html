@@ -28,7 +28,7 @@
                         <div class="dropdown-content">
                             {% if current_user.is_admin %}
                                 <div class = "admin-links">
-                                    <a href="{{ url_for('views.register') }}">Register New User</a>
+                                    <a href="{{ url_for('views.users_add') }}">Register New User</a>
                                     <a href="{{ url_for('views.queue') }}">Queue</a>
                                     <a href="{{ url_for('views.archive') }}">Archive</a>
                                 </div>
