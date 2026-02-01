@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, redirect, flash, url_for
 from app import db
 from app.models import User
+from app.forms import RegisterForm
 
 
 user_bp = Blueprint('users', __name__, url_prefix='/api')
@@ -34,36 +35,55 @@ def users_remove():
 #route to add user
 @user_bp.route('/users_add', methods=['POST'])
 def users_add():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        u = User(
+            username=form.username.data,
+            email=form.email.data,
+            is_admin=form.is_admin.data
+        )
 
-    data = request.get_json()
+        u.set_password(form.password.data)
 
-    # initial post request inputs. pass, email, and is_admin r currently used
-    # email and pass can be empty
-    # can be figured out after UI is figured out
-    if not data or not all(k in data for k in ['username',
-                                                'is_admin']):
-        return jsonify({'error': 'Missing required fields'}), 400
+        db.session.add(u)
+        db.session.commit()
 
-    # default email if email is missing
-    email = ''
-    if not data['email']:
-        email = 'ONID@oregonstate.edu'
-    else:
-        email = data['email']
+        flash('User added successfully!', 'success')
+        return redirect(url_for('views.user_list'))
+    
+    flash('Error adding user. Please check the form and try again.', 'error')
+    return redirect(url_for('views.users_add'))
 
-    new_user = User(
-        username = data['username'],
-        email = email,
-        is_admin = data.get("is_admin", False)
-    )
+    # data = request.get_json()
 
-    # set default password if no password provided
-    if not data['password']:
-        new_user.set_password("Wormhole")
+    # # initial post request inputs. pass, email, and is_admin r currently used
+    # # email and pass can be empty
+    # # can be figured out after UI is figured out
+    # if not data or not all(k in data for k in ['username',
+    #                                             'is_admin']):
+    #     flash(f'Missing required fields', 'error')
+    #     return redirect(url_for('views.users_add'))
 
-    new_user.set_password(data['password'])
+    # # default email if email is missing
+    # email = ''
+    # if not data['email']:
+    #     email = 'ONID@oregonstate.edu'
+    # else:
+    #     email = data['email']
+
+    # new_user = User(
+    #     username = data['username'],
+    #     email = email,
+    #     is_admin = data.get("is_admin", False)
+    # )
+
+    # # set default password if no password provided
+    # if not data['password']:
+    #     new_user.set_password("Wormhole")
+
+    # new_user.set_password(data['password'])
 
 
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify(data), 201 # return lik
+    # db.session.add(new_user)
+    # db.session.commit()
+    # return redirect(url_for('views.user_list'))
