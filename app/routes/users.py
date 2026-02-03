@@ -17,13 +17,11 @@ def users_remove():
     if not data or not all(k in data for k in ['username']):
         return jsonify({'error': 'Missing required fields'}), 404
 
-
     user = User.query.filter_by(username=data['username']).first()
-
 
     if not user:
         return jsonify({'error': 'User not found'}), 400
-   
+
     db.session.delete(user)
     db.session.commit()
 
@@ -50,7 +48,7 @@ def users_add():
 
         flash('User added successfully!', 'success')
         return redirect(url_for('views.user_list'))
-    
+
     flash('Error adding user. Please check the form and try again.', 'error')
     return redirect(url_for('views.users_add'))
 
