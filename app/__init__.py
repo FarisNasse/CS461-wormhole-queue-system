@@ -105,4 +105,7 @@ def create_app(testing=False):
             )
         }
 
+    from app.routes.users import user_bp
+    app.register_blueprint(user_bp)
+
     return app

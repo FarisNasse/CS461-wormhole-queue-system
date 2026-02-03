@@ -97,7 +97,7 @@ class Ticket(Base):
 
     # Foreign Keys
     wa_id: Mapped[Optional[int]] = mapped_column(
-        sa.ForeignKey("users.id"), default=None, index=True
+        sa.ForeignKey("users.id", ondelete="SET NULL"), default=None, index=True
     )
 
     # Relationships
