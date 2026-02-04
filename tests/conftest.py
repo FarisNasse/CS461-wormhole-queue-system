@@ -16,6 +16,9 @@ def test_app():
     """Creates a Flask app instance for testing."""
     app = create_app(testing=True)
 
+    # Disable CSRF protection for testing
+    app.config['WTF_CSRF_ENABLED'] = False
+
     with app.app_context():
         db.create_all()
         yield app
