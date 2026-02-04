@@ -292,7 +292,7 @@ def user_list():
 @views_bp.route('/users_add', methods=['GET'])
 @admin_required
 def users_add():
-    form = RegisterForm() 
+    form = RegisterForm()
     return render_template('users_add.html', form=form)
 
 

@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify, request, redirect, flash, url_for
+from flask import Blueprint, flash, jsonify, redirect, request, url_for
+
 from app import db
-from app.models import User
 from app.forms import RegisterForm
+from app.models import User
 
 
 user_bp = Blueprint('users', __name__, url_prefix='/api')

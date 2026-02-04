@@ -48,7 +48,7 @@ def test_user_remove_no_email_no_pass_admin(test_client):
         "password": "",
         "is_admin": True
     })
-    
+
     response = test_client.post("/api/users_remove", json={
         "username": "testusername"
     })
