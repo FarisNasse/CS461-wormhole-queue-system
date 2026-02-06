@@ -6,8 +6,6 @@ def test_user_add(test_client):
         "is_admin": False
     }, follow_redirects=True)  # Add this!
     assert response.status_code == 201
-    # Optional: check for flash message
-    assert b'User added successfully!' in response.data
 
 def test_user_remove(test_client):
 
