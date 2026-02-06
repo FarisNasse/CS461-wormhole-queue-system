@@ -12,7 +12,7 @@ def test_user_add(test_client):
 def test_user_remove(test_client):
 
     # create test user first
-    response = test_client.post("/api/users_add", json={
+    response = test_client.post("/api/users_add_json", json={
         "username": "testusername",
         "email": "testemail123",
         "password": "testpass123",
@@ -26,7 +26,7 @@ def test_user_remove(test_client):
     assert data == {"success": "user removed"}
 
 def test_user_add_admin(test_client):
-    response = test_client.post("/api/users_add", data={
+    response = test_client.post("/api/users_add_json", data={
         "username": "testusername",
         "email": "testemail123",
         "password": "testpass123",
@@ -35,7 +35,7 @@ def test_user_add_admin(test_client):
     assert response.status_code == 200  # Change from 201 to 200
 
 def test_user_add_no_email_no_pass_admin(test_client):
-    response = test_client.post("/api/users_add", data={
+    response = test_client.post("/api/users_add_json", data={
         "username": "testusername",
         "email": "",
         "password": "",
@@ -45,7 +45,7 @@ def test_user_add_no_email_no_pass_admin(test_client):
     # This might actually fail validation and show error - you may need to adjust
 
 def test_user_remove_no_email_no_pass_admin(test_client):
-    response = test_client.post("/api/users_add", json={
+    response = test_client.post("/api/users_add_json", json={
         "username": "testusername",
         "email": "",
         "password": "",

@@ -9,7 +9,7 @@ user_bp = Blueprint('users', __name__, url_prefix='/api')
 
 
 #route to remove user
-@user_bp.route('/api/users_remove', methods=['POST'])
+@user_bp.route('/users_remove', methods=['POST'])
 def users_remove():
 
     data = request.get_json()
@@ -54,7 +54,7 @@ def users_add():
     return redirect(url_for('views.users_add'))
 
 # New JSON API for testing
-@user_bp.route('/api/users_add', methods=['POST'])
+@user_bp.route('/users_add_json', methods=['POST'])
 def api_users_add():
     data = request.get_json()
     
