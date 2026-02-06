@@ -10,6 +10,10 @@ Typical usage example:
     from app import models
 """
 
+import jwt
+from time import time
+from flask import current_app
+
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -114,6 +118,25 @@ class Ticket(db.Model):
         """Assign ticket to a user."""
         self.wa_id = user.id
         db.session.commit()
+
+    def get_reset_password_token(self, expires_in=3600):
+        """Generates a secure JWT token for password reset."""
+        return jwt.encode(
+            {"reset_password": self.id, "exp": time() + expires_in},
+            current_app.config["SECRET_KEY"],
+            algorithm="HS256",
+        )
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        """Verifies the JWT token and returns the corresponding User."""
+        try:
+            user_id = jwt.decode(
+                token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
+            )["reset_password"]
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+            return None
+        return db.session.get(User, user_id)
     
 # Old models for reference
 
