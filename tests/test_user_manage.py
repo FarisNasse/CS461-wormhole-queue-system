@@ -5,7 +5,7 @@ def test_user_add(test_client):
         "password": "testpass123",
         "is_admin": False
     }, follow_redirects=True)  # Add this!
-    assert response.status_code == 200  # Change from 201 to 200
+    assert response.status_code == 201
     # Optional: check for flash message
     assert b'User added successfully!' in response.data
 
@@ -32,7 +32,7 @@ def test_user_add_admin(test_client):
         "password": "testpass123",
         "is_admin": True
     }, follow_redirects=True)  # Add this!
-    assert response.status_code == 200  # Change from 201 to 200
+    assert response.status_code == 201
 
 def test_user_add_no_email_no_pass_admin(test_client):
     response = test_client.post("/api/users_add_json", json={
@@ -41,7 +41,7 @@ def test_user_add_no_email_no_pass_admin(test_client):
         "password": "",
         "is_admin": True
     }, follow_redirects=True)  # Add this!
-    assert response.status_code == 200  # Change from 201 to 200
+    assert response.status_code == 201
     # This might actually fail validation and show error - you may need to adjust
 
 def test_user_remove_no_email_no_pass_admin(test_client):
