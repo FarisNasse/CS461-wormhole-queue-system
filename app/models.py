@@ -60,7 +60,8 @@ class User(Base):
 
     # Relationships
     tickets: orm.WriteOnlyMapped["Ticket"] = orm.relationship(
-        back_populates="wormhole_assistant"
+        back_populates="wormhole_assistant",
+        passive_deletes=True,
     )
 
     def __repr__(self) -> str:

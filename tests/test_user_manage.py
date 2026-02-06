@@ -1,5 +1,5 @@
 def test_user_add(test_client):
-    response = test_client.post("/api/users_add", data={
+    response = test_client.post("/api/users_add_json", json={
         "username": "testusername",
         "email": "testemail123",
         "password": "testpass123",
@@ -26,7 +26,7 @@ def test_user_remove(test_client):
     assert data == {"success": "user removed"}
 
 def test_user_add_admin(test_client):
-    response = test_client.post("/api/users_add_json", data={
+    response = test_client.post("/api/users_add_json", json={
         "username": "testusername",
         "email": "testemail123",
         "password": "testpass123",
@@ -35,7 +35,7 @@ def test_user_add_admin(test_client):
     assert response.status_code == 200  # Change from 201 to 200
 
 def test_user_add_no_email_no_pass_admin(test_client):
-    response = test_client.post("/api/users_add_json", data={
+    response = test_client.post("/api/users_add_json", json={
         "username": "testusername",
         "email": "",
         "password": "",
