@@ -1,44 +1,64 @@
 {% extends "base.html" %}
-
 {% block scripts %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJ+YRFb2v3l+6Gk5bQ5f5Q5h5Yt1lV9l8a5Qg=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJ+YRFb2v3l+6Gk5bQ5f5Q5h5Yt1lV9l8a5Qg="
+            crossorigin="anonymous"></script>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/userpage.js') }}"></script>
 {% endblock %}
-
-
 {% block content %}
-<div class="page">
-    <div class="section Tickets">
-        <h2 style="text-align:center">Tickets (<span id='ticket-count'></span>)</h2>
-        
-        {% if user.tkt == None %}
-        <h4 style="text-align:center"><a href="{{ url_for('views.getnewticket', username=user.username) }}">Get Next Request</a></h4>
-        {% else %}
-        <h4 style="text-align:center"><a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}">Check Current Request</a></h2>
-        {% endif %}
-
+    <div class="page">
+        <div class="section tickets">
+            <h2 style="text-align:center">
+                Tickets (<span id='ticket-count'></span>)
+            </h2>
+            {% if user.tkt == None %}
+                <h4 style="text-align:center">
+                    <a href="{{ url_for('views.getnewticket', username=user.username) }}">Get Next Request</a>
+                </h4>
+            {% else %}
+                <h4 style="text-align:center">
+                    <a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}">Check Current Request</a>
+                </h4>
+            {% endif %}
+        </div>
+        <div class="section profile">
+            <h2 style="text-align:center">
+                Profile
+            </h2>
+            <!-- Base profile atributes -->
+            <p style="margin:10px">
+                <b>Username: </b>{{ user.username }}
+                <br>
+                <b>Email: </b>{{ user.email }}
+                <br>
+                <b>Administrator: </b>{{ user.is_admin }}
+                <br>
+                {% if current_user.username==user.username or current_user.is_admin %}
+                    <a href="{{ url_for('views.changepass') }}">Change Password</a>
+                {% endif %}
+            </p>
+            {% if current_user.is_admin %}
+                <h3 style="text-align:center">
+                    Admin Utilities
+                </h3>
+                <p style="margin:10px">
+                    <a href="{{ url_for('views.register') }}">Register New User</a>
+                </p>
+                <!--<p><a href="{{ url_for('views.changepass') }}">Change User Password</a></p>-->
+                <p style="margin:10px">
+                    <a href="{{ url_for('views.queue') }}">Queue</a>
+                </p>
+                <p style="margin:10px">
+                    <a href="{{ url_for('views.archive') }}">Archive</a>
+                </p>
+                <p style="margin:10px">
+                    <a href="{{ url_for('views.register_batch') }}">Register Users in Batch</a>
+                </p>
+                <p style="margin:10px">
+                    <a href="{{ url_for('views.user_list') }}">TA/LA List</a>
+                </p>
+            {% endif %}
+        </div>
     </div>
-    <div class="section profile">    
-        <h2 style="text-align:center">Profile</h2>
-        <!-- Base profile atributes -->
-        <p style="margin:10px">
-            <b>Username: </b>{{ user.username }}<br>
-            <b>Email: </b>{{ user.email }} <br>
-            <b>Adminstrator: </b>{{ user.is_admin }} <br>
-        {% if current_user.username==user.username or current_user.is_admin %}
-            <a href="{{ url_for('views.changepass') }}">Change Password</a>
-        {% endif %}
-        </p>
-        {% if current_user.is_admin %}
-            <h3 style="text-align:center">Admin Utilities</h3>
-            <p style="margin:10px"><a href="{{ url_for('views.register') }}">Register New User</a></p>
-            <!--<p><a href="{{ url_for('views.changepass') }}">Change User Password</a></p>-->
-            <p style="margin:10px"><a href="{{ url_for('views.queue') }}">Queue</a></p>
-            <p style="margin:10px"><a href="{{ url_for('views.archive') }}">Archive</a></p>
-	    <p style="margin:10px"><a href="{{ url_for('views.register_batch') }}">Register Users in Batch</a></p>
-            <p style="margin:10px"><a href="{{ url_for('views.user_list') }}">TA/LA List</a></p>
-        {% endif %}
-    </div>
-</div>
 {% endblock %}

@@ -8,16 +8,16 @@ from app import socketio
 from app.models import Ticket
 
 
-@socketio.on('connect', namespace='/queue')
+@socketio.on("connect", namespace="/queue")
 def handle_queue_connect():
     """Handle client connection to queue namespace."""
-    print('Client connected to /queue')
+    print("Client connected to /queue")
 
 
-@socketio.on('disconnect', namespace='/queue')
+@socketio.on("disconnect", namespace="/queue")
 def handle_queue_disconnect():
     """Handle client disconnect from queue namespace."""
-    print('Client disconnected from /queue')
+    print("Client disconnected from /queue")
 
 
 def broadcast_ticket_update(ticket_id):
@@ -29,17 +29,17 @@ def broadcast_ticket_update(ticket_id):
         t = Ticket.query.get(ticket_id)
         if t:
             ticket_data = {
-                'id': t.id,
-                'student_name': t.student_name,
-                'table': t.table,
-                'physics_course': t.physics_course,
-                'created_at': t.created_at.isoformat() if t.created_at else None,
-                'status': t.status,
+                "id": t.id,
+                "student_name": t.student_name,
+                "table": t.table,
+                "physics_course": t.physics_course,
+                "created_at": t.created_at.isoformat() if t.created_at else None,
+                "status": t.status,
             }
-            socketio.emit('new_ticket', ticket_data, namespace='/queue')
-            print(f'Broadcasted ticket update for ticket ID {ticket_id}')
+            socketio.emit("new_ticket", ticket_data, namespace="/queue")
+            print(f"Broadcasted ticket update for ticket ID {ticket_id}")
     except Exception as e:
-        print(f'Error broadcasting ticket update: {e}')
+        print(f"Error broadcasting ticket update: {e}")
 
 
 def broadcast_queue_refresh():
@@ -47,4 +47,4 @@ def broadcast_queue_refresh():
     Broadcast a refresh signal to all connected clients.
     Triggers the client to refetch the queue.
     """
-    socketio.emit('queue_refresh', {}, namespace='/queue')
+    socketio.emit("queue_refresh", {}, namespace="/queue")
