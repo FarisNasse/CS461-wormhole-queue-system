@@ -289,11 +289,11 @@ def user_list():
     return render_template("user_list.html", new_users=new_users, old_users=old_users)
 
 
-@views_bp.route('/users_add', methods=['GET'])
+@views_bp.route("/users_add", methods=["GET"])
 @admin_required
 def users_add():
     form = RegisterForm()
-    return render_template('users_add.html', form=form)
+    return render_template("users_add.html", form=form)
 
 
 @views_bp.route("/register_batch", methods=["GET", "POST"])
