@@ -1,39 +1,48 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         {% if title %}
-        <title>{{title}}</title>
+            <title>{{ title }}</title>
         {% else %}
-        <title>Wormhole Queue System</title>
+            <title>Wormhole Queue System</title>
         {% endif %}
-        {% block scripts %} {% endblock %}
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}" />
-    	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}" type="text/css">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        {% block scripts %}
+        {% endblock %}
+        <link rel="icon"
+              type="image/png"
+              sizes="32x32"
+              href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}">
+        <link rel="shortcut icon"
+              href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}" />
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='styles.css') }}"
+              type="text/css">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     </head>
     <body>
         <div class = "page">
             <div class = "header">
-                <h1 style="color:#FFFFFF;text-align:center">Oregon State University Wormhole</h1>
+                <h1 style="color:#FFFFFF;text-align:center">
+                    Oregon State University Wormhole
+                </h1>
                 <div class="navbar">
                     <a href="{{ url_for('views.index') }}">Home</a>
                     <a href="{{ url_for('views.create_ticket_page') }}">Submit Request</a>
                     <a href="{{ url_for('views.livequeue') }}">Live Queue</a>
                     <a href="{{ url_for('views.wiki') }}">Wiki</a>
-                
                     <div class="dropdown">
-                        <button class="dropbtn">User</button>
+                        <button class="dropbtn">
+                            User
+                        </button>
                         <div class="dropdown-content">
                             {% if current_user.is_admin %}
                                 <div class = "admin-links">
-                                    <a href="{{ url_for('views.register') }}">Register New User</a>
+                                    <a href="{{ url_for('views.users_add') }}">Register New User</a>
                                     <a href="{{ url_for('views.queue') }}">Queue</a>
                                     <a href="{{ url_for('views.archive') }}">Archive</a>
                                 </div>
                             {% endif %}
-                
                             {% if current_user.is_anonymous %}
                                 <a href="{{ url_for('views.assistant_login') }}">Log In</a>
                             {% else %}
@@ -46,18 +55,22 @@
                 </div>
             </div>
         </div>
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
                 <div class ="section message">
-                <ul>
-                    {% for ms in messages %}
-                        <li>{{ ms }}</li>
-                    {% endfor %}
-                </ul>
+                    <ul>
+                        {% for ms in messages %}
+                            <li>
+                                {{ ms }}
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
-                {% endif %}
-                {% endwith %}
-                {% block content%} {% endblock %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock %}
     </body>
-    {% block body_scripts %} {% endblock %}
+    {% block body_scripts %}
+    {% endblock %}
 </html>

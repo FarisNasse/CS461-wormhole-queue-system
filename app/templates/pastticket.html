@@ -1,43 +1,70 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="page">
-    <div class="section tick_info">
-        <h3 style="text-align:center">Previous Help Request</h3>
-        <table id="tickets" style="margin-left:30px; width: 75%; text-align: left; border-collapse:separate; border-spacing:10px;">
-            <tr>
-                <th>Name: <b>{{ ticket.name }}</b></th>
-            </tr>
-            <tr>
-                {% if ticket.table == 0 %}
-                    <th>Table: <b>Ecampus</b></th>
-                {% else %}
-                    <th>Table: <b>{{ ticket.table }}</b></th>
-                {% endif %}
-            </tr>
-            <tr>
-                <th>Class: <b>{{ ticket.phClass }}</b></th>
-            </tr>
-        </table>
-        <p style="text-align:center">Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b></p>
-    </div>
-    <div class="section tick_resol">
-        <h3 style="text-align:center">Resolve As:</h3>
-        <form action="" method="post" nonvalidate>
-        {{ form.hidden_tag() }}
-        {{ form.numStds.label }}  {{ form.numStds(size=4) }}<br>
-            {% for er in form.numStds.errors %}
-                <span style="color:red;">[{{ er }}]</span>
-            {% endfor %}
-        <blockquote>Current number: <b>{{ ticket.num_students }}</b></blockquote>
-        <table id="tickets" style="margin-left:15px; width: 100%; text-align: left; border-collapse:separate; border-spacing:30px;">
-            <tr>
-                <td>
+    <div class="page">
+        <div class="section tick-info">
+            <h3 style="text-align:center">
+                Previous Help Request
+            </h3>
+            <table id="tickets"
+                   style="margin-left:30px;
+                          width: 75%;
+                          text-align: left;
+                          border-collapse:separate;
+                          border-spacing:10px">
+                <tr>
+                    <th>
+                        Name: <b>{{ ticket.name }}</b>
+                    </th>
+                </tr>
+                <tr>
+                    {% if ticket.table == 0 %}
+                        <th>
+                            Table: <b>Ecampus</b>
+                        </th>
+                    {% else %}
+                        <th>
+                            Table: <b>{{ ticket.table }}</b>
+                        </th>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th>
+                        Class: <b>{{ ticket.phClass }}</b>
+                    </th>
+                </tr>
+            </table>
+            <p style="text-align:center">
+                Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b>
+            </p>
+        </div>
+        <div class="section tick-resol">
+            <h3 style="text-align:center">
+                Resolve As:
+            </h3>
+            <form action="" method="post" nonvalidate>
                 {{ form.hidden_tag() }}
-                {{ form.submit() }}
-                </td>
-            </tr>
-        </table>
+                {{ form.numStds.label }} {{ form.numStds(size=4) }}
+                <br>
+                {% for er in form.numStds.errors %}
+                    <span style="color:red;">[{{ er }}]</span>
+                {% endfor %}
+                <blockquote>
+                    Current number: <b>{{ ticket.num_students }}</b>
+                </blockquote>
+                <table id="tickets"
+                       style="margin-left:15px;
+                              width: 100%;
+                              text-align: left;
+                              border-collapse:separate;
+                              border-spacing:30px">
+                    <tr>
+                        <td>
+                            {{ form.hidden_tag() }}
+                            {{ form.submit() }}
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}

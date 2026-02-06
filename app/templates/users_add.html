@@ -3,10 +3,19 @@
     <div class="page">
         <div class="section generic">
             <h1>
-                Change Password
+                New User Registration
             </h1>
-            <form action="" method="post" novalidate>
+            <form action="{{ url_for('users.users_add') }}" method="post" novalidate>
                 {{ form.hidden_tag() }}
+                <p>
+                    {{ form.name.label }}
+                    <br>
+                    {{ form.name(size=32) }}
+                    <br>
+                    {% for er in form.name.errors %}
+                        <span style="color: red;">[{{ er }}]</span>
+                    {% endfor %}
+                </p>
                 <p>
                     {{ form.username.label }}
                     <br>
@@ -17,11 +26,11 @@
                     {% endfor %}
                 </p>
                 <p>
-                    {{ form.old_password.label }}
+                    {{ form.email.label }}
                     <br>
-                    {{ form.old_password(size=32) }}
+                    {{ form.email(size=32) }}
                     <br>
-                    {% for er in form.old_password.errors %}
+                    {% for er in form.email.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
                 </p>
@@ -42,6 +51,9 @@
                     {% for er in form.password2.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
+                </p>
+                <p>
+                    {{ form.is_admin() }} {{ form.is_admin.label }}
                 </p>
                 <p>
                     {{ form.submit() }}
