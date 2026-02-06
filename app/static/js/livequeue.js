@@ -38,11 +38,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const ticketTableBody = document.querySelector('#tickets tbody');
                 ticketTableBody.innerHTML = ''; // Clear existing rows
-                tickets.forEach((ticket, index) => {
+
+                let index = 0;
+
+                tickets.forEach((ticket) => {
                     const row = document.createElement('tr');
                     row.id = `ticket-${ticket.id}`;
+
+                    let queue_position;
+                    if (ticket.status === 'in_progress') {
+                        queue_position = 'In Progress';
+                    } else {
+                        index++;
+                        queue_position = index;
+                    }
+
                     row.innerHTML = `
-                        <td>${index + 1}</td>
+                        <td>${queue_position}</td>
                         <td>${ticket.student_name}</td>
                         <td>${ticket.table}</td>
                         <td>${ticket.physics_course}</td>
