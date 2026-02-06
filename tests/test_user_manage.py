@@ -13,7 +13,6 @@ def test_user_add(test_client):
 
 
 def test_user_remove(test_client):
-
     # create test user first
     response = test_client.post(
         "/api/users_add_json",

@@ -10,7 +10,6 @@ user_bp = Blueprint("users", __name__, url_prefix="/api")
 # route to remove user
 @user_bp.route("/users_remove", methods=["POST"])
 def users_remove():
-
     data = request.get_json()
 
     # filler field for now, to be updated later
