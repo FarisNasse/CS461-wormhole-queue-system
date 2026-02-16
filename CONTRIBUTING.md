@@ -1,7 +1,6 @@
 # Contributing Guide
 
 This document explains how to contribute to the Wormhole Queue System project so that all work meets our Definition of Done (DoD) and Quality Gates defined in the Team Charter.  
-It will be updated after the technical design phase (scheduled for November 23, 2025).
 
 ---
 
