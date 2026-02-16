@@ -23,6 +23,8 @@ from app.forms import (
     TicketForm,
 )
 from app.models import Ticket, User
+from flask import send_from_directory, current_app
+import os
 
 views_bp = Blueprint("views", __name__)
 
@@ -234,10 +236,37 @@ def logout():
 @views_bp.route("/archive")
 @admin_required
 def archive():
-    # keep lists empty to avoid url_for('protected') being invoked
-    tkt_list = []
-    assoc_list = []
-    return render_template("archive.html", tkt_list=tkt_list, assoc_list=assoc_list)
+    # show single closed tickets CSV if present
+    data_dir = os.path.join(current_app.root_path, "data")
+    csv_path = os.path.join(data_dir, "closed_tickets.csv")
+    csv_exists = os.path.exists(csv_path)
+    return render_template("archive.html", csv_exists=csv_exists)
+
+
+@views_bp.route('/archive/download')
+@admin_required
+def download_closed_tickets():
+    data_dir = os.path.join(current_app.root_path, "data")
+    if not os.path.exists(os.path.join(data_dir, "closed_tickets.csv")):
+        flash("No closed tickets file found.", "error")
+        return redirect(url_for("views.archive"))
+    return send_from_directory(data_dir, "closed_tickets.csv", as_attachment=True)
+
+
+@views_bp.route('/archive/delete', methods=['POST'])
+@admin_required
+def delete_closed_tickets():
+    data_dir = os.path.join(current_app.root_path, "data")
+    csv_file = os.path.join(data_dir, "closed_tickets.csv")
+    if os.path.exists(csv_file):
+        try:
+            os.remove(csv_file)
+            flash("Closed tickets file deleted.", "success")
+        except Exception:
+            flash("Failed to delete file.", "error")
+    else:
+        flash("No closed tickets file found.", "error")
+    return redirect(url_for("views.archive"))
 
 
 @views_bp.route("/user/<username>")

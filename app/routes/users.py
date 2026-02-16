@@ -46,7 +46,7 @@ def users_add():
         db.session.add(u)
         db.session.commit()
 
-        flash("User added successfully!", "success")
+        flash(f"User {u.username} added successfully!", "success")
         return redirect(url_for("views.user_list"))
 
     flash("Error adding user. Please check the form and try again.", "error")

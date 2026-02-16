@@ -8,45 +8,60 @@
             <form action="{{ url_for('users.users_add') }}" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <p>
+                    <label for="first_name">First Name</label>
+                    <br>
+                    <input id="first_name" name="first_name" size="32">
+                </p>
+                <p>
+                    <label for="last_name">Last Name</label>
+                    <br>
+                    <input id="last_name" name="last_name" size="32">
+                </p>
+                <p>
+                    <label for="onid">ONID</label>
+                    <br>
+                    <input id="onid" name="onid" size="32">
+                </p>
+                <p style="display:none;">
                     {{ form.name.label }}
                     <br>
-                    {{ form.name(size=32) }}
+                    {{ form.name(size=32, id='name', style='display:none;') }}
                     <br>
                     {% for er in form.name.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
                 </p>
-                <p>
+                <p style="display:none;">
                     {{ form.username.label }}
                     <br>
-                    {{ form.username(size=32) }}
+                    {{ form.username(size=32, id='username', style='display:none;') }}
                     <br>
                     {% for er in form.username.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
                 </p>
-                <p>
+                <p style="display:none;">
                     {{ form.email.label }}
                     <br>
-                    {{ form.email(size=32) }}
+                    {{ form.email(size=32, id='email', style='display:none;') }}
                     <br>
                     {% for er in form.email.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
                 </p>
-                <p>
+                <p style="display:none;">
                     {{ form.password.label }}
                     <br>
-                    {{ form.password(size=32) }}
+                    {{ form.password(size=32, id='password', style='display:none;') }}
                     <br>
                     {% for er in form.password.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
                 </p>
-                <p>
+                <p style="display:none;">
                     {{ form.password2.label }}
                     <br>
-                    {{ form.password2(size=32) }}
+                    {{ form.password2(size=32, id='password2', style='display:none;') }}
                     <br>
                     {% for er in form.password2.errors %}
                         <span style="color: red;">[{{ er }}]</span>
@@ -60,5 +75,33 @@
                 </p>
             </form>
         </div>
+            <script>
+                (function(){
+                    const form = document.querySelector('form');
+                    form.addEventListener('submit', function(e){
+                        const fn = document.getElementById('first_name').value.trim();
+                        const ln = document.getElementById('last_name').value.trim();
+                        const onid = document.getElementById('onid').value.trim();
+
+                        if(!fn || !ln || !onid){
+                            alert('Please provide First Name, Last Name, and ONID.');
+                            e.preventDefault();
+                            return false;
+                        }
+
+                        const nameField = document.querySelector('[name="name"]');
+                        const usernameField = document.querySelector('[name="username"]');
+                        const emailField = document.querySelector('[name="email"]');
+                        const pwField = document.querySelector('[name="password"]');
+                        const pw2Field = document.querySelector('[name="password2"]');
+
+                        if(nameField) nameField.value = fn + ' ' + ln;
+                        if(usernameField) usernameField.value = onid;
+                        if(emailField) emailField.value = onid + '@oregonstate.edu';
+                        if(pwField) pwField.value = 'wormhole';
+                        if(pw2Field) pw2Field.value = 'wormhole';
+                    });
+                })();
+            </script>
     </div>
 {% endblock %}

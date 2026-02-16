@@ -7,33 +7,24 @@
                 Ticket Archive
             </h2>
             <p>
-                <table style="display:inline-block;">
+                <table style="display:inline-block; vertical-align: top;">
                     <tr>
                         <th>
-                            Ticket Data
+                            Closed Tickets CSV
                         </th>
                     </tr>
-                    {% for tn in tkt_list %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('protected', filename= 'tickets/'+tn) }}">{{ tn }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-                <table style="display:inline-block;">
                     <tr>
-                        <th>
-                            Association Data
-                        </th>
+                        <td>
+                            {% if csv_exists %}
+                                <a href="{{ url_for('views.download_closed_tickets') }}">closed_tickets.csv</a>
+                                <form id="delete-csv" action="{{ url_for('views.delete_closed_tickets') }}" method="post" style="display:inline-block; margin-left:10px;">
+                                    <button type="submit" onclick="return confirm('Delete closed_tickets.csv? This cannot be undone.')">Delete File</button>
+                                </form>
+                            {% else %}
+                                <span>No closed tickets file yet.</span>
+                            {% endif %}
+                        </td>
                     </tr>
-                    {% for an in assoc_list %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('protected', filename= 'associations/'+an) }}">{{ an }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
                 </table>
             </p>
         </div>

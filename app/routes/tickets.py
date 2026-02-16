@@ -1,10 +1,13 @@
 # /app/routes/tickets.py
-from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
+from flask import Blueprint, flash, jsonify, redirect, request, session, url_for, current_app
 
 from app import db
 from app.forms import ResolveTicketForm
 from app.models import Ticket, User
 from app.routes.queue_events import broadcast_ticket_update
+import os
+import csv
+from datetime import datetime, timezone
 
 tickets_bp = Blueprint("tickets", __name__, url_prefix="/api")
 
@@ -62,9 +65,45 @@ def resolve_ticket(ticket_id):
         ticket = Ticket.query.get(ticket_id)
         if ticket:
             ticket.status = "resolved"
-            ticket.num_students = form.numStds.data
+            ticket.number_of_students = form.numStds.data
             ticket.resolve_reason = form.resolveReason.data
+            # mark closed time for archive purposes
+            ticket.closed_at = datetime.now(timezone.utc)
             db.session.commit()
+            # append to closed tickets CSV
+            try:
+                data_dir = os.path.join(current_app.root_path, "data")
+                os.makedirs(data_dir, exist_ok=True)
+                csv_path = os.path.join(data_dir, "closed_tickets.csv")
+                write_header = not os.path.exists(csv_path)
+                with open(csv_path, "a", newline='', encoding="utf-8") as csvfile:
+                    writer = csv.writer(csvfile)
+                    if write_header:
+                        writer.writerow([
+                            "ticket_id",
+                            "name",
+                            "table",
+                            "class",
+                            "status",
+                            "created_at",
+                            "updated_at",
+                            "num_students",
+                            "ticket_type",
+                        ])
+                    writer.writerow([
+                        ticket.id,
+                        ticket.student_name,
+                        ticket.table,
+                        ticket.physics_course,
+                        ticket.status,
+                        ticket.created_at.isoformat() if ticket.created_at else "",
+                        ticket.closed_at.isoformat() if ticket.closed_at else "",
+                        ticket.number_of_students if ticket.number_of_students is not None else "",
+                        ticket.resolve_reason or ticket.closed_reason or "",
+                    ])
+            except Exception:
+                # Do not block resolution on CSV errors
+                pass
             broadcast_ticket_update(ticket.id)
             flash("Ticket resolved successfully", "success")
             return redirect(url_for("views.userpage", username=user.username))
