@@ -64,18 +64,12 @@ def _ticket_to_ns(ticket: Ticket):
 # --- Routes ---
 
 
-# -------------------------------
-# GET / (Student Home Page)
-# -------------------------------
 @views_bp.route("/")
 @views_bp.route("/index", endpoint="index")
 def index():
     return render_template("index.html")
 
 
-# -------------------------------
-# GET /livequeue (Live Queue)
-# -------------------------------
 @views_bp.route("/livequeue")
 def livequeue():
     # Fetch current open tickets for initial page load
@@ -88,17 +82,11 @@ def livequeue():
     return render_template("livequeue.html", ol=ol)
 
 
-# -------------------------------
-# GET /wiki (Wiki Page)
-# -------------------------------
 @views_bp.route("/wiki")
 def wiki():
     return render_template("wiki.html")
 
 
-# -------------------------------
-# GET /queue (New Queue Page)
-# -------------------------------
 @views_bp.route("/queue")
 @login_required
 def queue():
@@ -122,7 +110,7 @@ def queue():
     cul = [_ticket_to_ns(t) for t in current_tickets]
     cll = [_ticket_to_ns(t) for t in closed_tickets]
 
-    # Provide a form for CSRF protection on the flush action
+    # Use the dedicated form for the flush action (CSRF only)
     form = FlushQueueForm()
 
     return render_template(
@@ -136,35 +124,30 @@ def queue():
 
 
 # -------------------------------
-# POST /flush (Flush Queue)
+# POST /flush (Flush Queue) - OPTIMIZED
 # -------------------------------
 @views_bp.route("/flush", methods=["POST"])
 @admin_required
 def flush():
-    # Close all tickets that are not already in a terminal state (closed/resolved)
-    # This includes 'live', 'current', 'in_progress', etc.
-    active_tickets = Ticket.query.filter(
-        ~Ticket.status.in_(["closed", "resolved"])
-    ).all()
-
-    count = 0
+    # Use bulk UPDATE for performance
     now = datetime.now(timezone.utc)
-    for t in active_tickets:
-        t.status = "closed"
-        t.closed_reason = "Queue Flushed"
-        t.closed_at = now
-        count += 1
 
-    # Commit all changes in a single transaction
+    # Update all non-closed/resolved tickets
+    count = Ticket.query.filter(~Ticket.status.in_(["closed", "resolved"])).update(
+        {
+            Ticket.status: "closed",
+            Ticket.closed_reason: "Queue Flushed",
+            Ticket.closed_at: now,
+        },
+        synchronize_session=False,
+    )
+
     db.session.commit()
 
     flash(f"Queue flushed. {count} tickets closed.", "info")
     return redirect(url_for("views.queue"))
 
 
-# -------------------------------
-# GET /anonymize (Anonymize Closed Tickets)
-# -------------------------------
 @views_bp.route("/anonymize")
 @login_required
 def anonymize():
@@ -173,9 +156,6 @@ def anonymize():
     return redirect(url_for("views.queue"))
 
 
-# -------------------------------
-# GET/POST /createticket (Help Request Creation)
-# -------------------------------
 @views_bp.route("/createticket", methods=["GET", "POST"])
 def create_ticket_page():
     form = TicketForm()
@@ -204,7 +184,6 @@ def create_ticket_page():
     return render_template("createticket.html", form=form)
 
 
-# Debug endpoint to list all tickets
 @views_bp.route("/debug/tickets")
 def debug_tickets():
     """List all tickets for debugging."""
@@ -229,9 +208,6 @@ def debug_tickets():
     )
 
 
-# -------------------------------
-# GET/POST /assistant-login (Assistant Login Page)
-# -------------------------------
 @views_bp.route("/assistant-login", methods=["GET", "POST"])
 def assistant_login():
     # support form-based login (POST) as well as rendering the login page (GET)
@@ -253,18 +229,12 @@ def assistant_login():
     return render_template("login.html", form=form)
 
 
-# -------------------------------
-# GET /dashboard (Protected Area)
-# -------------------------------
 @views_bp.route("/dashboard")
 @login_required
 def dashboard():
     return "<h1>Welcome! You are logged in to the Wormhole System.</h1>", 200
 
 
-# -------------------------------
-# GET /hardware_list (Hardware List)
-# -------------------------------
 @views_bp.route("/hardware_list")
 @login_required
 def hardware_list():
@@ -280,7 +250,7 @@ def logout():
 
 
 # -------------------------------
-# POST /archive/export (Archive Export)
+# POST /archive/export (Archive Export) - OPTIMIZED
 # -------------------------------
 @views_bp.route("/archive/export", methods=["POST"])
 @admin_required
@@ -311,8 +281,8 @@ def export_archive():
         Ticket.closed_at.between(start_date, end_date),
     ).order_by(Ticket.closed_at.desc())
 
-    # Check for empty results without loading objects
-    if tickets_query.count() == 0:
+    # Optimization: Use limit(1) instead of count() to check for existence
+    if tickets_query.limit(1).first() is None:
         flash("No closed or resolved tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 
@@ -517,6 +487,13 @@ def currentticket(tktid):
 @views_bp.route("/pastticket/<username>/<int:tktid>", methods=["GET", "POST"])
 @login_required
 def pastticket(username, tktid):
+    # Validate authorization first: Ensure path username matches logged-in user or admin
+    sid = session.get("user_id")
+    cur = db.session.get(User, sid) if sid else None
+
+    if not cur or (cur.username != username and not cur.is_admin):
+        abort(403)
+
     # Use session.get for SQLAlchemy 2.0 compliance
     t = db.session.get(Ticket, tktid)
     if not t:

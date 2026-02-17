@@ -23,7 +23,11 @@
                       style="display:inline">
                     {{ form.hidden_tag() }}
                     <button type="submit"
-                            class="btn btn-danger"
+                            style="color: white;
+                                   background-color: #dc3545;
+                                   border: none;
+                                   padding: 5px 10px;
+                                   cursor: pointer"
                             onclick="return confirm('Are you sure you want to close all active tickets?');">
                         Flush Queue
                     </button>
