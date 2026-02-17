@@ -114,16 +114,12 @@ def flush():
     # 1. Find all tickets that are currently live
     live_tickets = Ticket.query.filter_by(status="live").all()
 
-    # 2. Close them
+    # 2. Close them using the Ticket.close_ticket() helper
     count = 0
     for t in live_tickets:
-        t.status = "closed"
-        t.closed_reason = "Queue Flushed"
-        t.closed_at = datetime.now()
+        # This method handles the DB commit and sets the timezone-aware timestamp
+        t.close_ticket(closed_reason="Queue Flushed")
         count += 1
-
-    # 3. Commit changes
-    db.session.commit()
 
     flash(f"Queue flushed. {count} tickets closed.", "info")
     return redirect(url_for("views.queue"))
@@ -246,6 +242,9 @@ def logout():
     return redirect(url_for("views.index"))
 
 
+# -------------------------------
+# POST /archive/export (Archive Export)
+# -------------------------------
 @views_bp.route("/archive/export", methods=["POST"])
 @admin_required
 def export_archive():
@@ -253,23 +252,36 @@ def export_archive():
     start_str = request.form.get("start_date")
     end_str = request.form.get("end_date")
 
-    # 2. Validate input
+    # 2. Validate input existence
     if not start_str or not end_str:
         flash("Please select both a start and end date.", "error")
         return redirect(url_for("views.archive"))
 
-    # 3. Convert strings to datetime objects (handling full day ranges)
-    # We set start time to 00:00:00 and end time to 23:59:59
-    start_date = datetime.strptime(start_str, "%Y-%m-%d")
-    end_date = datetime.combine(datetime.strptime(end_str, "%Y-%m-%d"), time.max)
+    # 3. Parse dates with error handling
+    try:
+        start_date = datetime.strptime(start_str, "%Y-%m-%d")
+        end_date = datetime.combine(datetime.strptime(end_str, "%Y-%m-%d"), time.max)
+    except ValueError:
+        flash(
+            "Invalid date format. Please select dates using the date picker.", "error"
+        )
+        return redirect(url_for("views.archive"))
 
-    # 4. Query the database
-    # We filter for tickets that are 'closed' AND created within the range
+    # 4. Logical Validation
+    if start_date > end_date:
+        flash(
+            "Start date cannot be after end date. Please adjust your selection.",
+            "error",
+        )
+        return redirect(url_for("views.archive"))
+
+    # 5. Query the database using closed_at
+    # We filter for tickets that are 'closed' AND closed within the range
     tickets = (
         Ticket.query.filter(
-            Ticket.status == "closed", Ticket.created_at.between(start_date, end_date)
+            Ticket.status == "closed", Ticket.closed_at.between(start_date, end_date)
         )
-        .order_by(Ticket.created_at.desc())
+        .order_by(Ticket.closed_at.desc())
         .all()
     )
 
@@ -277,7 +289,7 @@ def export_archive():
         flash("No closed tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 
-    # 5. Generate CSV in memory
+    # 6. Generate CSV in memory
     si = io.StringIO()
     cw = csv.writer(si)
 
@@ -310,7 +322,7 @@ def export_archive():
             ]
         )
 
-    # 6. Create the response object
+    # 7. Create the response object
     output = make_response(si.getvalue())
     output.headers[
         "Content-Disposition"
@@ -454,32 +466,30 @@ def currentticket(tktid):
     return render_template("currentticket.html", ticket=ticket_ns, form=form)
 
 
+# -------------------------------
+# POST /pastticket (Past Ticket Resolution)
+# -------------------------------
 @views_bp.route("/pastticket/<username>/<int:tktid>", methods=["GET", "POST"])
 @login_required
 def pastticket(username, tktid):
     t = Ticket.query.get(tktid)
     if not t:
         abort(404)
-
     form = ResolveTicketForm()
 
     if form.validate_on_submit():
-        # 1. Update ticket attributes
-        t.status = "closed"
-        t.closed_reason = (
-            form.resolveReason.data
-        )  # Assuming field name is resolveReason
-        t.closed_at = datetime.now()
+        # Delegate closing logic to the model method, which handles timestamp and commits
+        num_stds = 1
+        if hasattr(form, "numStds"):
+            num_stds = form.numStds.data
 
-        # 2. Save to DB
-        db.session.commit()
+        t.close_ticket(closed_reason=form.resolveReason.data, num_students=num_stds)
 
         flash("Ticket resolved successfully.", "success")
 
-        # 3. Redirect (use the 'next' parameter if available, else default to queue)
+        # Redirect (use the 'next' parameter if available, else default to queue)
         next_page = request.args.get("next")
         return redirect(next_page or url_for("views.queue"))
-    # ----------------------
 
     ticket_ns = _ticket_to_ns(t)
     return render_template("pastticket.html", ticket=ticket_ns, form=form)
