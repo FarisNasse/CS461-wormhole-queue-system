@@ -111,8 +111,21 @@ def queue():
 @views_bp.route("/flush")
 @login_required
 def flush():
-    # Placeholder for flushing/clearing the queue
-    flash("Queue flushed", "info")
+    # 1. Find all tickets that are currently live
+    live_tickets = Ticket.query.filter_by(status="live").all()
+
+    # 2. Close them
+    count = 0
+    for t in live_tickets:
+        t.status = "closed"
+        t.closed_reason = "Queue Flushed"
+        t.closed_at = datetime.now()
+        count += 1
+
+    # 3. Commit changes
+    db.session.commit()
+
+    flash(f"Queue flushed. {count} tickets closed.", "info")
     return redirect(url_for("views.queue"))
 
 
@@ -299,9 +312,9 @@ def export_archive():
 
     # 6. Create the response object
     output = make_response(si.getvalue())
-    output.headers["Content-Disposition"] = (
-        f"attachment; filename=wormhole_archive_{start_str}_to_{end_str}.csv"
-    )
+    output.headers[
+        "Content-Disposition"
+    ] = f"attachment; filename=wormhole_archive_{start_str}_to_{end_str}.csv"
     output.headers["Content-type"] = "text/csv"
 
     return output
@@ -441,12 +454,32 @@ def currentticket(tktid):
     return render_template("currentticket.html", ticket=ticket_ns, form=form)
 
 
-@views_bp.route("/pastticket/<username>/<int:tktid>")
+@views_bp.route("/pastticket/<username>/<int:tktid>", methods=["GET", "POST"])
 @login_required
 def pastticket(username, tktid):
     t = Ticket.query.get(tktid)
     if not t:
         abort(404)
+
     form = ResolveTicketForm()
+
+    if form.validate_on_submit():
+        # 1. Update ticket attributes
+        t.status = "closed"
+        t.closed_reason = (
+            form.resolveReason.data
+        )  # Assuming field name is resolveReason
+        t.closed_at = datetime.now()
+
+        # 2. Save to DB
+        db.session.commit()
+
+        flash("Ticket resolved successfully.", "success")
+
+        # 3. Redirect (use the 'next' parameter if available, else default to queue)
+        next_page = request.args.get("next")
+        return redirect(next_page or url_for("views.queue"))
+    # ----------------------
+
     ticket_ns = _ticket_to_ns(t)
     return render_template("pastticket.html", ticket=ticket_ns, form=form)
