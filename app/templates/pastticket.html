@@ -1,70 +1,56 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="page">
-        <div class="section tick-info">
-            <h3 style="text-align:center">
-                Previous Help Request
-            </h3>
-            <table id="tickets"
-                   style="margin-left:30px;
-                          width: 75%;
-                          text-align: left;
-                          border-collapse:separate;
-                          border-spacing:10px">
-                <tr>
-                    <th>
-                        Name: <b>{{ ticket.name }}</b>
-                    </th>
-                </tr>
-                <tr>
-                    {% if ticket.table == 0 %}
-                        <th>
-                            Table: <b>Ecampus</b>
-                        </th>
-                    {% else %}
-                        <th>
-                            Table: <b>{{ ticket.table }}</b>
-                        </th>
-                    {% endif %}
-                </tr>
-                <tr>
-                    <th>
-                        Class: <b>{{ ticket.phClass }}</b>
-                    </th>
-                </tr>
-            </table>
-            <p style="text-align:center">
-                Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b>
+        <div class="section generic">
+            <h2>
+                Past Ticket Details
+            </h2>
+            <p>
+                <strong>Student Name:</strong> {{ ticket.name }}
             </p>
-        </div>
-        <div class="section tick-resol">
-            <h3 style="text-align:center">
-                Resolve As:
+            <p>
+                <strong>Class:</strong> {{ ticket.phClass }}
+            </p>
+            <p>
+                <strong>Location:</strong> {{ ticket.table }}
+            </p>
+            <p>
+                <strong>Created At:</strong> {{ ticket.time_create }}
+            </p>
+            <hr>
+            <h3>
+                Resolve Ticket
             </h3>
-            <form action="" method="post" nonvalidate>
+            <form method="post">
                 {{ form.hidden_tag() }}
-                {{ form.numStds.label }} {{ form.numStds(size=4) }}
-                <br>
-                {% for er in form.numStds.errors %}
-                    <span style="color:red;">[{{ er }}]</span>
-                {% endfor %}
-                <blockquote>
-                    Current number: <b>{{ ticket.num_students }}</b>
-                </blockquote>
-                <table id="tickets"
-                       style="margin-left:15px;
-                              width: 100%;
-                              text-align: left;
-                              border-collapse:separate;
-                              border-spacing:30px">
-                    <tr>
-                        <td>
-                            {{ form.hidden_tag() }}
-                            {{ form.submit() }}
-                        </td>
-                    </tr>
-                </table>
+                <div style="margin-bottom: 1rem;">
+                    {{ form.resolveReason.label() }}
+                    <br>
+                    {{ form.resolveReason(style="padding: 5px;") }}
+                    {% for error in form.resolveReason.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    {{ form.numStds.label() }}
+                    <br>
+                    {{ form.numStds(type="number", min="1", style="padding: 5px;") }}
+                    {% for error in form.numStds.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <button type="submit"
+                        style="padding: 5px 10px;
+                               background-color: #28a745;
+                               color: white;
+                               border: none;
+                               cursor: pointer">
+                    Resolve Ticket
+                </button>
             </form>
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('views.queue') }}">Back to Queue</a>
+            </div>
         </div>
     </div>
 {% endblock %}

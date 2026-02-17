@@ -250,7 +250,7 @@ def logout():
 
 
 # -------------------------------
-# POST /archive/export (Archive Export) - OPTIMIZED
+# POST /archive/export (Archive Export)
 # -------------------------------
 @views_bp.route("/archive/export", methods=["POST"])
 @admin_required
@@ -260,7 +260,7 @@ def export_archive():
         flash("Invalid date format or missing fields.", "error")
         return redirect(url_for("views.archive"))
 
-    # 3. Parse dates (combine with time.min/max for full day coverage)
+    # Parse dates (combine with time.min/max for full day coverage)
     # Ensure they are timezone aware (UTC) to match database storage
     start_date = datetime.combine(form.start_date.data, time.min).replace(
         tzinfo=timezone.utc
@@ -269,12 +269,12 @@ def export_archive():
         tzinfo=timezone.utc
     )
 
-    # 4. Logical Validation
+    # Logical Validation: Start cannot be after End
     if start_date > end_date:
         flash("Start date cannot be after end date.", "error")
         return redirect(url_for("views.archive"))
 
-    # 5. Query the database using closed_at
+    # Query the database using closed_at
     # Filter for all terminal statuses ("closed", "resolved")
     tickets_query = Ticket.query.filter(
         Ticket.status.in_(["closed", "resolved"]),
@@ -286,7 +286,7 @@ def export_archive():
         flash("No closed or resolved tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 
-    # 6. Streaming CSV Generation
+    # Streaming CSV Generation
     def generate():
         output = io.StringIO()
         writer = csv.writer(output)
@@ -299,31 +299,29 @@ def export_archive():
                     return f"'{value}"
             return value
 
-        # Write Header
         writer.writerow(
             [
-                "Ticket ID",
-                "Student Name",
+                "ID",
+                "Student",
                 "Course",
                 "Table",
-                "Created At",
-                "Closed At",
-                "Resolution",
-                "Assistant ID",
+                "Created",
+                "Closed",
+                "Reason",
+                "Assistant",
             ]
         )
         yield output.getvalue()
         output.truncate(0)
         output.seek(0)
 
-        # Write Rows in batches to avoid memory overload
         for t in tickets_query.yield_per(1000):
             writer.writerow(
                 [
                     t.id,
                     sanitize(t.student_name),
-                    t.physics_course,
-                    t.table,
+                    sanitize(t.physics_course),  # Added sanitization
+                    sanitize(t.table),  # Added sanitization
                     t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                     t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
                     sanitize(t.closed_reason) or "N/A",
@@ -334,7 +332,6 @@ def export_archive():
             output.truncate(0)
             output.seek(0)
 
-    # 7. Create the streaming response object
     filename = f"wormhole_archive_{start_date.date()}_to_{end_date.date()}.csv"
     return Response(
         stream_with_context(generate()),
