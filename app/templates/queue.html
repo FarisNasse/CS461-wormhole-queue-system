@@ -1,66 +1,64 @@
 {% extends "base.html" %}
-{% block scripts %}
-    <!-- Use Socket.IO client from CDN to avoid missing static copy -->
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/queue.js') }}"></script>
-{% endblock %}
 {% block content %}
     <div class="page">
-        <div class="container">
-            <div class="section open">
-                <h1>
-                    Open Queue
-                </h1>
-                <ul>
-                    {% for tk in ol %}
-                        <li>
-                            <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}">{{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <form action="{{ url_for('views.flush') }}"
-                      method="post"
-                      style="display:inline">
-                    {{ form.hidden_tag() }}
-                    <button type="submit"
-                            style="color: white;
-                                   background-color: #dc3545;
-                                   border: none;
-                                   padding: 5px 10px;
-                                   cursor: pointer"
-                            onclick="return confirm('Are you sure you want to close all active tickets?');">
-                        Flush Queue
-                    </button>
-                </form>
-            </div>
-            <div class="section current">
-                <h1>
-                    Current Queue
-                </h1>
-                <ul>
-                    {% for tk in cul %}
-                        <!--<li><a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue')) }}">{{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})</a></li>-->
-                        <li>
-                            <a>{{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        <div class="section closed">
-            <h1>
-                Closed Queue
-            </h1>
-            <p align="center">
-                <a href="{{ url_for('views.anonymize') }}">Click me to anonymize closed tickets</a>
-            </p>
+        <div class="section generic">
+            <h2>
+                Queue Dashboard
+            </h2>
+            <h3>
+                Open Tickets
+            </h3>
             <ul>
-                {% for tk in cll %}
+                {% for tk in ol %}
                     <li>
-                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}">{{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})</a>
+                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}">
+                            {{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
+            <h3>
+                Current Tickets (In Progress)
+            </h3>
+            <ul>
+                {% for tk in cul %}
+                    <li>
+                        <a href="{{ url_for('views.currentticket', tktid=tk.id) }}">
+                            {{ tk.name }} (Table {{ tk.table }})
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <h3>
+                Closed Tickets (History)
+            </h3>
+            <ul>
+                {% for tk in cll %}
+                    <li>
+                        {{ tk.name }} - {{ tk.time_create }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('views.hardware_list') }}">Back to Hardware List</a>
+                {% if user.is_admin %}
+                    <span style="margin: 0 10px;">|</span>
+                    <form action="{{ url_for('views.flush') }}"
+                          method="post"
+                          style="display:inline">
+                        {{ form.hidden_tag() }}
+                        <button type="submit"
+                                style="color: white;
+                                       background-color: #dc3545;
+                                       border: none;
+                                       padding: 5px 10px;
+                                       cursor: pointer"
+                                onclick="return confirm('Are you sure you want to close all active tickets?');">
+                            Flush Queue
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

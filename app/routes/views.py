@@ -90,15 +90,25 @@ def wiki():
 @views_bp.route("/queue")
 @login_required
 def queue():
+    # 1. Fetch the REAL user to ensure template links use the correct username
+    sid = session.get("user_id")
+    current_user_obj = db.session.get(User, sid) if sid else None
+
+    if not current_user_obj:
+        return redirect(url_for("views.assistant_login"))
+
     # Fetch current queue data
     open_tickets = (
         Ticket.query.filter_by(status="live", wa_id=None)
         .order_by(Ticket.created_at)
         .all()
     )
+
+    # Filter by 'in_progress' to match Ticket.assign_to() logic
     current_tickets = (
-        Ticket.query.filter_by(status="current").order_by(Ticket.created_at).all()
+        Ticket.query.filter_by(status="in_progress").order_by(Ticket.created_at).all()
     )
+
     # Include both "closed" and "resolved" in the historical list
     closed_tickets = (
         Ticket.query.filter(Ticket.status.in_(["closed", "resolved"]))
@@ -113,13 +123,9 @@ def queue():
     # Use the dedicated form for the flush action (CSRF only)
     form = FlushQueueForm()
 
+    # Pass the real user object so permissions and usernames are correct in the template
     return render_template(
-        "queue.html",
-        ol=ol,
-        cul=cul,
-        cll=cll,
-        user=SimpleNamespace(username="admin"),
-        form=form,
+        "queue.html", ol=ol, cul=cul, cll=cll, user=current_user_obj, form=form
     )
 
 
@@ -129,6 +135,12 @@ def queue():
 @views_bp.route("/flush", methods=["POST"])
 @admin_required
 def flush():
+    # Validate the form to enforce CSRF protection
+    form = FlushQueueForm()
+    if not form.validate_on_submit():
+        flash("Invalid request or session expired.", "error")
+        return redirect(url_for("views.queue"))
+
     # Use bulk UPDATE for performance
     now = datetime.now(timezone.utc)
 
@@ -260,7 +272,7 @@ def export_archive():
         flash("Invalid date format or missing fields.", "error")
         return redirect(url_for("views.archive"))
 
-    # Parse dates (combine with time.min/max for full day coverage)
+    # 3. Parse dates (combine with time.min/max for full day coverage)
     # Ensure they are timezone aware (UTC) to match database storage
     start_date = datetime.combine(form.start_date.data, time.min).replace(
         tzinfo=timezone.utc
@@ -269,12 +281,12 @@ def export_archive():
         tzinfo=timezone.utc
     )
 
-    # Logical Validation: Start cannot be after End
+    # 4. Logical Validation
     if start_date > end_date:
         flash("Start date cannot be after end date.", "error")
         return redirect(url_for("views.archive"))
 
-    # Query the database using closed_at
+    # 5. Query the database using closed_at
     # Filter for all terminal statuses ("closed", "resolved")
     tickets_query = Ticket.query.filter(
         Ticket.status.in_(["closed", "resolved"]),
@@ -286,7 +298,7 @@ def export_archive():
         flash("No closed or resolved tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 
-    # Streaming CSV Generation
+    # 6. Streaming CSV Generation
     def generate():
         output = io.StringIO()
         writer = csv.writer(output)
@@ -299,29 +311,31 @@ def export_archive():
                     return f"'{value}"
             return value
 
+        # Write Header
         writer.writerow(
             [
-                "ID",
-                "Student",
+                "Ticket ID",
+                "Student Name",
                 "Course",
                 "Table",
-                "Created",
-                "Closed",
-                "Reason",
-                "Assistant",
+                "Created At",
+                "Closed At",
+                "Resolution",
+                "Assistant ID",
             ]
         )
         yield output.getvalue()
         output.truncate(0)
         output.seek(0)
 
+        # Write Rows in batches to avoid memory overload
         for t in tickets_query.yield_per(1000):
             writer.writerow(
                 [
                     t.id,
                     sanitize(t.student_name),
-                    sanitize(t.physics_course),  # Added sanitization
-                    sanitize(t.table),  # Added sanitization
+                    sanitize(t.physics_course),
+                    sanitize(t.table),
                     t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                     t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
                     sanitize(t.closed_reason) or "N/A",
@@ -332,6 +346,7 @@ def export_archive():
             output.truncate(0)
             output.seek(0)
 
+    # 7. Create the streaming response object
     filename = f"wormhole_archive_{start_date.date()}_to_{end_date.date()}.csv"
     return Response(
         stream_with_context(generate()),
