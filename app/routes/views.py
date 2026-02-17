@@ -1,17 +1,20 @@
+# app/routes/views.py
 import csv
 import io
 from datetime import datetime, time, timezone
 from types import SimpleNamespace
+from urllib.parse import urljoin, urlparse
 
 from flask import (
     Blueprint,
+    Response,
     abort,
     flash,
-    make_response,
     redirect,
     render_template,
     request,
     session,
+    stream_with_context,
     url_for,
 )
 
@@ -32,6 +35,18 @@ from app.models import Ticket, User
 views_bp = Blueprint("views", __name__)
 
 
+# --- Helper Functions ---
+
+
+def is_safe_url(target):
+    """Ensures a URL is a safe local path to prevent open redirects."""
+    if not target:
+        return False
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ("http", "https") and ref_url.netloc == test_url.netloc
+
+
 def _ticket_to_ns(ticket: Ticket):
     if ticket is None:
         return None
@@ -43,6 +58,9 @@ def _ticket_to_ns(ticket: Ticket):
         time_create=ticket.created_at,
         num_students=ticket.number_of_students,
     )
+
+
+# --- Routes ---
 
 
 # -------------------------------
@@ -92,41 +110,52 @@ def queue():
     current_tickets = (
         Ticket.query.filter_by(status="current").order_by(Ticket.created_at).all()
     )
+    # Include both "closed" and "resolved" in the historical list
     closed_tickets = (
-        Ticket.query.filter_by(status="closed").order_by(Ticket.created_at.desc()).all()
+        Ticket.query.filter(Ticket.status.in_(["closed", "resolved"]))
+        .order_by(Ticket.created_at.desc())
+        .all()
     )
 
     ol = [_ticket_to_ns(t) for t in open_tickets]
     cul = [_ticket_to_ns(t) for t in current_tickets]
     cll = [_ticket_to_ns(t) for t in closed_tickets]
 
+    # Provide a form for CSRF protection on the flush action
+    form = ResolveTicketForm()
+
     return render_template(
-        "queue.html", ol=ol, cul=cul, cll=cll, user=SimpleNamespace(username="admin")
+        "queue.html",
+        ol=ol,
+        cul=cul,
+        cll=cll,
+        user=SimpleNamespace(username="admin"),
+        form=form,
     )
 
 
 # -------------------------------
-# GET /flush (Flush Queue)
+# POST /flush (Flush Queue)
 # -------------------------------
-@views_bp.route("/flush")
+@views_bp.route("/flush", methods=["POST"])
 @admin_required
 @login_required
 def flush():
-    # 1. Find all tickets that are currently live
-    live_tickets = Ticket.query.filter_by(status="live").all()
+    # Close all tickets that are not already in a terminal state (closed/resolved)
+    # This includes 'live', 'current', 'in_progress', etc.
+    active_tickets = Ticket.query.filter(
+        ~Ticket.status.in_(["closed", "resolved"])
+    ).all()
 
-    # 2. Close them
-    # Note: We manually update to allow for a single batched commit at the end,
-    # ensuring atomicity, rather than committing 1-by-1 in a loop.
     count = 0
     now = datetime.now(timezone.utc)
-    for t in live_tickets:
+    for t in active_tickets:
         t.status = "closed"
         t.closed_reason = "Queue Flushed"
         t.closed_at = now
         count += 1
 
-    # 3. Commit changes once
+    # Commit all changes in a single transaction
     db.session.commit()
 
     flash(f"Queue flushed. {count} tickets closed.", "info")
@@ -201,7 +230,7 @@ def debug_tickets():
 
 
 # -------------------------------
-# GET /assistant-login (Assistant Login Page)
+# GET/POST /assistant-login (Assistant Login Page)
 # -------------------------------
 @views_bp.route("/assistant-login", methods=["GET", "POST"])
 def assistant_login():
@@ -262,8 +291,13 @@ def export_archive():
         return redirect(url_for("views.archive"))
 
     # 3. Parse dates (combine with time.min/max for full day coverage)
-    start_date = datetime.combine(form.start_date.data, time.min)
-    end_date = datetime.combine(form.end_date.data, time.max)
+    # Ensure they are timezone aware (UTC) to match database storage
+    start_date = datetime.combine(form.start_date.data, time.min).replace(
+        tzinfo=timezone.utc
+    )
+    end_date = datetime.combine(form.end_date.data, time.max).replace(
+        tzinfo=timezone.utc
+    )
 
     # 4. Logical Validation
     if start_date > end_date:
@@ -271,65 +305,72 @@ def export_archive():
         return redirect(url_for("views.archive"))
 
     # 5. Query the database using closed_at
+    # Filter for all terminal statuses ("closed", "resolved")
     tickets_query = Ticket.query.filter(
-        Ticket.status == "closed",
+        Ticket.status.in_(["closed", "resolved"]),
         Ticket.closed_at.between(start_date, end_date),
     ).order_by(Ticket.closed_at.desc())
 
-    if tickets_query.count() == 0:
-        flash("No closed tickets found for this period.", "info")
+    # Check for empty results without loading objects
+    if tickets_query.first() is None:
+        flash("No closed or resolved tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 
-    # Stream tickets in batches to avoid memory overload
-    tickets = tickets_query.yield_per(1000)
+    # 6. Streaming CSV Generation
+    def generate():
+        output = io.StringIO()
+        writer = csv.writer(output)
 
-    # 6. Generate CSV in memory
-    si = io.StringIO()
-    cw = csv.writer(si)
+        # CSV Injection Sanitization Helper
+        def sanitize(value):
+            if value and isinstance(value, str):
+                normalized = value.lstrip()
+                if normalized.startswith(("=", "+", "-", "@")):
+                    return f"'{value}"
+            return value
 
-    # CSV Injection Sanitization Helper
-    def sanitize(value):
-        if value and isinstance(value, str) and value.startswith(("=", "+", "-", "@")):
-            return f"'{value}"
-        return value
-
-    # Write Header
-    cw.writerow(
-        [
-            "Ticket ID",
-            "Student Name",
-            "Course",
-            "Table",
-            "Created At",
-            "Closed At",
-            "Resolution",
-            "Assistant ID",
-        ]
-    )
-
-    # Write Rows
-    for t in tickets:
-        cw.writerow(
+        # Write Header
+        writer.writerow(
             [
-                t.id,
-                sanitize(t.student_name),
-                t.physics_course,
-                t.table,
-                t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
-                sanitize(t.closed_reason) or "N/A",
-                t.wa_id or "Unassigned",
+                "Ticket ID",
+                "Student Name",
+                "Course",
+                "Table",
+                "Created At",
+                "Closed At",
+                "Resolution",
+                "Assistant ID",
             ]
         )
+        yield output.getvalue()
+        output.truncate(0)
+        output.seek(0)
 
-    # 7. Create the response object
-    output = make_response(si.getvalue())
-    output.headers[
-        "Content-Disposition"
-    ] = f"attachment; filename=wormhole_archive_{start_date.date()}_to_{end_date.date()}.csv"
-    output.headers["Content-type"] = "text/csv"
+        # Write Rows in batches to avoid memory overload
+        for t in tickets_query.yield_per(1000):
+            writer.writerow(
+                [
+                    t.id,
+                    sanitize(t.student_name),
+                    t.physics_course,
+                    t.table,
+                    t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
+                    sanitize(t.closed_reason) or "N/A",
+                    t.wa_id or "Unassigned",
+                ]
+            )
+            yield output.getvalue()
+            output.truncate(0)
+            output.seek(0)
 
-    return output
+    # 7. Create the streaming response object
+    filename = f"wormhole_archive_{start_date.date()}_to_{end_date.date()}.csv"
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
 
 
 # -------------------------------
@@ -461,6 +502,7 @@ def changepass():
 @views_bp.route("/currentticket/<int:tktid>")
 @login_required
 def currentticket(tktid):
+    # Use session.get for SQLAlchemy 2.0 compliance
     t = db.session.get(Ticket, tktid)
     if not t:
         abort(404)
@@ -475,6 +517,7 @@ def currentticket(tktid):
 @views_bp.route("/pastticket/<username>/<int:tktid>", methods=["GET", "POST"])
 @login_required
 def pastticket(username, tktid):
+    # Use session.get for SQLAlchemy 2.0 compliance
     t = db.session.get(Ticket, tktid)
     if not t:
         abort(404)
@@ -489,9 +532,12 @@ def pastticket(username, tktid):
 
         flash("Ticket resolved successfully.", "success")
 
-        # Redirect (use the 'next' parameter if available, else default to queue)
+        # Open Redirect Protection
         next_page = request.args.get("next")
-        return redirect(next_page or url_for("views.queue"))
+        if is_safe_url(next_page):
+            return redirect(next_page)
+
+        return redirect(url_for("views.queue"))
 
     ticket_ns = _ticket_to_ns(t)
     return render_template("pastticket.html", ticket=ticket_ns, form=form)

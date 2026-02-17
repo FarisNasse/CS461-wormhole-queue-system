@@ -59,7 +59,9 @@ def test_flush_route(test_client):
         sess["user_id"] = admin.id
         sess["is_admin"] = True
 
-    response = test_client.get("/flush", follow_redirects=True)
+    # Use POST because the route was updated to POST for security
+    response = test_client.post("/flush", follow_redirects=True)
+
     assert response.status_code == 200
     assert b"Queue flushed" in response.data
 
@@ -75,13 +77,12 @@ def test_export_archive(test_client):
     admin.set_password("pass")
     db.session.add(admin)
 
-    # Use a fixed date to avoid timezone shifts during the test
+    # Create a closed ticket with fixed UTC time
     test_date = datetime(2026, 2, 16, 12, 0, 0, tzinfo=timezone.utc)
-
     t = Ticket(
         student_name="ExportMe", table="T1", physics_course="Ph 211", status="closed"
     )
-    t.closed_at = test_date  # Fixed UTC time
+    t.closed_at = test_date
     db.session.add(t)
     db.session.commit()
 
@@ -89,17 +90,74 @@ def test_export_archive(test_client):
         sess["user_id"] = admin.id
         sess["is_admin"] = True
 
-    # Send the date string that matches the fixed test_date
     data = {
         "start_date": "2026-02-16",
         "end_date": "2026-02-16",
-        "csrf_token": "",  # Ensure CSRF is handled if enabled
+        "csrf_token": "",  # Placeholder if CSRF disabled in test config, else needed
     }
 
     response = test_client.post("/archive/export", data=data)
     assert response.status_code == 200
-    assert response.headers["Content-Type"] == "text/csv"
+
+    # Use 'in' to handle optional charset (e.g. 'text/csv; charset=utf-8')
+    assert "text/csv" in response.headers["Content-Type"]
     assert b"ExportMe" in response.data
+
+
+def test_export_archive_invalid_date_input(test_client):
+    """Archive export should redirect on invalid date strings."""
+    # Setup Admin
+    admin = User(username="admin_bad_date", email="bad_date@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    data = {"start_date": "invalid-date", "end_date": "2026-02-16"}
+    response = test_client.post("/archive/export", data=data)
+
+    # Expect 302 Redirect (because views.py flashes error and redirects to archive)
+    assert response.status_code == 302
+
+
+def test_export_archive_forbidden_for_non_admin(test_client):
+    """Regular assistants should not be allowed to export the archive."""
+    # Setup Regular User
+    user = User(username="regular_export", email="reg_export@test.com", is_admin=False)
+    user.set_password("pass")
+    db.session.add(user)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    data = {"start_date": "2026-02-16", "end_date": "2026-02-16"}
+    response = test_client.post("/archive/export", data=data)
+
+    # Expect 403 Forbidden
+    assert response.status_code == 403
+
+
+def test_flush_forbidden_for_non_admin(test_client):
+    """Ensure non-admin users cannot trigger the flush POST route."""
+    # Setup Regular User
+    user = User(username="regular_flush", email="reg_flush@test.com", is_admin=False)
+    user.set_password("pass")
+    db.session.add(user)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    response = test_client.post("/flush")
+
+    # Expect 403 Forbidden
+    assert response.status_code == 403
 
 
 def test_pastticket_resolution(test_client):
