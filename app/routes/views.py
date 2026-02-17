@@ -24,6 +24,7 @@ from app.forms import (
     ChangePassForm,
     DeleteUserForm,
     ExportArchiveForm,
+    FlushQueueForm,
     LoginForm,
     RegisterBatchForm,
     RegisterForm,
@@ -122,7 +123,7 @@ def queue():
     cll = [_ticket_to_ns(t) for t in closed_tickets]
 
     # Provide a form for CSRF protection on the flush action
-    form = ResolveTicketForm()
+    form = FlushQueueForm()
 
     return render_template(
         "queue.html",
@@ -139,7 +140,6 @@ def queue():
 # -------------------------------
 @views_bp.route("/flush", methods=["POST"])
 @admin_required
-@login_required
 def flush():
     # Close all tickets that are not already in a terminal state (closed/resolved)
     # This includes 'live', 'current', 'in_progress', etc.
@@ -312,7 +312,7 @@ def export_archive():
     ).order_by(Ticket.closed_at.desc())
 
     # Check for empty results without loading objects
-    if tickets_query.first() is None:
+    if tickets_query.count() == 0:
         flash("No closed or resolved tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 

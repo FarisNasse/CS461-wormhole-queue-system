@@ -106,3 +106,9 @@ class ExportArchiveForm(FlaskForm):
     start_date = DateField("Start Date", validators=[DataRequired()])
     end_date = DateField("End Date", validators=[DataRequired()])
     submit = SubmitField("Download CSV")
+
+
+class FlushQueueForm(FlaskForm):
+    """Simple form to handle CSRF protection for the Flush Queue action."""
+
+    submit = SubmitField("Flush Queue")
