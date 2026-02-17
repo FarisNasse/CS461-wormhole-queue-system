@@ -1,41 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="page">
-        <div class="section generic">
-            <br />
-            <h2>
-                Ticket Archive
-            </h2>
-            <p>
-                <table style="display:inline-block;">
-                    <tr>
-                        <th>
-                            Ticket Data
-                        </th>
-                    </tr>
-                    {% for tn in tkt_list %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('protected', filename= 'tickets/'+tn) }}">{{ tn }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-                <table style="display:inline-block;">
-                    <tr>
-                        <th>
-                            Association Data
-                        </th>
-                    </tr>
-                    {% for an in assoc_list %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('protected', filename= 'associations/'+an) }}">{{ an }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </p>
+    <div class="container mt-5">
+        <h2>
+            Data Archive Export
+        </h2>
+        <p class="lead">
+            Select a time period to export closed ticket data.
+        </p>
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Export Configuration
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('views.export_archive') }}" method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">
+                                Start Date
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   id="start_date"
+                                   name="start_date"
+                                   required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label">
+                                End Date
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   id="end_date"
+                                   name="end_date"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> Download CSV
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -1,12 +1,17 @@
 # app/routes/views.py
+import csv
+import io
+from datetime import datetime, time
 from types import SimpleNamespace
 
 from flask import (
     Blueprint,
     abort,
     flash,
+    make_response,
     redirect,
     render_template,
+    request,
     session,
     url_for,
 )
@@ -226,6 +231,80 @@ def hardware_list():
 def logout():
     session.clear()
     return redirect(url_for("views.index"))
+
+
+@views_bp.route("/archive/export", methods=["POST"])
+@admin_required
+def export_archive():
+    # 1. Get dates from the form
+    start_str = request.form.get("start_date")
+    end_str = request.form.get("end_date")
+
+    # 2. Validate input
+    if not start_str or not end_str:
+        flash("Please select both a start and end date.", "error")
+        return redirect(url_for("views.archive"))
+
+    # 3. Convert strings to datetime objects (handling full day ranges)
+    # We set start time to 00:00:00 and end time to 23:59:59
+    start_date = datetime.strptime(start_str, "%Y-%m-%d")
+    end_date = datetime.combine(datetime.strptime(end_str, "%Y-%m-%d"), time.max)
+
+    # 4. Query the database
+    # We filter for tickets that are 'closed' AND created within the range
+    tickets = (
+        Ticket.query.filter(
+            Ticket.status == "closed", Ticket.created_at.between(start_date, end_date)
+        )
+        .order_by(Ticket.created_at.desc())
+        .all()
+    )
+
+    if not tickets:
+        flash("No closed tickets found for this period.", "info")
+        return redirect(url_for("views.archive"))
+
+    # 5. Generate CSV in memory
+    si = io.StringIO()
+    cw = csv.writer(si)
+
+    # Write Header
+    cw.writerow(
+        [
+            "Ticket ID",
+            "Student Name",
+            "Course",
+            "Table",
+            "Created At",
+            "Closed At",
+            "Resolution",
+            "Assistant ID",
+        ]
+    )
+
+    # Write Rows
+    for t in tickets:
+        cw.writerow(
+            [
+                t.id,
+                t.student_name,
+                t.physics_course,
+                t.table,
+                t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
+                t.closed_reason or "N/A",
+                t.wa_id or "Unassigned",
+            ]
+        )
+
+    # 6. Create the response object
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = (
+        f"attachment; filename=wormhole_archive_{start_str}_to_{end_str}.csv"
+    )
+    output.headers["Content-type"] = "text/csv"
+
+    return output
 
 
 # -------------------------------
