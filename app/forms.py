@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
+    DateField,
     IntegerField,
     PasswordField,
     SelectField,
@@ -99,3 +100,9 @@ class ResolveTicketForm(FlaskForm):
         validators=[DataRequired(message="Please select a reason.")],
     )
     submit = SubmitField("Submit")
+
+
+class ExportArchiveForm(FlaskForm):
+    start_date = DateField("Start Date", validators=[DataRequired()])
+    end_date = DateField("End Date", validators=[DataRequired()])
+    submit = SubmitField("Download CSV")

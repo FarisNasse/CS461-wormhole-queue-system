@@ -86,7 +86,7 @@ def create_app(testing=False):
             if "user_id" in session:
                 from app.models import User
 
-                u = User.query.get(session["user_id"])
+                u = db.session.get(User, session["user_id"])
                 if u:
                     return {
                         "current_user": SimpleNamespace(

@@ -13,26 +13,21 @@
             </div>
             <div class="card-body">
                 <form action="{{ url_for('views.export_archive') }}" method="post">
+                    {{ form.hidden_tag() }}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="start_date" class="form-label">
-                                Start Date
-                            </label>
-                            <input type="date"
-                                   class="form-control"
-                                   id="start_date"
-                                   name="start_date"
-                                   required>
+                            {{ form.start_date.label(class="form-label") }}
+                            {{ form.start_date(class="form-control", type="date") }}
+                            {% for error in form.start_date.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="end_date" class="form-label">
-                                End Date
-                            </label>
-                            <input type="date"
-                                   class="form-control"
-                                   id="end_date"
-                                   name="end_date"
-                                   required>
+                            {{ form.end_date.label(class="form-label") }}
+                            {{ form.end_date(class="form-control", type="date") }}
+                            {% for error in form.end_date.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
                         </div>
                     </div>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">

@@ -1,7 +1,6 @@
-# app/routes/views.py
 import csv
 import io
-from datetime import datetime, time
+from datetime import datetime, time, timezone
 from types import SimpleNamespace
 
 from flask import (
@@ -21,6 +20,7 @@ from app.auth_utils import admin_required, login_required
 from app.forms import (
     ChangePassForm,
     DeleteUserForm,
+    ExportArchiveForm,
     LoginForm,
     RegisterBatchForm,
     RegisterForm,
@@ -109,17 +109,25 @@ def queue():
 # GET /flush (Flush Queue)
 # -------------------------------
 @views_bp.route("/flush")
+@admin_required
 @login_required
 def flush():
     # 1. Find all tickets that are currently live
     live_tickets = Ticket.query.filter_by(status="live").all()
 
-    # 2. Close them using the Ticket.close_ticket() helper
+    # 2. Close them
+    # Note: We manually update to allow for a single batched commit at the end,
+    # ensuring atomicity, rather than committing 1-by-1 in a loop.
     count = 0
+    now = datetime.now(timezone.utc)
     for t in live_tickets:
-        # This method handles the DB commit and sets the timezone-aware timestamp
-        t.close_ticket(closed_reason="Queue Flushed")
+        t.status = "closed"
+        t.closed_reason = "Queue Flushed"
+        t.closed_at = now
         count += 1
+
+    # 3. Commit changes once
+    db.session.commit()
 
     flash(f"Queue flushed. {count} tickets closed.", "info")
     return redirect(url_for("views.queue"))
@@ -248,50 +256,42 @@ def logout():
 @views_bp.route("/archive/export", methods=["POST"])
 @admin_required
 def export_archive():
-    # 1. Get dates from the form
-    start_str = request.form.get("start_date")
-    end_str = request.form.get("end_date")
-
-    # 2. Validate input existence
-    if not start_str or not end_str:
-        flash("Please select both a start and end date.", "error")
+    form = ExportArchiveForm()
+    if not form.validate_on_submit():
+        flash("Invalid date format or missing fields.", "error")
         return redirect(url_for("views.archive"))
 
-    # 3. Parse dates with error handling
-    try:
-        start_date = datetime.strptime(start_str, "%Y-%m-%d")
-        end_date = datetime.combine(datetime.strptime(end_str, "%Y-%m-%d"), time.max)
-    except ValueError:
-        flash(
-            "Invalid date format. Please select dates using the date picker.", "error"
-        )
-        return redirect(url_for("views.archive"))
+    # 3. Parse dates (combine with time.min/max for full day coverage)
+    start_date = datetime.combine(form.start_date.data, time.min)
+    end_date = datetime.combine(form.end_date.data, time.max)
 
     # 4. Logical Validation
     if start_date > end_date:
-        flash(
-            "Start date cannot be after end date. Please adjust your selection.",
-            "error",
-        )
+        flash("Start date cannot be after end date.", "error")
         return redirect(url_for("views.archive"))
 
     # 5. Query the database using closed_at
-    # We filter for tickets that are 'closed' AND closed within the range
-    tickets = (
-        Ticket.query.filter(
-            Ticket.status == "closed", Ticket.closed_at.between(start_date, end_date)
-        )
-        .order_by(Ticket.closed_at.desc())
-        .all()
-    )
+    tickets_query = Ticket.query.filter(
+        Ticket.status == "closed",
+        Ticket.closed_at.between(start_date, end_date),
+    ).order_by(Ticket.closed_at.desc())
 
-    if not tickets:
+    if tickets_query.count() == 0:
         flash("No closed tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
+
+    # Stream tickets in batches to avoid memory overload
+    tickets = tickets_query.yield_per(1000)
 
     # 6. Generate CSV in memory
     si = io.StringIO()
     cw = csv.writer(si)
+
+    # CSV Injection Sanitization Helper
+    def sanitize(value):
+        if value and isinstance(value, str) and value.startswith(("=", "+", "-", "@")):
+            return f"'{value}"
+        return value
 
     # Write Header
     cw.writerow(
@@ -312,12 +312,12 @@ def export_archive():
         cw.writerow(
             [
                 t.id,
-                t.student_name,
+                sanitize(t.student_name),
                 t.physics_course,
                 t.table,
                 t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                 t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
-                t.closed_reason or "N/A",
+                sanitize(t.closed_reason) or "N/A",
                 t.wa_id or "Unassigned",
             ]
         )
@@ -326,7 +326,7 @@ def export_archive():
     output = make_response(si.getvalue())
     output.headers[
         "Content-Disposition"
-    ] = f"attachment; filename=wormhole_archive_{start_str}_to_{end_str}.csv"
+    ] = f"attachment; filename=wormhole_archive_{start_date.date()}_to_{end_date.date()}.csv"
     output.headers["Content-type"] = "text/csv"
 
     return output
@@ -338,10 +338,13 @@ def export_archive():
 @views_bp.route("/archive")
 @admin_required
 def archive():
-    # keep lists empty to avoid url_for('protected') being invoked
+    # Instantiate form for the template to render CSRF token and fields
+    form = ExportArchiveForm()
     tkt_list = []
     assoc_list = []
-    return render_template("archive.html", tkt_list=tkt_list, assoc_list=assoc_list)
+    return render_template(
+        "archive.html", tkt_list=tkt_list, assoc_list=assoc_list, form=form
+    )
 
 
 @views_bp.route("/user/<username>")
@@ -458,7 +461,7 @@ def changepass():
 @views_bp.route("/currentticket/<int:tktid>")
 @login_required
 def currentticket(tktid):
-    t = Ticket.query.get(tktid)
+    t = db.session.get(Ticket, tktid)
     if not t:
         abort(404)
     form = ResolveTicketForm()
@@ -472,16 +475,15 @@ def currentticket(tktid):
 @views_bp.route("/pastticket/<username>/<int:tktid>", methods=["GET", "POST"])
 @login_required
 def pastticket(username, tktid):
-    t = Ticket.query.get(tktid)
+    t = db.session.get(Ticket, tktid)
     if not t:
         abort(404)
     form = ResolveTicketForm()
 
     if form.validate_on_submit():
-        # Delegate closing logic to the model method, which handles timestamp and commits
-        num_stds = 1
-        if hasattr(form, "numStds"):
-            num_stds = form.numStds.data
+        # Delegate closing logic to the model method
+        # Standardize num_stds retrieval logic
+        num_stds = form.numStds.data if form.numStds.data else 1
 
         t.close_ticket(closed_reason=form.resolveReason.data, num_students=num_stds)
 
