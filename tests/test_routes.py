@@ -93,7 +93,11 @@ def test_flush_route(test_client):
         assert ticket.closed_at is not None
         assert isinstance(ticket.closed_at, datetime)
         # Ensure ticket.closed_at is timezone-aware before comparison
-        closed_at_aware = ticket.closed_at.replace(tzinfo=timezone.utc) if ticket.closed_at.tzinfo is None else ticket.closed_at
+        closed_at_aware = (
+            ticket.closed_at.replace(tzinfo=timezone.utc)
+            if ticket.closed_at.tzinfo is None
+            else ticket.closed_at
+        )
         assert now - closed_at_aware < timedelta(minutes=1)
 
 
