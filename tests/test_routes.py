@@ -12,11 +12,24 @@ def test_health_check_route(test_client):
     assert response.get_json() == {"message": "Wormhole Queue System API is running"}
 
 
+def test_404_for_unknown_route(test_client):
+    """Test that a non-existent route returns a 404 error."""
+    response = test_client.get("/non_existent_route")
+    assert response.status_code == 404
+
+
 def test_home_page_loads(test_client):
     """Verify the root route '/' loads the Student Home Page (index.html)."""
     response = test_client.get("/")
     assert response.status_code == 200
     assert b"Physics Collaboration and Help Center" in response.data
+
+
+def test_login_route_exists(test_client):
+    """Verify the login route is accessible."""
+    response = test_client.get("/assistant-login")
+    assert response.status_code == 200
+    assert b"Sign In" in response.data
 
 
 def test_assistant_login_page_loads(test_client):

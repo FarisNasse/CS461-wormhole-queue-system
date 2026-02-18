@@ -275,7 +275,7 @@ def export_archive():
         flash("Invalid date format or missing fields.", "error")
         return redirect(url_for("views.archive"))
 
-    # 3. Parse dates (combine with time.min/max for full day coverage)
+    # Parse dates (combine with time.min/max for full day coverage)
     # Ensure they are timezone aware (UTC) to match database storage
     start_date = datetime.combine(form.start_date.data, time.min).replace(
         tzinfo=timezone.utc
@@ -532,7 +532,7 @@ def pastticket(username, tktid):
     if form.validate_on_submit():
         # Delegate closing logic to the model method
         # Standardize num_stds retrieval logic
-        num_stds = form.numStds.data if form.numStds.data else 1
+        num_stds = form.numStds.data if form.numStds.data is not None else 1
 
         t.close_ticket(closed_reason=form.resolveReason.data, num_students=num_stds)
 
