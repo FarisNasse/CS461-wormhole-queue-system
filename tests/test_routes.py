@@ -144,9 +144,8 @@ def test_pastticket_forbidden_for_other_user(test_client):
         sess["user_id"] = owner.id
         sess["is_admin"] = False
 
-    # Owner tries to access "other's" pastticket URL
     response = test_client.post(
-        f"/pastticket/other/{t.id}", data={"resolveReason": "test"}
+        f"/pastticket/other/{t.id}", data={"resolveReason": "helped"}
     )
     assert response.status_code == 403
 
@@ -165,7 +164,7 @@ def test_pastticket_admin_can_access_any_user(test_client):
         sess["user_id"] = admin.id
         sess["is_admin"] = True
 
-    # FIX: Use a valid choice defined in ResolveTicketForm (e.g., "helped")
+    # Use a valid choice defined in ResolveTicketForm
     data = {"resolveReason": "helped", "numStds": 1}
 
     response = test_client.post(
@@ -176,5 +175,4 @@ def test_pastticket_admin_can_access_any_user(test_client):
 
     db.session.refresh(t)
     assert t.status == "closed"
-    # Verify the reason matches the valid choice you sent
     assert t.closed_reason == "helped"

@@ -18,6 +18,9 @@ from flask import (
     url_for,
 )
 
+# Explicit imports for SQLAlchemy operators to ensure compatibility
+from sqlalchemy import and_, func, or_
+
 from app import db
 from app.auth_utils import admin_required, login_required
 from app.forms import (
@@ -130,7 +133,7 @@ def queue():
 
 
 # -------------------------------
-# POST /flush (Flush Queue) - OPTIMIZED
+# POST /flush (Flush Queue)
 # -------------------------------
 @views_bp.route("/flush", methods=["POST"])
 @admin_required
@@ -287,21 +290,20 @@ def export_archive():
         return redirect(url_for("views.archive"))
 
     # 5. Query the database using closed_at OR fallback to created_at for resolved tickets
-    # - Tickets with non-null closed_at are filtered by closed_at
-    # - "resolved" tickets with null closed_at fall back to created_at
+    # Using explicit or_ / and_ for compatibility
     tickets_query = Ticket.query.filter(
-        db.or_(
-            db.and_(
+        or_(
+            and_(
                 Ticket.status.in_(["closed", "resolved"]),
                 Ticket.closed_at.between(start_date, end_date),
             ),
-            db.and_(
+            and_(
                 Ticket.status == "resolved",
                 Ticket.closed_at.is_(None),
                 Ticket.created_at.between(start_date, end_date),
             ),
         )
-    ).order_by(db.func.coalesce(Ticket.closed_at, Ticket.created_at).desc())
+    ).order_by(func.coalesce(Ticket.closed_at, Ticket.created_at).desc())
 
     # Optimization: Use limit(1) instead of count() to check for existence
     if tickets_query.limit(1).first() is None:
@@ -318,7 +320,8 @@ def export_archive():
             if value and isinstance(value, str):
                 normalized = value.lstrip()
                 if normalized.startswith(("=", "+", "-", "@")):
-                    return f"'{value}"
+                    # Prepend quote to the NORMALIZED string to prevent evasion
+                    return f"'{normalized}"
             return value
 
         # Write Header
@@ -511,9 +514,11 @@ def currentticket(tktid):
 def pastticket(username, tktid):
     # Validate authorization first: Ensure path username matches logged-in user or admin
     sid = session.get("user_id")
-    cur = db.session.get(User, sid) if sid else None
+    current_user_obj = db.session.get(User, sid) if sid else None
 
-    if not cur or (cur.username != username and not cur.is_admin):
+    if not current_user_obj or (
+        current_user_obj.username != username and not current_user_obj.is_admin
+    ):
         abort(403)
 
     # Use session.get for SQLAlchemy 2.0 compliance

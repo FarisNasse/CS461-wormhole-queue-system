@@ -268,6 +268,50 @@
     gap: 10px;
 }
 
+/* Button Styles */
+.btn-delete {
+    color: white;
+    background-color: #dc3545; /* Red */
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+.btn-success {
+    padding: 5px 10px;
+    background-color: #28a745; /* Green */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.error-msg {
+    color: red;
+    font-size: 0.9em;
+}
 
 /* Mobile Styles */
 @media only screen and (width <= 400px) {

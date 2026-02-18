@@ -23,28 +23,23 @@
             </h3>
             <form method="post">
                 {{ form.hidden_tag() }}
-                <div style="margin-bottom: 1rem;">
+                <div class="form-group">
                     {{ form.resolveReason.label() }}
                     <br>
-                    {{ form.resolveReason(style="padding: 5px;") }}
+                    {{ form.resolveReason(class="form-control") }}
                     {% for error in form.resolveReason.errors %}
-                        <span style="color: red;">{{ error }}</span>
+                        <span class="error-msg">{{ error }}</span>
                     {% endfor %}
                 </div>
-                <div style="margin-bottom: 1rem;">
+                <div class="form-group">
                     {{ form.numStds.label() }}
                     <br>
-                    {{ form.numStds(type="number", min="1", style="padding: 5px;") }}
+                    {{ form.numStds(type="number", min="1", class="form-control") }}
                     {% for error in form.numStds.errors %}
-                        <span style="color: red;">{{ error }}</span>
+                        <span class="error-msg">{{ error }}</span>
                     {% endfor %}
                 </div>
-                <button type="submit"
-                        style="padding: 5px 10px;
-                               background-color: #28a745;
-                               color: white;
-                               border: none;
-                               cursor: pointer">
+                <button type="submit" class="btn-success">
                     Resolve Ticket
                 </button>
             </form>
