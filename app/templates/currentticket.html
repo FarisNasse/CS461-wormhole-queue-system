@@ -78,4 +78,43 @@
             </form>
         </div>
     </div>
+
+    <div class="section tick_resol">
+        <h3 style="text-align:center">Resolve Ticket:</h3>
+	    <form id="resolve-form" action="/api/resolveticket/{{ ticket.id }}" method="post" novalidate>
+	        {{ form.hidden_tag() }}
+        <table id="tickets" style="margin-left:15px; width: 100%; text-align: left; border-collapse:separate; border-spacing:30px;">
+            <tr>
+                <td>
+                    {{ form.numStds.label }}  {{ form.numStds(size=4) }}<br>
+		            {% for er in form.numStds.errors %}
+			        <span style="color:red;">[{{ er }}]</span>
+		            {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ form.resolveReason.label }} {{ form.resolveReason() }}<br>
+                    {% for er in form.resolveReason.errors %}
+                        <span style="color:red;">[{{ er }}]</span>
+                    {% endfor %}
+                
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ form.submit() }}
+                </td>
+        </table>
+        </form>
+        <form id="return-form" action="/api/returntoqueue/{{ ticket.id }}" method="post">
+            {{ qform.hidden_tag() }}
+            <table style="margin-left:15px; width: 100%; text-align: left; border-collapse:separate; border-spacing:30px;">
+                <tr>
+                    <td>{{ qform.submit() }}</td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
 {% endblock %}

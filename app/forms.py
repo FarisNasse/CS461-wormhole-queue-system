@@ -98,4 +98,8 @@ class ResolveTicketForm(FlaskForm):
         ],
         validators=[DataRequired(message="Please select a reason.")],
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField('Resolve')
+
+class ReturnToQueueForm(FlaskForm):
+    submit = SubmitField('Return to Queue')
+ 
