@@ -49,7 +49,10 @@ def test_flush_route(test_client):
 
     t1 = Ticket(student_name="S1", table="T1", physics_course="Ph 211", status="live")
     t2 = Ticket(student_name="S2", table="T2", physics_course="Ph 212", status="live")
-    db.session.add_all([t1, t2])
+    t3 = Ticket(
+        student_name="S3", table="T3", physics_course="Ph 213", status="in_progress"
+    )
+    db.session.add_all([t1, t2, t3])
     db.session.commit()
 
     with test_client.session_transaction() as sess:
@@ -63,10 +66,13 @@ def test_flush_route(test_client):
     # Refresh objects from DB to see the update from the separate request context
     db.session.refresh(t1)
     db.session.refresh(t2)
-
+    db.session.refresh(t3)
     assert t1.status == "closed"
     assert t1.closed_reason == "Queue Flushed"
     assert t2.status == "closed"
+    assert t2.closed_reason == "Queue Flushed"
+    assert t3.status == "closed"
+    assert t3.closed_reason == "Queue Flushed"
 
 
 def test_export_archive(test_client):
@@ -91,7 +97,6 @@ def test_export_archive(test_client):
     data = {
         "start_date": yesterday.strftime("%Y-%m-%d"),
         "end_date": yesterday.strftime("%Y-%m-%d"),
-        "csrf_token": "",
     }
 
     response = test_client.post("/archive/export", data=data)
@@ -132,6 +137,8 @@ def test_pastticket_forbidden_for_other_user(test_client):
     """Regular users should not resolve past tickets under another user's URL."""
     owner = User(username="owner", email="owner@test.com", is_admin=False)
     other = User(username="other", email="other@test.com", is_admin=False)
+    owner.set_password("pass")
+    other.set_password("pass")
     db.session.add_all([owner, other])
 
     t = Ticket(
@@ -154,6 +161,8 @@ def test_pastticket_admin_can_access_any_user(test_client):
     """Admins should be able to resolve past tickets for any user's URL."""
     admin = User(username="admin_past", email="admin@test.com", is_admin=True)
     other = User(username="other_u", email="other@test.com", is_admin=False)
+    admin.set_password("pass")
+    other.set_password("pass")
     db.session.add_all([admin, other])
 
     t = Ticket(student_name="Old", table="T3", physics_course="Ph 213", status="live")

@@ -320,8 +320,8 @@ def export_archive():
             if value and isinstance(value, str):
                 normalized = value.lstrip()
                 if normalized.startswith(("=", "+", "-", "@")):
-                    # Prepend quote to the NORMALIZED string to prevent evasion
-                    return f"'{normalized}"
+                    # Prepend quote to the ORIGINAL value so leading whitespace is preserved
+                    return f"'{value}"
             return value
 
         # Write Header
