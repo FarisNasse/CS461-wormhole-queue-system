@@ -360,11 +360,13 @@ def export_archive():
             output.seek(0)
 
     # 7. Create the streaming response object
-    filename = f"wormhole_archive_{start_date.date()}_to_{end_date.date()}.csv"
+    safe_start = start_date.date().isoformat()
+    safe_end = end_date.date().isoformat()
+    filename = f"wormhole_archive_{safe_start}_to_{safe_end}.csv"
     return Response(
         stream_with_context(generate()),
         mimetype="text/csv",
-        headers={"Content-Disposition": f"attachment; filename={filename}"},
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 
 
