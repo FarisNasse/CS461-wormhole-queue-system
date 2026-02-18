@@ -87,6 +87,15 @@ def test_flush_route(test_client):
     assert t3.status == "closed"
     assert t3.closed_reason == "Queue Flushed"
 
+    # Verify that closed_at has been set recently for all flushed tickets
+    now = datetime.now(timezone.utc)
+    for ticket in (t1, t2, t3):
+        assert ticket.closed_at is not None
+        assert isinstance(ticket.closed_at, datetime)
+        # Ensure ticket.closed_at is timezone-aware before comparison
+        closed_at_aware = ticket.closed_at.replace(tzinfo=timezone.utc) if ticket.closed_at.tzinfo is None else ticket.closed_at
+        assert now - closed_at_aware < timedelta(minutes=1)
+
 
 def test_export_archive(test_client):
     """Test archive export generates CSV with correct content."""

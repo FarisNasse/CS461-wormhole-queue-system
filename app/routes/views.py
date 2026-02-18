@@ -284,12 +284,18 @@ def export_archive():
         tzinfo=timezone.utc
     )
 
-    # 4. Logical Validation
+    # Logical Validation
     if start_date > end_date:
         flash("Start date cannot be after end date.", "error")
         return redirect(url_for("views.archive"))
 
-    # 5. Query the database using closed_at OR fallback to created_at for resolved tickets
+    # Prevent exporting archives for future dates
+    now_utc = datetime.now(timezone.utc)
+    if start_date > now_utc or end_date > now_utc:
+        flash("Dates cannot be in the future.", "error")
+        return redirect(url_for("views.archive"))
+
+    # Query the database using closed_at OR fallback to created_at for resolved tickets
     # Using explicit or_ / and_ for compatibility
     tickets_query = Ticket.query.filter(
         or_(
@@ -310,7 +316,7 @@ def export_archive():
         flash("No closed or resolved tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 
-    # 6. Streaming CSV Generation
+    # Streaming CSV Generation
     def generate():
         output = io.StringIO()
         writer = csv.writer(output)
@@ -359,7 +365,7 @@ def export_archive():
             output.truncate(0)
             output.seek(0)
 
-    # 7. Create the streaming response object
+    # Create the streaming response object
     safe_start = start_date.date().isoformat()
     safe_end = end_date.date().isoformat()
     filename = f"wormhole_archive_{safe_start}_to_{safe_end}.csv"
