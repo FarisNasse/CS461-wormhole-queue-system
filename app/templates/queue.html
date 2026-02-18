@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{% block scripts %}
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/queue.js') }}"></script>
+{% endblock %}
 {% block content %}
     <div class="page">
         <div class="section generic">

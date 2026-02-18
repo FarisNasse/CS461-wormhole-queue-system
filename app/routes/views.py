@@ -286,12 +286,22 @@ def export_archive():
         flash("Start date cannot be after end date.", "error")
         return redirect(url_for("views.archive"))
 
-    # 5. Query the database using closed_at
-    # Filter for all terminal statuses ("closed", "resolved")
+    # 5. Query the database using closed_at OR fallback to created_at for resolved tickets
+    # - Tickets with non-null closed_at are filtered by closed_at
+    # - "resolved" tickets with null closed_at fall back to created_at
     tickets_query = Ticket.query.filter(
-        Ticket.status.in_(["closed", "resolved"]),
-        Ticket.closed_at.between(start_date, end_date),
-    ).order_by(Ticket.closed_at.desc())
+        db.or_(
+            db.and_(
+                Ticket.status.in_(["closed", "resolved"]),
+                Ticket.closed_at.between(start_date, end_date),
+            ),
+            db.and_(
+                Ticket.status == "resolved",
+                Ticket.closed_at.is_(None),
+                Ticket.created_at.between(start_date, end_date),
+            ),
+        )
+    ).order_by(db.func.coalesce(Ticket.closed_at, Ticket.created_at).desc())
 
     # Optimization: Use limit(1) instead of count() to check for existence
     if tickets_query.limit(1).first() is None:
