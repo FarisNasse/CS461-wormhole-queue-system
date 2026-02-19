@@ -50,7 +50,7 @@ def users_add():
         return redirect(url_for("views.user_list"))
 
     flash("Error adding user. Please check the form and try again.", "error")
-    return redirect(url_for("views.users_add"))
+    return redirect(url_for("views.register"))
 
 
 # New JSON API for testing
