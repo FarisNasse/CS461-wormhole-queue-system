@@ -41,15 +41,11 @@ class TicketForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    username = StringField("Username", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Email()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    password2 = PasswordField(
-        "Re-enter Password", validators=[DataRequired(), EqualTo("password")]
-    )
+    first_name = StringField("First Name", validators=[DataRequired()])
+    last_name = StringField("Last Name", validators=[DataRequired()])
+    onid = StringField("ONID", validators=[DataRequired()])
     is_admin = BooleanField("Administrator")
-    submit = SubmitField("Register")
+    submit = SubmitField("Create")
 
 
 class RegisterBatchForm(FlaskForm):
@@ -71,8 +67,8 @@ class ResetPasswordForm(FlaskForm):
 
 
 class DeleteUserForm(FlaskForm):
-    confirm = StringField('Type "confirm" to delete', validators=[DataRequired()])
-    submit = SubmitField("Delete User")
+    confirm = StringField('Type "DELETE" to confirm', validators=[DataRequired()])
+    submit = SubmitField("Confirm")
 
 
 class ChangePassForm(FlaskForm):

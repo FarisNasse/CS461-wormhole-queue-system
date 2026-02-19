@@ -8,14 +8,11 @@
             <form action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <p>
-                    This page can be used to delete the user {{ user.username }}. Please
-                    triple check that you do, in fact, want to delete this user. If you
-                    are ABSOLUTELY SURE, then type the word 'confirm' below and hit the
-                    button.
+                    Deleting {{ user.username }} will remove them permanently. Type "DELETE" to confirm user deletion.
                 </p>
                 <p>
                     {{ form.confirm.label }}
-                    {{ form.confirm(size=12) }}
+                    {{ form.confirm(size=20) }}
                     <br>
                     {% for er in form.confirm.errors %}
                         <span style="color: red;">[{{ er }}]</span>
