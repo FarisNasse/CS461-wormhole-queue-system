@@ -1,29 +1,43 @@
 {% extends "base.html" %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('register-batch-form');
+            form.addEventListener('submit', function(e) {
+                submitFormAsJSON(e, '/api/register_batch',
+                    function(data) {
+                        window.location.href = '/user_list';
+                    },
+                    function(data) {
+                        const errorMsg = data.error || 'Failed to register batch';
+                        alert('Error: ' + errorMsg);
+                    }
+                );
+            });
+        });
+    </script>
+{% endblock %}
 {% block content %}
     <div class="page">
         <div class="section generic">
             <h1>
                 New User Registration In Batch
             </h1>
-            <form action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
+            <form id="register-batch-form" novalidate>
                 <p>
                     This page will generate any new TA/LAs out of a list of emails,
                     prompting them to create a password. The emails must be comma
-                    seperated, and valid email addresses (this program doesn't
+                    separated, and valid email addresses (this program doesn't
                     check if the email is valid).
                 </p>
                 <p>
-                    {{ form.emailcsv.label }}
+                    <label for="emailcsv">Emails</label>
                     <br>
-                    {{ form.emailcsv(size=32) }}
-                    <br>
-                    {% for er in form.emailcsv.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <textarea id="emailcsv" name="emailcsv" size="32" required></textarea>
                 </p>
                 <p>
-                    {{ form.submit() }}
+                    <button type="submit">Register Batch</button>
                 </p>
             </form>
         </div>

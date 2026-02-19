@@ -1,32 +1,56 @@
 {% extends "base.html" %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('create-ticket-form');
+            form.addEventListener('submit', function(e) {
+                submitFormAsJSON(e, '/api/tickets',
+                    function(data) {
+                        window.location.href = '/livequeue';
+                    },
+                    function(data) {
+                        const errorMsg = data.error || 'Failed to create ticket';
+                        alert('Error: ' + errorMsg);
+                    }
+                );
+            });
+        });
+    </script>
+{% endblock %}
 {% block content %}
     <div class='page'>
         <div class='section create-ticket'>
             <h2 style="text-align:center">
                 Create Help Request
             </h2>
-            <form align="center" action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
+            <form id="create-ticket-form" align="center" novalidate>
                 <p style="text-align:center">
-                    {{ form.name.label }} {{ form.name(size=32) }}
-                    {% for er in form.name.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <label for="student_name">Name</label>
+                    <input id="student_name" name="student_name" size="32" type="text" required>
                 </p>
                 <p style="text-align:center">
-                    {{ form.phClass.label }} {{ form.phClass() }}
-                    {% for er in form.phClass.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <label for="class_name">Class</label>
+                    <select id="class_name" name="class_name" required>
+                        <option value="">Select a class</option>
+                        <option value="Ph 211">Ph 211</option>
+                        <option value="Ph 212">Ph 212</option>
+                        <option value="Ph 213">Ph 213</option>
+                        <option value="Ph 20x">Ph 20x</option>
+                        <option value="Ph 20x Ecampus">Ph 20x Ecampus</option>
+                        <option value="Ph 21x Ecampus">Ph 21x Ecampus</option>
+                    </select>
                 </p>
                 <p style="text-align:center">
-                    {{ form.location.label }} {{ form.location() }}
-                    {% for er in form.location.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <label for="table_number">Location</label>
+                    <select id="table_number" name="table_number" required>
+                        <option value="">Select a location</option>
+                        <option value="Teams">Teams</option>
+                        <option value="Zoom">Zoom</option>
+                    </select>
                 </p>
                 <p align="center">
-                    {{ form.submit() }}
+                    <button type="submit">Create</button>
                 </p>
             </form>
         </div>

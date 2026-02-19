@@ -1,9 +1,8 @@
 # /app/routes/tickets.py
-from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
+from flask import Blueprint, jsonify, request
 
 from app import db
-from app.forms import ResolveTicketForm
-from app.models import Ticket, User
+from app.models import Ticket
 from app.routes.queue_events import broadcast_ticket_update
 
 tickets_bp = Blueprint("tickets", __name__, url_prefix="/api")
@@ -22,16 +21,16 @@ def create_ticket():
     data = request.get_json()
     student_name = data.get("student_name")
     physics_course = data.get("class_name")
-    table = data.get("table_number")
+    location = data.get("table_number")
 
     # Validate required fields
-    if not student_name or not physics_course or table is None:
+    if not student_name or not physics_course or not location:
         return jsonify({"error": "Missing required fields"}), 400
 
     # Create the new ticket
     new_ticket = Ticket(
         student_name=student_name,
-        table=table,
+        table=location,
         physics_course=physics_course,
         status="live",
     )
@@ -56,21 +55,39 @@ def get_open_tickets():
 # API route to handle ticket resolution form submission
 @tickets_bp.route("/resolveticket/<int:ticket_id>", methods=["POST"])
 def resolve_ticket(ticket_id):
-    user = User.query.get(session["user_id"])
-    form = ResolveTicketForm()
-    if form.validate_on_submit():
-        ticket = Ticket.query.get(ticket_id)
-        if ticket:
-            ticket.status = "resolved"
-            ticket.num_students = form.numStds.data
-            ticket.resolve_reason = form.resolveReason.data
-            db.session.commit()
-            broadcast_ticket_update(ticket.id)
-            flash("Ticket resolved successfully", "success")
-            return redirect(url_for("views.userpage", username=user.username))
-        else:
-            flash("Ticket not found", "error")
-            return redirect(url_for("views.userpage", username=user.username))
-    else:
-        flash("There was a problem resolving the ticket.", "error")
-        return redirect(url_for("views.currentticket", tktid=ticket_id))
+    data = request.get_json()
+
+    # Get form data
+    num_students_str = data.get("numStds", "")
+    resolve_reason = data.get("resolveReason")
+
+    # Validate required fields
+    if not resolve_reason:
+        return jsonify({"error": "Resolution reason is required"}), 400
+
+    # Parse and validate number of students (optional, but must be positive if provided)
+    num_students = None
+    if num_students_str:
+        try:
+            num_students = int(num_students_str)
+            if num_students < 1:
+                return jsonify({"error": "Number of students must be at least 1"}), 400
+        except (ValueError, TypeError):
+            return jsonify({"error": "Number of students must be a valid number"}), 400
+
+    # Get ticket
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        return jsonify({"error": "Ticket not found"}), 404
+
+    # Update ticket
+    ticket.status = "resolved"
+    if num_students is not None:
+        ticket.num_students = num_students
+    ticket.resolve_reason = resolve_reason
+    db.session.commit()
+
+    # Broadcast update
+    broadcast_ticket_update(ticket.id)
+
+    return jsonify({"message": "Ticket resolved successfully"}), 200

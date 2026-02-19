@@ -1,62 +1,51 @@
 {% extends "base.html" %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('register-form');
+            form.addEventListener('submit', function(e) {
+                submitFormAsJSON(e, '/api/users_add_json',
+                    function(data) {
+                        window.location.href = '/user_list';
+                    },
+                    function(data) {
+                        const errorMsg = data.error || 'Failed to create user';
+                        alert('Error: ' + errorMsg);
+                    }
+                );
+            });
+        });
+    </script>
+{% endblock %}
 {% block content %}
     <div class="page">
         <div class="section generic">
             <h1>
                 New User Registration
             </h1>
-            <form action="{{ url_for('users.users_add') }}" method="post" novalidate>
-                {{ form.hidden_tag() }}
+            <form id="register-form" novalidate>
                 <p>
-                    {{ form.name.label }}
+                    <label for="username">Username</label>
                     <br>
-                    {{ form.name(size=32) }}
-                    <br>
-                    {% for er in form.name.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <input id="username" name="username" size="32" type="text" required>
                 </p>
                 <p>
-                    {{ form.username.label }}
+                    <label for="email">Email</label>
                     <br>
-                    {{ form.username(size=32) }}
-                    <br>
-                    {% for er in form.username.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <input id="email" name="email" size="32" type="email" required>
                 </p>
                 <p>
-                    {{ form.email.label }}
+                    <label for="password">Password</label>
                     <br>
-                    {{ form.email(size=32) }}
-                    <br>
-                    {% for er in form.email.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <input id="password" name="password" size="32" type="password" required>
                 </p>
                 <p>
-                    {{ form.password.label }}
-                    <br>
-                    {{ form.password(size=32) }}
-                    <br>
-                    {% for er in form.password.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <label for="is_admin">Administrator</label>
+                    <input id="is_admin" name="is_admin" type="checkbox">
                 </p>
                 <p>
-                    {{ form.password2.label }}
-                    <br>
-                    {{ form.password2(size=32) }}
-                    <br>
-                    {% for er in form.password2.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.is_admin() }} {{ form.is_admin.label }}
-                </p>
-                <p>
-                    {{ form.submit() }}
+                    <button type="submit">Create</button>
                 </p>
             </form>
         </div>

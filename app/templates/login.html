@@ -1,4 +1,24 @@
 {% extends "base.html" %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('login-form');
+            form.addEventListener('submit', function(e) {
+                submitFormAsJSON(e, '/api/login', 
+                    function(data) {
+                        window.location.href = '/hardware_list';
+                    },
+                    function(data) {
+                        // Display error message
+                        const errorMsg = data.error || 'Invalid username or password';
+                        alert(errorMsg);
+                    }
+                );
+            });
+        });
+    </script>
+{% endblock %}
 {% block content %}
     <div class='page'>
         <div class='section create-ticket'>
@@ -8,27 +28,23 @@
             <h3 style="text-align:center">
                 Sign In
             </h3>
-            <form align="center" action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
+            <form id="login-form" align="center" novalidate>
                 <p style="text-align:center">
-                    {{ form.username.label }}  {{ form.username(size=32) }}
-                    <br>
-                    {% for er in form.username.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <label for="username">Username</label>
+                    <input id="username" name="username" size="32" type="text" required>
+                    <span id="username-error" style="color: red;"></span>
                 </p>
                 <p style="text-align:center">
-                    {{ form.password.label }}  {{ form.password(size=32) }}
-                    <br>
-                    {% for er in form.password.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <label for="password">Password</label>
+                    <input id="password" name="password" size="32" type="password" required>
+                    <span id="password-error" style="color: red;"></span>
                 </p>
                 <p style="text-align:center">
-                    {{ form.remember_me() }} {{ form.remember_me.label }}
+                    <input id="remember_me" name="remember_me" type="checkbox">
+                    <label for="remember_me">Remember Me</label>
                 </p>
                 <p style="text-align:center">
-                    {{ form.submit() }}
+                    <button type="submit">Sign In</button>
                 </p>
                 <p style="text-align:center">
                     <a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a>
