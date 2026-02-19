@@ -44,10 +44,17 @@ views_bp = Blueprint("views", __name__)
 
 def is_safe_url(target):
     """Ensures a URL is a safe local path to prevent open redirects."""
-    if not target:
+    # Ensure target is a non-empty string before using it with urljoin/urlparse
+    if not target or not isinstance(target, str):
+        return False
+    stripped_target = target.strip()
+    if not stripped_target:
+        return False
+    # Reject protocol-relative URLs (e.g., "//example.com/path") to prevent open redirects
+    if stripped_target.startswith("//"):
         return False
     ref_url = urlparse(request.host_url)
-    test_url = urlparse(urljoin(request.host_url, target))
+    test_url = urlparse(urljoin(request.host_url, stripped_target))
     return test_url.scheme in ("http", "https") and ref_url.netloc == test_url.netloc
 
 

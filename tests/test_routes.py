@@ -216,8 +216,6 @@ def test_pastticket_admin_can_access_any_user(test_client):
 def test_flash_message_category_rendering(test_client):
     """Verify that flash messages are rendered with the correct CSS class."""
     # 1. Create a dummy admin user in the database (or use an existing one)
-    from app import db
-    from app.models import User
 
     admin = User(username="admin_test", email="admin_test@test.com", is_admin=True)
     admin.set_password("pass")
