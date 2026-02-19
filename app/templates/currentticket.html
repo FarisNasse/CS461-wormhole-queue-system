@@ -49,32 +49,13 @@
                 Resolve As:
             </h3>
             <form id="resolve-form"
-                  action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
-                  method="post"
-                  novalidate>
-                {{ form.hidden_tag() }}
-                {{ form.numStds.label }} {{ form.numStds(size=4) }}
-                <br>
-                {% for er in form.numStds.errors %}
-                    <span style="color:red;">[{{ er }}]</span>
-                {% endfor %}
-                <table id="tickets"
-                       style="margin-left:15px;
-                              width: 100%;
-                              text-align: left;
-                              border-collapse:separate;
-                              border-spacing:30px">
-                    <tr>
-                        <td>
-                            {{ form.resolveReason.label }} {{ form.resolveReason() }}
-                            <br>
-                            {% for er in form.resolveReason.errors %}
-                                <span style="color:red;">[{{ er }}]</span>
-                            {% endfor %}
-                            {{ form.submit() }}
-                        </td>
-                    </tr>
-                </table>
+                action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
+                method="post"
+                novalidate>
+                <button type="submit" name="resolve" value="duplicate">Duplicate</button>
+                <button type="submit" name="resolve" value="helped">Helped</button>
+                <button type="submit" name="resolve" value="no_show">No Show</button>
+                <button type="submit" name="resolve" value="return_to_queue">Return To Queue</button>
             </form>
         </div>
     </div>
