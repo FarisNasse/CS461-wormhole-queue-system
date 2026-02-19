@@ -7,6 +7,7 @@ from flask import (
     flash,
     redirect,
     render_template,
+    request,
     session,
     url_for,
 )
@@ -310,6 +311,16 @@ def delete_user(username):
     if not u:
         abort(404)
     form = DeleteUserForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            if form.confirm.data == "DELETE":
+                username_to_delete = u.username
+                db.session.delete(u)
+                db.session.commit()
+                flash(f"User {username_to_delete} has been deleted permanently.", "success")
+                return redirect(url_for("views.user_list"))
+            else:
+                flash('Please type "DELETE" to confirm user deletion.', "error")
     user_ns = SimpleNamespace(username=u.username)
     return render_template("delete_user.html", user=user_ns, form=form)
 
