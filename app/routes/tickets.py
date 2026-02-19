@@ -56,7 +56,7 @@ def get_open_tickets():
 @tickets_bp.route("/resolveticket/<int:ticket_id>", methods=["POST"])
 def resolve_ticket(ticket_id):
     user = User.query.get(session["user_id"])
-    resolved_as = request.form.get('resolve')
+    resolved_as = request.form.get("resolve")
 
     if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue"]:
         flash("Invalid resolution option selected.", "error")
