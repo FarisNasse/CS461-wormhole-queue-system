@@ -317,7 +317,10 @@ def delete_user(username):
                 username_to_delete = u.username
                 db.session.delete(u)
                 db.session.commit()
-                flash(f"User {username_to_delete} has been deleted permanently.", "success")
+                flash(
+                    f"User {username_to_delete} has been deleted permanently.",
+                    "success",
+                )
                 return redirect(url_for("views.user_list"))
             else:
                 flash('Please type "DELETE" to confirm user deletion.', "error")
