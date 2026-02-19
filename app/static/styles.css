@@ -4,6 +4,7 @@
     box-sizing: border-box;
 }
 
+
 .section {
     width: 100%;
     height: 200px;
@@ -13,6 +14,7 @@
     border-width: 2px;
     border-radius: 15px 50px;
 }
+
 
 .header {
     width: 100%;
@@ -26,6 +28,7 @@
     height: auto;
 }
 
+
 .navbar {
     display: flex;
     align-items: center;
@@ -36,6 +39,7 @@
     background-color: #000;
 }
 
+
 .navbar a {
     float: left;
     padding: 5px;
@@ -45,6 +49,7 @@
     text-decoration: none;
     white-space: nowrap;
 }
+
 
 .message {
     max-width: 960px;
@@ -60,15 +65,18 @@
     list-style-type: none;
 }
 
+
 .message ul {
     list-style-type: none;
 }
+
 
 .dropdown {
     float: left;
     overflow: hidden;
     text-align: center;
 }
+
 
 .dropdown .dropbtn {
     font-size: 17px;
@@ -81,6 +89,7 @@
     text-align: center;
 }
 
+
 .dropdown-content {
     display: none;
     position: absolute;
@@ -88,6 +97,7 @@
     padding: 8px;
     white-space: nowrap;
 }
+
 
 .dropdown-content a {
     display: inline-block;
@@ -100,30 +110,36 @@
     vertical-align: middle;
 }
 
+
 .admin-links {
     display: flex;
     gap: 12px;
     align-items: center;
 }
 
+
 .page {
     display: flex;
     flex-wrap: wrap;
 }
 
+
 .student-home {
     background: #FFF;
 }
 
+
 .ta-home {
     background-color: #a2ceff;
 }
+
 
 .create-ticket {
     background: #FFF;
     padding: 10px;
     height: 300px;
 }
+
 
 .live-queue {
     background: #FFF;
@@ -137,6 +153,7 @@
     border-radius: 50px;
 }
 
+
 .refresh {
     background: #002147;
     height: 80px;
@@ -146,6 +163,7 @@
     max-width: 961px;
 }
 
+
 .tickets {
     background: #FFF;
     border-radius: 15px;
@@ -153,6 +171,7 @@
     min-height: 350px;
     text-indent: 10px;
 }
+
 
 .generic {
     background: #FFF;
@@ -163,6 +182,7 @@
     padding: 15px;
 }
 
+
 .wormhole-content { /* Renamed to kebab-case */
     padding: 25px;
     margin-top: 30px;
@@ -170,13 +190,16 @@
     border-radius: 20px;
 }
 
+
 .subsection {
     margin-bottom: 25px;
 }
 
+
 .subsection:last-child {
     margin-bottom: 0;
 }
+
 
 .profile {
     background: #BBA0CA;
@@ -184,6 +207,7 @@
     border-radius: 15px;
     height: auto;
 }
+
 
 .tick-info {
     background: #BBA0CA;
@@ -195,9 +219,11 @@
     margin: auto;
 }
 
+
 .tick-info p {
     padding-top: 1.5cm;
 }
+
 
 .tick-resol { /* Renamed to kebab-case */
     background: #BBA0CA;
@@ -209,6 +235,7 @@
     margin: auto;
 }
 
+
 .old-ticket {
     background: #BBA0CA;
     min-height: 250px;
@@ -216,10 +243,12 @@
     height: auto;
 }
 
+
 .container {
     display: table;
     width: 100%;
 }
+
 
 .open {
     background: #BBA0CA;
@@ -232,6 +261,7 @@
     display: table-cell;
 }
 
+
 .current {
     background: #BBA0CA;
     height: auto;
@@ -243,6 +273,7 @@
     display: table-cell;
 }
 
+
 .closed {
     background: #BBA0CA;
     height: auto;
@@ -253,13 +284,16 @@
     width: 100%;
 }
 
+
 .dropdown-content a:hover {
     background-color: #f1f1f1; /* Added '#' */
 }
 
+
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
 
 .resolve-buttons {
     display: flex;
@@ -268,50 +302,8 @@
     gap: 10px;
 }
 
-/* Button Styles */
-.btn-delete {
-    color: white;
-    background-color: #dc3545; /* Red */
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-}
 
-.btn-delete:hover {
-    background-color: #c82333;
-}
 
-.btn-success {
-    padding: 5px 10px;
-    background-color: #28a745; /* Green */
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-}
-
-/* Form Styles */
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-control {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    max-width: 300px;
-}
-
-.error-msg {
-    color: red;
-    font-size: 0.9em;
-}
 
 /* Mobile Styles */
 @media only screen and (width <= 400px) {
@@ -319,11 +311,13 @@
         background-color: #002147;
     }
 
+
     .col {
         display: block;
         width: 100%;
     }
 }
+
 
 /* Tablet Styles */
 @media only screen and (width >= 401px) and (width <= 960px) {
@@ -332,34 +326,71 @@
     }
 }
 
+
 /* Desktop Styles */
 @media only screen and (width >= 961px) {
     body {
         background-color: #002147;
     }
 
+
     .page {
         width: 960px;
         margin: 0 auto;
     }
+
 
     .student-home,
     .ta-home {
         width: 50%;
     }
 
+
     .tick-info,
     .tick-resol { /* Renamed to kebab-case */
         width: 50%;
     }
+
 
     .tickets,
     .profile {
         width: 50%;
     }
 
+
     .open,
     .current {
         width: 50%;
     }
+}
+
+
+/* Flash Message Styles */
+.flash-success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+
+.flash-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+
+.flash-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
 }

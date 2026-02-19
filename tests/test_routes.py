@@ -211,3 +211,37 @@ def test_pastticket_admin_can_access_any_user(test_client):
     db.session.refresh(t)
     assert t.status == "closed"
     assert t.closed_reason == "helped"
+
+
+def test_flash_message_category_rendering(test_client):
+    """Verify that flash messages are rendered with the correct CSS class."""
+    # 1. Create a dummy admin user in the database (or use an existing one)
+    from app import db
+    from app.models import User
+
+    admin = User(username="admin_test", email="admin_test@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    # 2. Log in as the admin in the session
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    # 3. Now trigger the 'success' flash via user registration
+    data = {
+        "name": "Test User",
+        "username": "testflash",
+        "password": "password123",
+        "password2": "password123",
+        "is_admin": False,
+    }
+
+    # Submit the request
+    response = test_client.post("/api/users_add", data=data, follow_redirects=True)
+
+    # 4. Assertions
+    assert response.status_code == 200
+    assert b'class="flash-success"' in response.data
+    assert b"User added successfully!" in response.data
