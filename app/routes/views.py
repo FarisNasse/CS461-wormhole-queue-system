@@ -245,12 +245,14 @@ def userpage(username):
     u = User.query.filter_by(username=username).first()
     if not u:
         abort(404)
+    # Get user's current ticket (if any)
+    current_ticket = Ticket.query.filter_by(wa_id=u.id, status="in_progress").first()
     # create minimal surface for template
     user_ns = SimpleNamespace(
         username=u.username,
         email=u.email,
         is_admin=u.is_admin,
-        tkt=None,
+        tkt=current_ticket,
         all_tkt_assoc_sorted=lambda: [],
     )
     current_user = user_ns

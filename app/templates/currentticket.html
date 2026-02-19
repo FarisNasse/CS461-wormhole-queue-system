@@ -51,7 +51,8 @@
             <form id="resolve-form"
                 action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
                 method="post"
-                novalidate>
+                novalidate
+                style="text-align:center;">
                 <button type="submit" name="resolve" value="duplicate">Duplicate</button>
                 <button type="submit" name="resolve" value="helped">Helped</button>
                 <button type="submit" name="resolve" value="no_show">No Show</button>
