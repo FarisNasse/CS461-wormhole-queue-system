@@ -233,6 +233,7 @@ def test_flash_message_category_rendering(test_client):
     data = {
         "name": "Test User",
         "username": "testflash",
+        "email": "flash@test.com",
         "password": "password123",
         "password2": "password123",
         "is_admin": False,
