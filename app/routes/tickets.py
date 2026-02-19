@@ -2,7 +2,6 @@
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 
 from app import db
-from app.forms import ResolveTicketForm
 from app.models import Ticket, User
 from app.routes.queue_events import broadcast_ticket_update
 
