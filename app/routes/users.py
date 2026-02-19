@@ -78,3 +78,63 @@ def api_users_add():
     db.session.commit()
 
     return jsonify({"success": "User created", "username": u.username}), 201
+
+
+# POST /api/register_batch
+@user_bp.route("/register_batch", methods=["POST"])
+def register_batch():
+    data = request.get_json()
+    
+    if not data or "emailcsv" not in data:
+        return jsonify({"error": "Missing emailcsv field"}), 400
+
+    emailcsv = data.get("emailcsv", "").strip()
+    if not emailcsv:
+        return jsonify({"error": "Email list cannot be empty"}), 400
+
+    # Parse emails from comma-separated string
+    emails = [email.strip() for email in emailcsv.split(",") if email.strip()]
+    
+    if not emails:
+        return jsonify({"error": "No valid emails provided"}), 400
+
+    created_users = []
+    errors = []
+
+    for email in emails:
+        # Basic email validation
+        if "@" not in email:
+            errors.append(f"Invalid email: {email}")
+            continue
+
+        # Extract username from email (part before @)
+        username = email.split("@")[0]
+
+        # Check if user already exists
+        if User.query.filter_by(username=username).first():
+            errors.append(f"User with username {username} already exists")
+            continue
+        if User.query.filter_by(email=email).first():
+            errors.append(f"User with email {email} already exists")
+            continue
+
+        # Create new user with default password
+        u = User(
+            username=username,
+            email=email,
+            is_admin=False,
+        )
+        u.set_password("wormhole")  # Default password
+
+        db.session.add(u)
+        created_users.append(username)
+
+    # Commit all new users
+    if created_users:
+        db.session.commit()
+
+    return jsonify({
+        "created": created_users,
+        "errors": errors,
+        "total_created": len(created_users)
+    }), 201

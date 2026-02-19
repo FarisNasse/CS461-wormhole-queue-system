@@ -13,15 +13,6 @@ from flask import (
 
 from app import db
 from app.auth_utils import admin_required, login_required
-from app.forms import (
-    ChangePassForm,
-    DeleteUserForm,
-    LoginForm,
-    RegisterBatchForm,
-    RegisterForm,
-    ResolveTicketForm,
-    TicketForm,
-)
 from app.models import Ticket, User
 
 views_bp = Blueprint("views", __name__)
@@ -125,32 +116,10 @@ def anonymize():
 # -------------------------------
 # GET/POST /createticket (Help Request Creation)
 # -------------------------------
-@views_bp.route("/createticket", methods=["GET", "POST"])
+@views_bp.route("/createticket", methods=["GET"])
 def create_ticket_page():
-    form = TicketForm()
-    if form.validate_on_submit():
-        t = Ticket(
-            student_name=form.name.data,
-            table=form.location.data,
-            physics_course=form.phClass.data,
-            number_of_students=1,
-            status="live",
-        )
-        db.session.add(t)
-        db.session.commit()
-
-        # broadcast update to queue clients
-        try:
-            from app.routes.queue_events import broadcast_ticket_update
-
-            broadcast_ticket_update(t.id)
-        except Exception:
-            pass
-
-        flash("Ticket created — thank you!", "success")
-        return redirect(url_for("views.livequeue"))
-
-    return render_template("createticket.html", form=form)
+    # Render the create ticket form (submission handled via /api/tickets)
+    return render_template("createticket.html")
 
 
 # Debug endpoint to list all tickets
@@ -181,25 +150,10 @@ def debug_tickets():
 # -------------------------------
 # GET /assistant-login (Assistant Login Page)
 # -------------------------------
-@views_bp.route("/assistant-login", methods=["GET", "POST"])
+@views_bp.route("/assistant-login", methods=["GET"])
 def assistant_login():
-    # support form-based login (POST) as well as rendering the login page (GET)
-    form = LoginForm()
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            session["user_id"] = user.id
-            session["is_admin"] = user.is_admin
-            if user.is_admin:
-                return redirect(url_for("views.hardware_list"))
-            return redirect(url_for("views.hardware_list"))
-
-        flash("Invalid username or password.", "error")
-        return render_template("login.html", form=form)
-
-    return render_template("login.html", form=form)
+    # Render login page (form submission now handled via /api/login)
+    return render_template("login.html")
 
 
 # -------------------------------
@@ -292,63 +246,33 @@ def user_list():
 @views_bp.route("/register", methods=["GET"])
 @admin_required
 def register():
-    form = RegisterForm()
-    return render_template("register.html", form=form)
+    # Render registration form (submission handled via /api/users_add_json)
+    return render_template("register.html")
 
 
-@views_bp.route("/register_batch", methods=["GET", "POST"])
+@views_bp.route("/register_batch", methods=["GET"])
 @admin_required
 def register_batch():
-    form = RegisterBatchForm()
-    return render_template("register_batch.html", form=form)
+    # Render batch registration form (submission handled via /api/register_batch)
+    return render_template("register_batch.html")
 
 
-@views_bp.route("/delete/<username>", methods=["GET", "POST"])
+@views_bp.route("/delete/<username>", methods=["GET"])
 @admin_required
 def delete_user(username):
     u = User.query.filter_by(username=username).first()
     if not u:
         abort(404)
-    form = DeleteUserForm()
     user_ns = SimpleNamespace(username=u.username)
-    return render_template("delete_user.html", user=user_ns, form=form)
+    # Render delete confirmation form (submission handled via /api/users_remove)
+    return render_template("delete_user.html", user=user_ns)
 
 
-@views_bp.route("/changepass", methods=["GET", "POST"])
+@views_bp.route("/changepass", methods=["GET"])
 @login_required
 def changepass():
-    form = ChangePassForm()
-    if form.validate_on_submit():
-        username = form.username.data
-        user = User.query.filter_by(username=username).first()
-        if not user:
-            flash("User not found.", "error")
-            return render_template("changepass.html", form=form)
-
-        # get current session user
-        sid = session.get("user_id")
-        cur = User.query.get(sid) if sid else None
-        if not cur:
-            flash("Not authorized.", "error")
-            return render_template("changepass.html", form=form)
-
-        # allow admins to change without old password
-        if cur.id != user.id and not cur.is_admin:
-            flash("Not authorized to change this user's password.", "error")
-            return render_template("changepass.html", form=form)
-
-        # if changing own password, verify old password
-        if cur.id == user.id and not user.check_password(form.old_password.data):
-            flash("Old password is incorrect.", "error")
-            return render_template("changepass.html", form=form)
-
-        # set new password
-        user.set_password(form.password.data)
-        db.session.commit()
-        flash("Password updated successfully.", "success")
-        return redirect(url_for("views.userpage", username=user.username))
-
-    return render_template("changepass.html", form=form)
+    # Render password change form (submission handled via /api/changepass)
+    return render_template("changepass.html")
 
 
 @views_bp.route("/currentticket/<int:tktid>")
@@ -357,9 +281,9 @@ def currentticket(tktid):
     t = Ticket.query.get(tktid)
     if not t:
         abort(404)
-    form = ResolveTicketForm()
     ticket_ns = _ticket_to_ns(t)
-    return render_template("currentticket.html", ticket=ticket_ns, form=form)
+    # Pass ticket ID for JavaScript to use in API calls
+    return render_template("currentticket.html", ticket=ticket_ns)
 
 
 @views_bp.route("/pastticket/<username>/<int:tktid>")
@@ -368,6 +292,6 @@ def pastticket(username, tktid):
     t = Ticket.query.get(tktid)
     if not t:
         abort(404)
-    form = ResolveTicketForm()
     ticket_ns = _ticket_to_ns(t)
-    return render_template("pastticket.html", ticket=ticket_ns, form=form)
+    # Pass ticket ID for JavaScript to use in API calls
+    return render_template("pastticket.html", ticket=ticket_ns)

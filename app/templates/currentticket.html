@@ -5,6 +5,26 @@
             crossorigin="anonymous"></script>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/currentticket.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('resolve-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const ticket_id = '{{ ticket.id }}';
+                    submitFormAsJSON(e, '/api/resolveticket/' + ticket_id,
+                        function(data) {
+                            window.location.href = '/hardware_list';
+                        },
+                        function(data) {
+                            const errorMsg = data.error || 'Failed to resolve ticket';
+                            alert('Error: ' + errorMsg);
+                        }
+                    );
+                });
+            }
+        });
+    </script>
 {% endblock %}
 {% block content %}
     <div class="page">
@@ -48,16 +68,11 @@
             <h3 style="text-align:center">
                 Resolve As:
             </h3>
-            <form id="resolve-form"
-                  action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
-                  method="post"
-                  novalidate>
-                {{ form.hidden_tag() }}
-                {{ form.numStds.label }} {{ form.numStds(size=4) }}
-                <br>
-                {% for er in form.numStds.errors %}
-                    <span style="color:red;">[{{ er }}]</span>
-                {% endfor %}
+            <form id="resolve-form" novalidate>
+                <p>
+                    <label for="numStds">Number of Students</label>
+                    <input id="numStds" name="numStds" size="4" type="number" min="1">
+                </p>
                 <table id="tickets"
                        style="margin-left:15px;
                               width: 100%;
@@ -66,12 +81,14 @@
                               border-spacing:30px">
                     <tr>
                         <td>
-                            {{ form.resolveReason.label }} {{ form.resolveReason() }}
+                            <label for="resolveReason">Resolution Reason</label>
+                            <select id="resolveReason" name="resolveReason" required>
+                                <option value="helped">Helped</option>
+                                <option value="no_show">No Show</option>
+                                <option value="duplicate">Duplicate</option>
+                            </select>
                             <br>
-                            {% for er in form.resolveReason.errors %}
-                                <span style="color:red;">[{{ er }}]</span>
-                            {% endfor %}
-                            {{ form.submit() }}
+                            <button type="submit">Submit</button>
                         </td>
                     </tr>
                 </table>

@@ -1,28 +1,51 @@
 {% extends "base.html" %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('delete-user-form');
+            form.addEventListener('submit', function(e) {
+                const confirm_text = document.getElementById('confirm').value;
+                // Check if user typed "DELETE"
+                if (confirm_text !== 'DELETE') {
+                    e.preventDefault();
+                    alert('Please type "DELETE" to confirm');
+                    return;
+                }
+                
+                submitFormAsJSON(e, '/api/users_remove',
+                    function(data) {
+                        window.location.href = '/user_list';
+                    },
+                    function(data) {
+                        const errorMsg = data.error || 'Failed to delete user';
+                        alert('Error: ' + errorMsg);
+                    }
+                );
+            });
+        });
+    </script>
+{% endblock %}
 {% block content %}
     <div class="page">
         <div class="section generic">
             <h1>
                 Delete User: {{ user.username }}
             </h1>
-            <form action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
+            <form id="delete-user-form" novalidate>
                 <p>
                     This page can be used to delete the user {{ user.username }}. Please
                     triple check that you do, in fact, want to delete this user. If you
-                    are ABSOLUTELY SURE, then type the word 'confirm' below and hit the
+                    are ABSOLUTELY SURE, then type the word 'DELETE' below and hit the
                     button.
                 </p>
                 <p>
-                    {{ form.confirm.label }}
-                    {{ form.confirm(size=12) }}
-                    <br>
-                    {% for er in form.confirm.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
+                    <label for="confirm">Type "DELETE" to confirm</label>
+                    <input id="confirm" name="confirm" size="12" type="text">
                 </p>
                 <p>
-                    {{ form.submit() }}
+                    <input type="hidden" name="username" value="{{ user.username }}">
+                    <button type="submit">Confirm</button>
                 </p>
             </form>
         </div>
