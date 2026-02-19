@@ -63,7 +63,7 @@ def check_session():
 @auth_bp.route("/api/changepass", methods=["POST"])
 def change_password():
     from app import db
-    
+
     data = request.get_json()
     username = data.get("username")
     old_password = data.get("old_password")
@@ -86,7 +86,7 @@ def change_password():
     # Get current session user
     session_user_id = session.get("user_id")
     current_user = User.query.get(session_user_id) if session_user_id else None
-    
+
     if not current_user:
         return jsonify({"error": "Not authorized"}), 401
 
@@ -124,15 +124,17 @@ def api_reset_password_request():
         return jsonify({"error": "Email is required"}), 400
 
     user = User.query.filter_by(email=email).first()
-    
+
     # Log the request (in real implementation, would send email with reset link)
     if user:
         current_app.logger.info(f"Password reset requested for: {email}")
-    
+
     # Always return same message for security (don't reveal if email exists)
-    return jsonify({
-        "message": "If an account with that email exists, check your inbox for reset instructions."
-    }), 200
+    return jsonify(
+        {
+            "message": "If an account with that email exists, check your inbox for reset instructions."
+        }
+    ), 200
 
 
 # GET /reset_password/<token> (Render password reset form)
@@ -163,4 +165,6 @@ def api_reset_password(token):
     # For now, just accept the reset (token validation would be implemented with a proper token system)
     current_app.logger.info(f"Password reset for token: {token}")
 
-    return jsonify({"message": "Your password has been reset. You may now sign in."}), 200
+    return jsonify(
+        {"message": "Your password has been reset. You may now sign in."}
+    ), 200

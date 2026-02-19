@@ -84,7 +84,7 @@ def api_users_add():
 @user_bp.route("/register_batch", methods=["POST"])
 def register_batch():
     data = request.get_json()
-    
+
     if not data or "emailcsv" not in data:
         return jsonify({"error": "Missing emailcsv field"}), 400
 
@@ -94,7 +94,7 @@ def register_batch():
 
     # Parse emails from comma-separated string
     emails = [email.strip() for email in emailcsv.split(",") if email.strip()]
-    
+
     if not emails:
         return jsonify({"error": "No valid emails provided"}), 400
 
@@ -133,8 +133,10 @@ def register_batch():
     if created_users:
         db.session.commit()
 
-    return jsonify({
-        "created": created_users,
-        "errors": errors,
-        "total_created": len(created_users)
-    }), 201
+    return jsonify(
+        {
+            "created": created_users,
+            "errors": errors,
+            "total_created": len(created_users),
+        }
+    ), 201

@@ -11,7 +11,6 @@ from flask import (
     url_for,
 )
 
-from app import db
 from app.auth_utils import admin_required, login_required
 from app.models import Ticket, User
 

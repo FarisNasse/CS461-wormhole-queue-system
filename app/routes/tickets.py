@@ -56,7 +56,7 @@ def get_open_tickets():
 @tickets_bp.route("/resolveticket/<int:ticket_id>", methods=["POST"])
 def resolve_ticket(ticket_id):
     data = request.get_json()
-    
+
     # Get form data
     num_students_str = data.get("numStds", "")
     resolve_reason = data.get("resolveReason")
@@ -86,7 +86,7 @@ def resolve_ticket(ticket_id):
         ticket.num_students = num_students
     ticket.resolve_reason = resolve_reason
     db.session.commit()
-    
+
     # Broadcast update
     broadcast_ticket_update(ticket.id)
 
