@@ -2,7 +2,6 @@
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 
 from app import db
-from app.forms import ResolveTicketForm
 from app.models import Ticket, User
 from app.routes.queue_events import broadcast_ticket_update
 
@@ -57,20 +56,57 @@ def get_open_tickets():
 @tickets_bp.route("/resolveticket/<int:ticket_id>", methods=["POST"])
 def resolve_ticket(ticket_id):
     user = User.query.get(session["user_id"])
-    form = ResolveTicketForm()
-    if form.validate_on_submit():
+    resolved_as = request.form.get("resolve")
+
+    if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue"]:
+        flash("Invalid resolution option selected.", "error")
+        return redirect(url_for("views.currentticket", tktid=ticket_id))
+    elif resolved_as == "return_to_queue":
         ticket = Ticket.query.get(ticket_id)
         if ticket:
-            ticket.status = "resolved"
-            ticket.num_students = form.numStds.data
-            ticket.resolve_reason = form.resolveReason.data
+            ticket.status = "live"
+            ticket.wa_id = None
+            ticket.wormhole_assistant = None
             db.session.commit()
             broadcast_ticket_update(ticket.id)
-            flash("Ticket resolved successfully", "success")
+            flash("Ticket returned to queue successfully", "success")
             return redirect(url_for("views.userpage", username=user.username))
         else:
             flash("Ticket not found", "error")
             return redirect(url_for("views.userpage", username=user.username))
-    else:
-        flash("There was a problem resolving the ticket.", "error")
-        return redirect(url_for("views.currentticket", tktid=ticket_id))
+    elif resolved_as == "duplicate":
+        ticket = Ticket.query.get(ticket_id)
+        if ticket:
+            ticket.status = "resolved"
+            ticket.resolve_reason = "duplicate"
+            db.session.commit()
+            broadcast_ticket_update(ticket.id)
+            flash("Ticket marked as duplicate and resolved successfully", "success")
+            return redirect(url_for("views.userpage", username=user.username))
+        else:
+            flash("Ticket not found", "error")
+            return redirect(url_for("views.userpage", username=user.username))
+    elif resolved_as == "helped":
+        ticket = Ticket.query.get(ticket_id)
+        if ticket:
+            ticket.status = "resolved"
+            ticket.resolve_reason = "helped"
+            db.session.commit()
+            broadcast_ticket_update(ticket.id)
+            flash("Ticket marked as helped and resolved successfully", "success")
+            return redirect(url_for("views.userpage", username=user.username))
+        else:
+            flash("Ticket not found", "error")
+            return redirect(url_for("views.userpage", username=user.username))
+    elif resolved_as == "no_show":
+        ticket = Ticket.query.get(ticket_id)
+        if ticket:
+            ticket.status = "resolved"
+            ticket.resolve_reason = "no_show"
+            db.session.commit()
+            broadcast_ticket_update(ticket.id)
+            flash("Ticket marked as no show and resolved successfully", "success")
+            return redirect(url_for("views.userpage", username=user.username))
+        else:
+            flash("Ticket not found", "error")
+            return redirect(url_for("views.userpage", username=user.username))

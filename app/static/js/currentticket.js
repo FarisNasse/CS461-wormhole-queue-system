@@ -1,3 +1,6 @@
+// app/static/js/currentticket.js
+// JavaScript for handling ticket resolution actions on the current ticket page
+
 document.getElementById('resolve-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
