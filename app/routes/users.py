@@ -35,21 +35,37 @@ def users_remove():
 def users_add():
     form = RegisterForm()
     if form.validate_on_submit():
+        onid = form.onid.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        full_name = f"{first_name} {last_name}"
+        email = f"{onid}@oregonstate.edu"
+        username = onid
+
+        # Check if user already exists
+        if User.query.filter_by(username=username).first():
+            flash("A user with this ONID already exists.", "error")
+            return redirect(url_for("views.register"))
+        if User.query.filter_by(email=email).first():
+            flash("A user with this email already exists.", "error")
+            return redirect(url_for("views.register"))
+
         u = User(
-            username=form.username.data,
-            email=form.email.data,
+            username=username,
+            email=email,
+            name=full_name,
             is_admin=form.is_admin.data,
         )
 
-        u.set_password(form.password.data)
+        u.set_password("wormhole")
 
         db.session.add(u)
         db.session.commit()
 
-        flash("User added successfully!", "success")
+        flash("User created successfully!", "success")
         return redirect(url_for("views.user_list"))
 
-    flash("Error adding user. Please check the form and try again.", "error")
+    flash("Error creating user. Please check the form and try again.", "error")
     return redirect(url_for("views.register"))
 
 

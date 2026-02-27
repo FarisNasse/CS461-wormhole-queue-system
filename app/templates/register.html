@@ -8,47 +8,29 @@
             <form action="{{ url_for('users.users_add') }}" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <p>
-                    {{ form.name.label }}
+                    {{ form.first_name.label }}
                     <br>
-                    {{ form.name(size=32) }}
+                    {{ form.first_name(size=32) }}
                     <br>
-                    {% for er in form.name.errors %}
+                    {% for er in form.first_name.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
                 </p>
                 <p>
-                    {{ form.username.label }}
+                    {{ form.last_name.label }}
                     <br>
-                    {{ form.username(size=32) }}
+                    {{ form.last_name(size=32) }}
                     <br>
-                    {% for er in form.username.errors %}
+                    {% for er in form.last_name.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
                 </p>
                 <p>
-                    {{ form.email.label }}
+                    {{ form.onid.label }}
                     <br>
-                    {{ form.email(size=32) }}
+                    {{ form.onid(size=32) }}
                     <br>
-                    {% for er in form.email.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.password.label }}
-                    <br>
-                    {{ form.password(size=32) }}
-                    <br>
-                    {% for er in form.password.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.password2.label }}
-                    <br>
-                    {{ form.password2(size=32) }}
-                    <br>
-                    {% for er in form.password2.errors %}
+                    {% for er in form.onid.errors %}
                         <span style="color: red;">[{{ er }}]</span>
                     {% endfor %}
                 </p>
