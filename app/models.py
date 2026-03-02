@@ -54,6 +54,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(sa.String(100), unique=True, index=True)
     password_hash: Mapped[Optional[str]] = mapped_column(sa.String(128))
     is_admin: Mapped[bool] = mapped_column(sa.Boolean, default=False)
+    is_active: Mapped[bool] = mapped_column(sa.Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )

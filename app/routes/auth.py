@@ -33,6 +33,8 @@ def login():
     user = User.query.filter_by(username=username).first()
 
     if user and check_password_hash(user.password_hash, password):
+        if not user.is_active:
+            return jsonify({"error": "This account has been deactivated"}), 401
         session["user_id"] = user.id
         session["is_admin"] = user.is_admin
         return jsonify({"message": "Login successful", "is_admin": user.is_admin}), 200
@@ -55,6 +57,11 @@ def logout():
 @auth_bp.route("/api/check-session", methods=["GET"])
 def check_session():
     if "user_id" in session:
+        # ensure account still exists and is active
+        user = User.query.get(session.get("user_id"))
+        if user is None or not user.is_active:
+            session.clear()
+            return jsonify({"logged_in": False}), 200
         return jsonify(
             {"logged_in": True, "is_admin": session.get("is_admin", False)}
         ), 200

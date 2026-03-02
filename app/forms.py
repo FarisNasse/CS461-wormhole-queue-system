@@ -81,6 +81,32 @@ class ChangePassForm(FlaskForm):
     submit = SubmitField("Change Password")
 
 
+class EditUserForm(FlaskForm):
+    first_name = StringField("First Name", validators=[Optional()])
+    last_name = StringField("Last Name", validators=[Optional()])
+    onid = StringField("ONID", validators=[Optional()])
+    email = StringField("Email", validators=[Optional(), Email()])
+    is_admin = SelectField(
+        "Is Admin",
+        choices=[
+            ("", "Update"),
+            ("true", "True"),
+            ("false", "False"),
+        ],
+        validators=[Optional()],
+    )
+    is_active = SelectField(
+        "Is Active",
+        choices=[
+            ("", "Update"),
+            ("true", "True"),
+            ("false", "False"),
+        ],
+        validators=[Optional()],
+    )
+    submit = SubmitField("Update")
+
+
 class ResolveTicketForm(FlaskForm):
     numStds = IntegerField(
         "Number of Students", validators=[Optional(), NumberRange(min=1)]

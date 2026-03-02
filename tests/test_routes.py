@@ -1,5 +1,8 @@
 # tests/test_routes.py
 
+from app import db
+from app.models import User
+
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
@@ -29,6 +32,21 @@ def test_assistant_login_page_loads(test_client):
     # Check for the specific form title or button in login.html
     assert b"Assistant Login" in response.data
     assert b"Sign In" in response.data
+
+
+def test_assistant_login_inactive_user(test_client, test_app):
+    """Ensure that form-based login rejects inactive users."""
+    with test_app.app_context():
+        u = User(username="inactiveform", email="if@i.com", is_active=False)
+        u.set_password("pass")
+        db.session.add(u)
+        db.session.commit()
+
+    response = test_client.post(
+        "/assistant-login", data={"username": "inactiveform", "password": "pass"}, follow_redirects=True
+    )
+    # should not redirect to hardware_list; instead show error message
+    assert b"This account has been deactivated." in response.data
 
 
 def test_dashboard_is_protected(test_client):
