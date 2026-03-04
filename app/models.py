@@ -61,9 +61,10 @@ class User(Base):
     # Relationships
     tickets: orm.WriteOnlyMapped["Ticket"] = orm.relationship(
         back_populates="wormhole_assistant",
-        passive_deletes=True,
+        passive_deletes="all",
     )
 
+    # Functions
     def __repr__(self) -> str:
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
 
@@ -106,6 +107,7 @@ class Ticket(Base):
         back_populates="tickets"
     )
 
+    # Functions
     def __repr__(self) -> str:
         return f"<Ticket(id={self.id}, student_name={self.student_name}, status={self.status})>"
 
@@ -136,24 +138,27 @@ class Ticket(Base):
         self.status = "in_progress"
         db.session.commit()
 
+class Skipped(Base):
+    __tablename__ = "skipped"
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    
+    # Foreign Keys
+    wa_id: Mapped[int] = mapped_column(
+        sa.ForeignKey("users.id", ondelete="CASCADE"), 
+        index=True
+    )
+    tkt_id: Mapped[int] = mapped_column(
+        sa.ForeignKey("tickets.id", ondelete="CASCADE"), 
+        index=True
+    )
 
-# Old models for reference
+    # Relationships
+    ticket: orm.Mapped["Ticket"] = orm.relationship(
+        back_populates="skipped_by_user",
+    )
+    user: orm.Mapped["User"] = orm.relationship(
+        back_populates="skipped_ticket"
+    )
 
-# class Ticket(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     student_name = db.Column(db.String(80))
-#     table_number = db.Column(db.String(10))
-#     class_name = db.Column(db.String(50))
-#     status = db.Column(db.String(50), default="Open")
-#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-#     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-#     deactivated_at = db.Column(db.DateTime, nullable=True)
-#     num_students = db.Column(db.Integer, nullable=True)
-#     current_ta = db.Column(db.String(80), nullable=True)
-
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(64), unique=True, nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=False)
-#     password_hash = db.Column(db.String(128), nullable=False)
-#     is_admin = db.Column(db.Boolean, default=False)
+    def __repr__(self) -> str:
+        return f"<User {self.wa_id} skipped Ticket {self.tkt_id}>"

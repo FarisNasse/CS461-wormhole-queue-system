@@ -2,7 +2,7 @@
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 
 from app import db
-from app.models import Ticket, User
+from app.models import Ticket, User, Skipped
 from app.routes.queue_events import broadcast_ticket_update
 
 tickets_bp = Blueprint("tickets", __name__, url_prefix="/api")
@@ -58,7 +58,7 @@ def resolve_ticket(ticket_id):
     user = User.query.get(session["user_id"])
     resolved_as = request.form.get("resolve")
 
-    if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue"]:
+    if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue", "skip"]:
         flash("Invalid resolution option selected.", "error")
         return redirect(url_for("views.currentticket", tktid=ticket_id))
     elif resolved_as == "return_to_queue":
@@ -106,6 +106,24 @@ def resolve_ticket(ticket_id):
             db.session.commit()
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as no show and resolved successfully", "success")
+            return redirect(url_for("views.userpage", username=user.username))
+        else:
+            flash("Ticket not found", "error")
+            return redirect(url_for("views.userpage", username=user.username))
+    elif resolved_as == "skip":
+        ticket = Ticket.query.get(ticket_id)
+        if ticket:
+            ticket.status = "live"
+            ticket.wa_id = None
+            ticket.wormhole_assistant = None
+            db.session.commit()
+            broadcast_ticket_update(ticket.id)
+
+            skipped = Skipped(wa_id=user.id, tkt_id=ticket_id)
+            db.session.add(skipped)
+            db.session.commit()
+
+            flash("Ticket skipped and will be handled by another wormhole assistant")
             return redirect(url_for("views.userpage", username=user.username))
         else:
             flash("Ticket not found", "error")
