@@ -55,7 +55,7 @@ def users_add():
             email=email,
             name=full_name,
             is_admin=form.is_admin.data,
-            is_active=True
+            is_active=True,
         )
 
         u.set_password("wormhole")
