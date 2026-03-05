@@ -1,7 +1,7 @@
 # tests/test_auth_utils.py
 
 import pytest
-from flask import Flask, jsonify
+from flask import jsonify
 
 from app.auth_utils import admin_required, login_required
 
