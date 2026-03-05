@@ -62,14 +62,21 @@ def test_dashboard_is_protected(test_client):
     assert response.get_json() == {"error": "Authentication required"}
 
 
-def test_dashboard_access_granted(test_client):
+def test_dashboard_access_granted(test_client, test_app):
     """
     Verify that '/dashboard' allows users who ARE logged in.
     We simulate a login by manually setting the session cookie.
     """
+    with test_app.app_context():
+        u = User(username="testuser", email="test@example.com")
+        u.set_password("password")
+        db.session.add(u)
+        db.session.commit()
+        user_id = u.id
+
     # 1. Simulate a logged-in user by setting the session
     with test_client.session_transaction() as sess:
-        sess["user_id"] = 1  # Fake user ID
+        sess["user_id"] = user_id  # Use real user ID
         sess["is_admin"] = False
 
     # 2. Try to access the dashboard
