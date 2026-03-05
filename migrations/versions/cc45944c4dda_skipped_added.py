@@ -30,10 +30,6 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_skipped_tkt_id'), ['tkt_id'], unique=False)
         batch_op.create_index(batch_op.f('ix_skipped_wa_id'), ['wa_id'], unique=False)
 
-    with op.batch_alter_table('tickets', schema=None) as batch_op:
-        batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(None, 'users', ['wa_id'], ['id'], ondelete='SET NULL')
-
     # ### end Alembic commands ###
 
 

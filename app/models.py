@@ -154,10 +154,10 @@ class Skipped(Base):
 
     # Relationships
     ticket: orm.Mapped["Ticket"] = orm.relationship(
-        back_populates="skipped_by_user",
+        back_populates="skipped_ticket"
     )
     user: orm.Mapped["User"] = orm.relationship(
-        back_populates="skipped_ticket"
+        back_populates="skip_user"
     )
 
     def __repr__(self) -> str:
