@@ -348,7 +348,9 @@ def delete_user(username):
                 # ONID is the username, which is unique and shouldn't be changed easily
                 # For now, we'll skip this or validate it
                 if edit_form.onid.data != u.username:
-                    existing_user = User.query.filter_by(username=edit_form.onid.data).first()
+                    existing_user = User.query.filter_by(
+                        username=edit_form.onid.data
+                    ).first()
                     if existing_user:
                         flash("This ONID is already in use.", "error")
                         return render_template(
@@ -360,7 +362,9 @@ def delete_user(username):
                     u.username = edit_form.onid.data
             if edit_form.email.data:
                 if edit_form.email.data != u.email:
-                    existing_user = User.query.filter_by(email=edit_form.email.data).first()
+                    existing_user = User.query.filter_by(
+                        email=edit_form.email.data
+                    ).first()
                     if existing_user:
                         flash("This email is already in use.", "error")
                         return render_template(

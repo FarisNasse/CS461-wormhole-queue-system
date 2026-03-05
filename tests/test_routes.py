@@ -43,7 +43,9 @@ def test_assistant_login_inactive_user(test_client, test_app):
         db.session.commit()
 
     response = test_client.post(
-        "/assistant-login", data={"username": "inactiveform", "password": "pass"}, follow_redirects=True
+        "/assistant-login",
+        data={"username": "inactiveform", "password": "pass"},
+        follow_redirects=True,
     )
     # should not redirect to hardware_list; instead show error message
     assert b"This account has been deactivated." in response.data
