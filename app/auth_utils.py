@@ -25,6 +25,7 @@ They should be applied to any route that requires authentication, such as:
 from functools import wraps
 
 from flask import jsonify, session
+
 from app.models import User
 
 

@@ -317,15 +317,12 @@ def delete_user(username):
     u = User.query.filter_by(username=username).first()
     if not u:
         abort(404)
-    
     # Parse first and last name from the name field
     name_parts = u.name.split() if u.name else ["", ""]
     first_name = name_parts[0] if len(name_parts) > 0 else ""
     last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
-    
     delete_form = DeleteUserForm()
     edit_form = EditUserForm()
-    
     # Handle POST requests
     if request.method == "POST":
         # Check which form was submitted
@@ -341,14 +338,12 @@ def delete_user(username):
                 return redirect(url_for("views.user_list"))
             else:
                 flash('Please type "DELETE" to confirm user deletion.', "error")
-        
         elif edit_form.submit.data and edit_form.validate():
             # Update user fields based on form data
             if edit_form.first_name.data or edit_form.last_name.data:
                 new_first = edit_form.first_name.data or first_name
                 new_last = edit_form.last_name.data or last_name
                 u.name = f"{new_first} {new_last}".strip()
-            
             if edit_form.onid.data:
                 # ONID is the username, which is unique and shouldn't be changed easily
                 # For now, we'll skip this or validate it
@@ -363,7 +358,6 @@ def delete_user(username):
                             edit_form=edit_form,
                         )
                     u.username = edit_form.onid.data
-            
             if edit_form.email.data:
                 if edit_form.email.data != u.email:
                     existing_user = User.query.filter_by(email=edit_form.email.data).first()
@@ -376,18 +370,14 @@ def delete_user(username):
                             edit_form=edit_form,
                         )
                     u.email = edit_form.email.data
-            
             if edit_form.is_admin.data:
                 u.is_admin = edit_form.is_admin.data == "true"
-            
             if edit_form.is_active.data:
                 u.is_active = edit_form.is_active.data == "true"
-            
             db.session.commit()
             flash("User information has been updated successfully.", "success")
             # Refresh the page with updated data
             return redirect(url_for("views.delete_user", username=u.username))
-    
     user_ns = SimpleNamespace(username=u.username)
     return render_template(
         "delete_user.html",
