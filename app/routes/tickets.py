@@ -2,7 +2,7 @@
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 
 from app import db
-from app.models import Ticket, User, Skipped
+from app.models import Skipped, Ticket, User
 from app.routes.queue_events import broadcast_ticket_update
 
 tickets_bp = Blueprint("tickets", __name__, url_prefix="/api")
@@ -51,7 +51,7 @@ def get_open_tickets():
     # TODO fix this
     # results = get all tickets skipped by current user
     # get all live tickets not
-    
+
     # Get IDs of tickets already skipped by the current user
     skipped_subquery = db.session.query(Skipped.tkt_id)\
         .filter(Skipped.wa_id == session["user_id"])\
@@ -63,7 +63,7 @@ def get_open_tickets():
         .filter_by(status="live")\
         .filter(Ticket.id.notin_(skipped_subquery))\
         .all()
-    
+
     return jsonify([t.to_dict() for t in tickets])
 
 

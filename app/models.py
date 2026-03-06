@@ -65,7 +65,7 @@ class User(Base):
     )
 
     skipped: orm.Mapped["Skipped"] = orm.relationship(
-        back_populates="user"      
+        back_populates="user"
     )
 
     # Functions
@@ -149,14 +149,14 @@ class Ticket(Base):
 class Skipped(Base):
     __tablename__ = "skipped"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    
+
     # Foreign Keys
     wa_id: Mapped[int] = mapped_column(
-        sa.ForeignKey("users.id", ondelete="CASCADE"), 
+        sa.ForeignKey("users.id", ondelete="CASCADE"),
         index=True
     )
     tkt_id: Mapped[int] = mapped_column(
-        sa.ForeignKey("tickets.id", ondelete="CASCADE"), 
+        sa.ForeignKey("tickets.id", ondelete="CASCADE"),
         index=True
     )
 

@@ -23,7 +23,7 @@ from app.forms import (
     ResolveTicketForm,
     TicketForm,
 )
-from app.models import Ticket, User, Skipped
+from app.models import Skipped, Ticket, User
 
 views_bp = Blueprint("views", __name__)
 
