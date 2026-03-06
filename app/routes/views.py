@@ -23,7 +23,7 @@ from app.forms import (
     ResolveTicketForm,
     TicketForm,
 )
-from app.models import Ticket, User
+from app.models import Ticket, User, Skipped
 
 views_bp = Blueprint("views", __name__)
 
@@ -248,6 +248,19 @@ def userpage(username):
         abort(404)
     # Get user's current ticket (if any)
     current_ticket = Ticket.query.filter_by(wa_id=u.id, status="in_progress").first()
+    # All Skipped?
+    # Get IDs of tickets already skipped by the current user
+    skipped_subquery = db.session.query(Skipped.tkt_id)\
+        .filter(Skipped.wa_id == session["user_id"])\
+        .subquery()\
+        .select()
+
+    # Get all live tickets which the current user has not skipped
+    ticket_count = Ticket.query\
+        .filter_by(status="live")\
+        .filter(Ticket.id.notin_(skipped_subquery))\
+        .count()
+    skipped_all = (ticket_count == 0)
     # create minimal surface for template
     user_ns = SimpleNamespace(
         username=u.username,
@@ -257,7 +270,7 @@ def userpage(username):
         all_tkt_assoc_sorted=lambda: [],
     )
     current_user = user_ns
-    return render_template("userpage.html", user=user_ns, current_user=current_user)
+    return render_template("userpage.html", user=user_ns, current_user=current_user, skipped_all=skipped_all)
 
 
 @views_bp.route("/getnewticket/<username>")
@@ -268,12 +281,18 @@ def getnewticket(username):
     if not u:
         abort(404)
 
-    # find the oldest live unassigned ticket
-    t = (
-        Ticket.query.filter_by(status="live", wa_id=None)
-        .order_by(Ticket.created_at)
+    # Get IDs of tickets already skipped by the current user
+    skipped_subquery = db.session.query(Skipped.tkt_id)\
+        .filter(Skipped.wa_id == session["user_id"])\
+        .subquery()\
+        .select()
+
+    # Get the live ticket which the current user has not skipped that is first in line
+    t = Ticket.query\
+        .filter_by(status="live")\
+        .filter(Ticket.id.notin_(skipped_subquery))\
         .first()
-    )
+
     if not t:
         # no tickets available; redirect back to user page
         flash("No available tickets to claim.", "info")

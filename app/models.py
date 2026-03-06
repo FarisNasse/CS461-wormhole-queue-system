@@ -59,9 +59,13 @@ class User(Base):
     )
 
     # Relationships
-    tickets: orm.WriteOnlyMapped["Ticket"] = orm.relationship(
+    ticket: orm.WriteOnlyMapped["Ticket"] = orm.relationship(
         back_populates="wormhole_assistant",
         passive_deletes="all",
+    )
+
+    skipped: orm.Mapped["Skipped"] = orm.relationship(
+        back_populates="user"      
     )
 
     # Functions
@@ -104,7 +108,11 @@ class Ticket(Base):
 
     # Relationships
     wormhole_assistant: Mapped[Optional["User"]] = orm.relationship(
-        back_populates="tickets"
+        back_populates="ticket"
+    )
+
+    skipped: Mapped[Optional["Skipped"]] = orm.relationship(
+        back_populates="ticket"
     )
 
     # Functions
@@ -154,10 +162,10 @@ class Skipped(Base):
 
     # Relationships
     ticket: orm.Mapped["Ticket"] = orm.relationship(
-        back_populates="skipped_ticket"
+        back_populates="skipped"
     )
     user: orm.Mapped["User"] = orm.relationship(
-        back_populates="skip_user"
+        back_populates="skipped"
     )
 
     def __repr__(self) -> str:
