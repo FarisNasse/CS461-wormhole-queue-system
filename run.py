@@ -10,7 +10,14 @@ app = create_app()
 
 @app.shell_context_processor
 def make_shell_context():
-    return {"sa": sa, "orm": orm, "db": db, "User": User, "Ticket": Ticket, "Skipped": Skipped}
+    return {
+        "sa": sa,
+        "orm": orm,
+        "db": db,
+        "User": User,
+        "Ticket": Ticket,
+        "Skipped": Skipped,
+    }
 
 
 if __name__ == "__main__":

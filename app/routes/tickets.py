@@ -53,16 +53,19 @@ def get_open_tickets():
     # get all live tickets not
 
     # Get IDs of tickets already skipped by the current user
-    skipped_subquery = db.session.query(Skipped.tkt_id)\
-        .filter(Skipped.wa_id == session["user_id"])\
-        .subquery()\
+    skipped_subquery = (
+        db.session.query(Skipped.tkt_id)
+        .filter(Skipped.wa_id == session["user_id"])
+        .subquery()
         .select()
+    )
 
     # Get all live tickets which the current user has not skipped
-    tickets = Ticket.query\
-        .filter_by(status="live")\
-        .filter(Ticket.id.notin_(skipped_subquery))\
+    tickets = (
+        Ticket.query.filter_by(status="live")
+        .filter(Ticket.id.notin_(skipped_subquery))
         .all()
+    )
 
     return jsonify([t.to_dict() for t in tickets])
 

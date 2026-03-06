@@ -64,9 +64,7 @@ class User(Base):
         passive_deletes="all",
     )
 
-    skipped: orm.Mapped["Skipped"] = orm.relationship(
-        back_populates="user"
-    )
+    skipped: orm.Mapped["Skipped"] = orm.relationship(back_populates="user")
 
     # Functions
     def __repr__(self) -> str:
@@ -111,9 +109,7 @@ class Ticket(Base):
         back_populates="ticket"
     )
 
-    skipped: Mapped[Optional["Skipped"]] = orm.relationship(
-        back_populates="ticket"
-    )
+    skipped: Mapped[Optional["Skipped"]] = orm.relationship(back_populates="ticket")
 
     # Functions
     def __repr__(self) -> str:
@@ -146,27 +142,22 @@ class Ticket(Base):
         self.status = "in_progress"
         db.session.commit()
 
+
 class Skipped(Base):
     __tablename__ = "skipped"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     # Foreign Keys
     wa_id: Mapped[int] = mapped_column(
-        sa.ForeignKey("users.id", ondelete="CASCADE"),
-        index=True
+        sa.ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     tkt_id: Mapped[int] = mapped_column(
-        sa.ForeignKey("tickets.id", ondelete="CASCADE"),
-        index=True
+        sa.ForeignKey("tickets.id", ondelete="CASCADE"), index=True
     )
 
     # Relationships
-    ticket: orm.Mapped["Ticket"] = orm.relationship(
-        back_populates="skipped"
-    )
-    user: orm.Mapped["User"] = orm.relationship(
-        back_populates="skipped"
-    )
+    ticket: orm.Mapped["Ticket"] = orm.relationship(back_populates="skipped")
+    user: orm.Mapped["User"] = orm.relationship(back_populates="skipped")
 
     def __repr__(self) -> str:
         return f"<User {self.wa_id} skipped Ticket {self.tkt_id}>"
