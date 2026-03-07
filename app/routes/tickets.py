@@ -45,17 +45,20 @@ def create_ticket():
     return jsonify(new_ticket.to_dict()), 201
 
 
-# GET: API route to get all open tickets
-@tickets_bp.route("/opentickets", methods=["GET"])
-def get_open_tickets():
-    # TODO fix this
-    # results = get all tickets skipped by current user
+# GET: API route to get all open tickets that the current user has not skipped
+@tickets_bp.route("/unskippedtickets", methods=["GET"])
+def get_unskipped_tickets():
+    
+    # skipped_subquery = get all tickets skipped by current user
     # get all live tickets not
+    user_id = session["user_id"]
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
 
     # Get IDs of tickets already skipped by the current user
     skipped_subquery = (
         db.session.query(Skipped.tkt_id)
-        .filter(Skipped.wa_id == session["user_id"])
+        .filter(Skipped.wa_id == user_id)
         .subquery()
         .select()
     )
@@ -64,6 +67,18 @@ def get_open_tickets():
     tickets = (
         Ticket.query.filter_by(status="live")
         .filter(Ticket.id.notin_(skipped_subquery))
+        .all()
+    )
+
+    return jsonify([t.to_dict() for t in tickets])
+
+# GET: API route to get all open tickets
+@tickets_bp.route("/opentickets", methods=["GET"])
+def get_open_tickets():
+
+    # Get all live tickets
+    tickets = (
+        Ticket.query.filter_by(status="live")
         .all()
     )
 
