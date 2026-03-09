@@ -170,6 +170,7 @@
     height: auto;
     min-height: 350px;
     text-indent: 10px;
+    vertical-align: top;
 }
 
 
@@ -393,4 +394,21 @@
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 4px;
+}
+
+.user-tables {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin: 15px;
+}
+
+.user-tables table {
+    border-collapse: collapse;
+}
+
+.user-tables th {
+    text-align: center;
+    font-size: 1.2em;
+    padding-bottom: 8px;
 }

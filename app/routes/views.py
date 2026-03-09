@@ -447,11 +447,23 @@ def getnewticket(username):
 @views_bp.route("/user_list")
 @admin_required
 def user_list():
-    users = User.query.all()
-    # Separate active and inactive users
-    new_users = [SimpleNamespace(username=u.username) for u in users if u.is_active]
-    old_users = [SimpleNamespace(username=u.username) for u in users if not u.is_active]
-    return render_template("user_list.html", new_users=new_users, old_users=old_users)
+
+    current_users = User.query.filter_by(is_active=True).all()
+    old_users = User.query.filter_by(is_active=False).all()
+
+    def last_name(user):
+        if not user.name:
+            return ""
+        return user.name.split()[-1].lower()
+
+    new_users = sorted(current_users, key=last_name)
+    old_users = sorted(old_users, key=last_name)
+
+    return render_template(
+        "user_list.html",
+        new_users=new_users,
+        old_users=old_users
+    )
 
 
 @views_bp.route("/register", methods=["GET"])
