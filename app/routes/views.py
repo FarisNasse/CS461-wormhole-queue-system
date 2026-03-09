@@ -459,11 +459,7 @@ def user_list():
     new_users = sorted(current_users, key=last_name)
     old_users = sorted(old_users, key=last_name)
 
-    return render_template(
-        "user_list.html",
-        new_users=new_users,
-        old_users=old_users
-    )
+    return render_template("user_list.html", new_users=new_users, old_users=old_users)
 
 
 @views_bp.route("/register", methods=["GET"])
