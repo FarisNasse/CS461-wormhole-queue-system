@@ -26,6 +26,7 @@ from app.auth_utils import admin_required, login_required
 from app.forms import (
     ChangePassForm,
     DeleteUserForm,
+    EditUserForm,
     ExportArchiveForm,
     FlushQueueForm,
     LoginForm,
@@ -239,6 +240,9 @@ def assistant_login():
         password = form.password.data
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
+            if not user.is_active:
+                flash("This account has been deactivated.", "error")
+                return render_template("login.html", form=form)
             session["user_id"] = user.id
             session["is_admin"] = user.is_admin
             if user.is_admin:
@@ -444,8 +448,9 @@ def getnewticket(username):
 @admin_required
 def user_list():
     users = User.query.all()
-    new_users = [SimpleNamespace(username=u.username) for u in users]
-    old_users = []
+    # Separate active and inactive users
+    new_users = [SimpleNamespace(username=u.username) for u in users if u.is_active]
+    old_users = [SimpleNamespace(username=u.username) for u in users if not u.is_active]
     return render_template("user_list.html", new_users=new_users, old_users=old_users)
 
 
@@ -469,10 +474,17 @@ def delete_user(username):
     u = User.query.filter_by(username=username).first()
     if not u:
         abort(404)
-    form = DeleteUserForm()
+    # Parse first and last name from the name field
+    name_parts = u.name.split() if u.name else ["", ""]
+    first_name = name_parts[0] if len(name_parts) > 0 else ""
+    last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+    delete_form = DeleteUserForm()
+    edit_form = EditUserForm()
+    # Handle POST requests
     if request.method == "POST":
-        if form.validate_on_submit():
-            if form.confirm.data == "DELETE":
+        # Check which form was submitted
+        if delete_form.submit.data and delete_form.validate():
+            if delete_form.confirm.data == "DELETE":
                 username_to_delete = u.username
                 db.session.delete(u)
                 db.session.commit()
@@ -483,8 +495,65 @@ def delete_user(username):
                 return redirect(url_for("views.user_list"))
             else:
                 flash('Please type "DELETE" to confirm user deletion.', "error")
+        elif edit_form.submit.data and edit_form.validate():
+            # Update user fields based on form data
+            if edit_form.first_name.data or edit_form.last_name.data:
+                new_first = edit_form.first_name.data or first_name
+                new_last = edit_form.last_name.data or last_name
+                u.name = f"{new_first} {new_last}".strip()
+            if edit_form.onid.data:
+                # ONID is the username, which is unique and shouldn't be changed easily
+                # For now, we'll skip this or validate it
+                if edit_form.onid.data != u.username:
+                    existing_user = User.query.filter_by(
+                        username=edit_form.onid.data
+                    ).first()
+                    if existing_user:
+                        flash("This ONID is already in use.", "error")
+                        return render_template(
+                            "delete_user.html",
+                            user=SimpleNamespace(username=u.username),
+                            delete_form=delete_form,
+                            edit_form=edit_form,
+                        )
+                    u.username = edit_form.onid.data
+            if edit_form.email.data:
+                if edit_form.email.data != u.email:
+                    existing_user = User.query.filter_by(
+                        email=edit_form.email.data
+                    ).first()
+                    if existing_user:
+                        flash("This email is already in use.", "error")
+                        return render_template(
+                            "delete_user.html",
+                            user=SimpleNamespace(username=u.username),
+                            delete_form=delete_form,
+                            edit_form=edit_form,
+                        )
+                    u.email = edit_form.email.data
+            if edit_form.is_admin.data:
+                u.is_admin = edit_form.is_admin.data == "true"
+            if edit_form.is_active.data:
+                u.is_active = edit_form.is_active.data == "true"
+            db.session.commit()
+            flash("User information has been updated successfully.", "success")
+            # Refresh the page with updated data
+            return redirect(url_for("views.delete_user", username=u.username))
     user_ns = SimpleNamespace(username=u.username)
-    return render_template("delete_user.html", user=user_ns, form=form)
+    return render_template(
+        "delete_user.html",
+        user=user_ns,
+        delete_form=delete_form,
+        edit_form=edit_form,
+        user_data=SimpleNamespace(
+            first_name=first_name,
+            last_name=last_name,
+            onid=u.username,
+            email=u.email,
+            is_admin=u.is_admin,
+            is_active=u.is_active,
+        ),
+    )
 
 
 @views_bp.route("/changepass", methods=["GET", "POST"])

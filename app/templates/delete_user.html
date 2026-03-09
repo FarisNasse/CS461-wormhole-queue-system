@@ -1,27 +1,103 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="page">
-        <div class="section generic">
-            <h1>
-                Delete User: {{ user.username }}
-            </h1>
-            <form action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
-                <p>
-                    Deleting {{ user.username }} will remove them permanently. Type "DELETE" to confirm user deletion.
-                </p>
-                <p>
-                    {{ form.confirm.label }}
-                    {{ form.confirm(size=20) }}
-                    <br>
-                    {% for er in form.confirm.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.submit() }}
-                </p>
-            </form>
-        </div>
+        <h1 style = "color: white;">
+            Manage User: {{ user.username }}
+        </h1>
     </div>
+    <div class="page">
+        <div class="section profile" style="flex: 1; min-width: 300px; margin-right: 20px;">
+                    <h2>Edit User Information</h2>
+                    <form action="{{ url_for('views.delete_user', username=user.username) }}" method="post" novalidate>
+                        {{ edit_form.hidden_tag() }}
+                        
+                        <p>
+                            {{ edit_form.first_name.label }}
+                            {{ edit_form.first_name(size=20) }}
+                            {% for er in edit_form.first_name.errors %}
+                                <span style="color: red;">[{{ er }}]</span>
+                            {% endfor %}
+                            <br>
+                            <small>Current: {{ user_data.first_name }}</small>
+                        </p>
+                        
+                        <p>
+                            {{ edit_form.last_name.label }}
+                            {{ edit_form.last_name(size=20) }}
+                            {% for er in edit_form.last_name.errors %}
+                                <span style="color: red;">[{{ er }}]</span>
+                            {% endfor %}
+                            <br>
+                            <small>Current: {{ user_data.last_name }}</small>
+                        </p>
+                        
+                        <p>
+                            {{ edit_form.onid.label }}
+                            {{ edit_form.onid(size=20) }}
+                            {% for er in edit_form.onid.errors %}
+                                <span style="color: red;">[{{ er }}]</span>
+                            {% endfor %}
+                            <br>
+                            <small>Current: {{ user_data.onid }}</small>
+                        </p>
+                        
+                        <p>
+                            {{ edit_form.email.label }}
+                            {{ edit_form.email(size=20) }}
+                            {% for er in edit_form.email.errors %}
+                                <span style="color: red;">[{{ er }}]</span>
+                            {% endfor %}
+                            <br>
+                            <small>Current: {{ user_data.email }}</small>
+                        </p>
+                        
+                        <p>
+                            {{ edit_form.is_admin.label }}
+                            {{ edit_form.is_admin() }}
+                            {% for er in edit_form.is_admin.errors %}
+                                <span style="color: red;">[{{ er }}]</span>
+                            {% endfor %}
+                            <br>
+                            <small>Current: {% if user_data.is_admin %}True{% else %}False{% endif %}</small>
+                        </p>
+                        
+                        <p>
+                            {{ edit_form.is_active.label }}
+                            {{ edit_form.is_active() }}
+                            {% for er in edit_form.is_active.errors %}
+                                <span style="color: red;">[{{ er }}]</span>
+                            {% endfor %}
+                            <br>
+                            <small>Current: {% if user_data.is_active %}True{% else %}False{% endif %}</small>
+                        </p>
+                        
+                        <p>
+                            {{ edit_form.submit() }}
+                        </p>
+                    </form>
+                </div>
+                
+                <!-- Right side: Delete User Form -->
+                <div class="section generic" style="flex: 1; min-width: 300px;">
+                    <h2>Delete User</h2>
+                    <form action="{{ url_for('views.delete_user', username=user.username) }}" method="post" novalidate>
+                        {{ delete_form.hidden_tag() }}
+                        <p>
+                            Deleting {{ user.username }} will remove them permanently. Type "DELETE" to confirm user deletion.
+                        </p>
+                        <p>
+                            {{ delete_form.confirm.label }}
+                            {{ delete_form.confirm(size=20) }}
+                            <br>
+                            {% for er in delete_form.confirm.errors %}
+                                <span style="color: red;">[{{ er }}]</span>
+                            {% endfor %}
+                        </p>
+                        <p>
+                            {{ delete_form.submit() }}
+                        </p>
+                    </form>
+                </div>
+            </div>
+
 {% endblock %}

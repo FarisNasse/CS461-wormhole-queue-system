@@ -26,6 +26,8 @@ from functools import wraps
 
 from flask import jsonify, session
 
+from app.models import User
+
 
 def login_required(f):
     """
@@ -53,6 +55,12 @@ def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if "user_id" not in session:
+            return jsonify({"error": "Authentication required"}), 401
+
+        # check whether account still exists and is active
+        user = User.query.get(session.get("user_id"))
+        if user is None or not user.is_active:
+            session.clear()
             return jsonify({"error": "Authentication required"}), 401
 
         return f(*args, **kwargs)
@@ -90,8 +98,13 @@ def admin_required(f):
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        # Step 1: Must be logged in
+        # Step 1: Must be logged in and active
         if "user_id" not in session:
+            return jsonify({"error": "Authentication required"}), 401
+
+        user = User.query.get(session.get("user_id"))
+        if user is None or not user.is_active:
+            session.clear()
             return jsonify({"error": "Authentication required"}), 401
 
         # Step 2: Must have admin privileges
