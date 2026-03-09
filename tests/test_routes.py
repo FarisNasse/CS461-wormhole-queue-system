@@ -39,16 +39,44 @@ def test_assistant_login_page_loads(test_client):
     assert b"Assistant Login" in response.data
 
 
+def test_assistant_login_inactive_user(test_client, test_app):
+    """Ensure that form-based login rejects inactive users."""
+    with test_app.app_context():
+        u = User(username="inactiveform", email="if@i.com", is_active=False)
+        u.set_password("pass")
+        db.session.add(u)
+        db.session.commit()
+
+    response = test_client.post(
+        "/assistant-login",
+        data={"username": "inactiveform", "password": "pass"},
+        follow_redirects=True,
+    )
+    # should not redirect to hardware_list; instead show error message
+    assert b"This account has been deactivated." in response.data
+
+
 def test_dashboard_is_protected(test_client):
     """Verify that '/dashboard' blocks users who are NOT logged in."""
     response = test_client.get("/dashboard")
     assert response.status_code == 401
 
 
-def test_dashboard_access_granted(test_client):
-    """Verify that '/dashboard' allows users who ARE logged in."""
+def test_dashboard_access_granted(test_client, test_app):
+    """
+    Verify that '/dashboard' allows users who ARE logged in.
+    We simulate a login by manually setting the session cookie.
+    """
+    with test_app.app_context():
+        u = User(username="testuser", email="test@example.com")
+        u.set_password("password")
+        db.session.add(u)
+        db.session.commit()
+        user_id = u.id
+
+    # 1. Simulate a logged-in user by setting the session
     with test_client.session_transaction() as sess:
-        sess["user_id"] = 1
+        sess["user_id"] = user_id  # Use real user ID
         sess["is_admin"] = False
     response = test_client.get("/dashboard")
     assert response.status_code == 200
@@ -229,11 +257,9 @@ def test_flash_message_category_rendering(test_client):
 
     # 3. Now trigger the 'success' flash via user registration
     data = {
-        "name": "Test User",
-        "username": "testflash",
-        "email": "flash@test.com",
-        "password": "password123",
-        "password2": "password123",
+        "first_name": "Test",
+        "last_name": "User",
+        "onid": "testflash",
         "is_admin": False,
     }
 
@@ -243,4 +269,4 @@ def test_flash_message_category_rendering(test_client):
     # 4. Assertions
     assert response.status_code == 200
     assert b'class="flash-success"' in response.data
-    assert b"User added successfully!" in response.data
+    assert b"User created successfully!" in response.data

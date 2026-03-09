@@ -89,6 +89,22 @@ def test_login_missing_fields(test_client):
     assert response.status_code in (400, 401)
 
 
+def test_login_rejects_inactive_user(test_client, test_app):
+    """Users with is_active=False must not be able to log in."""
+    with test_app.app_context():
+        u = User(username="inactive", email="i@i.com", is_active=False)
+        u.set_password("password123")
+        db.session.add(u)
+        db.session.commit()
+
+    response = test_client.post(
+        "/api/login", json={"username": "inactive", "password": "password123"}
+    )
+    assert response.status_code == 401
+    data = response.get_json()
+    assert data["error"] == "This account has been deactivated"
+
+
 def test_login_returns_admin_flag(test_client, test_app):
     """Verify that admin flag is correctly returned after login."""
     with test_app.app_context():

@@ -30,7 +30,7 @@
                     {% for u in old_users %}
                         <tr>
                             <td>
-                                <a href="{{ url_for('views.delete_user', username=u.username) }}">{{ u.username }} (Last Seen: {{ u.last_login.date() }})</a>
+                                <a href="{{ url_for('views.delete_user', username=u.username) }}">{{ u.username }} (Inactive)</a>
                             </td>
                         </tr>
                     {% endfor %}
