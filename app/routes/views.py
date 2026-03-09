@@ -447,7 +447,6 @@ def getnewticket(username):
 @views_bp.route("/user_list")
 @admin_required
 def user_list():
-
     current_users = User.query.filter_by(is_active=True).all()
     old_users = User.query.filter_by(is_active=False).all()
 
