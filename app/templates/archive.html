@@ -2,40 +2,37 @@
 {% block content %}
     <div class="page">
         <div class="section generic">
-            <br />
             <h2>
-                Ticket Archive
+                Data Archive Export
             </h2>
             <p>
-                <table style="display:inline-block;">
-                    <tr>
-                        <th>
-                            Ticket Data
-                        </th>
-                    </tr>
-                    {% for tn in tkt_list %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('protected', filename= 'tickets/'+tn) }}">{{ tn }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-                <table style="display:inline-block;">
-                    <tr>
-                        <th>
-                            Association Data
-                        </th>
-                    </tr>
-                    {% for an in assoc_list %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('protected', filename= 'associations/'+an) }}">{{ an }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
+                Select a time period to export closed ticket data.
             </p>
+            <h3>
+                Export Configuration
+            </h3>
+            <form action="{{ url_for('views.export_archive') }}" method="post">
+                {{ form.hidden_tag() }}
+                <div style="margin-bottom: 1rem;">
+                    {{ form.start_date.label() }}
+                    {{ form.start_date(type="date") }}
+                    {% for error in form.start_date.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    {{ form.end_date.label() }}
+                    {{ form.end_date(type="date") }}
+                    {% for error in form.end_date.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn-success">
+                        Download CSV
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 {% endblock %}

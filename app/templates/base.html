@@ -55,12 +55,14 @@
                 </div>
             </div>
         </div>
-        {% with messages = get_flashed_messages() %}
+        {# Update get_flashed_messages to include categories (success, error, info) #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class ="section message">
                     <ul>
-                        {% for ms in messages %}
-                            <li>
+                        {% for category, ms in messages %}
+                            {# Apply a class based on the category (e.g., flash-success, flash-error) #}
+                            <li class="flash-{{ category }}">
                                 {{ ms }}
                             </li>
                         {% endfor %}
