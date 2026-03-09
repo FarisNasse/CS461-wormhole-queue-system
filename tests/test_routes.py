@@ -4,9 +4,6 @@ from datetime import datetime, timedelta, timezone
 from app import db
 from app.models import Ticket, User
 
-from app import db
-from app.models import User
-
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
@@ -260,11 +257,9 @@ def test_flash_message_category_rendering(test_client):
 
     # 3. Now trigger the 'success' flash via user registration
     data = {
-        "name": "Test User",
-        "username": "testflash",
-        "email": "flash@test.com",
-        "password": "password123",
-        "password2": "password123",
+        "first_name": "Test",
+        "last_name": "User",
+        "onid": "testflash",
         "is_admin": False,
     }
 
@@ -274,4 +269,4 @@ def test_flash_message_category_rendering(test_client):
     # 4. Assertions
     assert response.status_code == 200
     assert b'class="flash-success"' in response.data
-    assert b"User added successfully!" in response.data
+    assert b"User created successfully!" in response.data
