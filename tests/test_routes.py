@@ -129,6 +129,38 @@ def test_flush_route(test_client):
         assert now - closed_at_aware < timedelta(minutes=1)
 
 
+def test_clear_queue_route_resets_ticket_index(test_client):
+    """Clear queue should permanently remove tickets and restart IDs at 1."""
+    admin = User(username="admin_clear", email="clear@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+
+    t1 = Ticket(student_name="S1", table="T1", physics_course="Ph 211", status="live")
+    t2 = Ticket(student_name="S2", table="T2", physics_course="Ph 212", status="closed")
+    db.session.add_all([t1, t2])
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.post("/clear_queue", follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Queue data cleared permanently" in response.data
+
+    assert Ticket.query.count() == 0
+
+    new_ticket = Ticket(
+        student_name="AfterClear",
+        table="T9",
+        physics_course="Ph 213",
+        status="live",
+    )
+    db.session.add(new_ticket)
+    db.session.commit()
+    assert new_ticket.id == 1
+
+
 def test_export_archive(test_client):
     """Test archive export generates CSV with correct content."""
     admin = User(username="admin_arch", email="arch@test.com", is_admin=True)

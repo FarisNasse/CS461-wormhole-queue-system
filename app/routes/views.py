@@ -19,12 +19,13 @@ from flask import (
 )
 
 # Explicit imports for SQLAlchemy operators to ensure compatibility
-from sqlalchemy import and_, func, or_
+from sqlalchemy import and_, func, or_, text
 
 from app import db
 from app.auth_utils import admin_required, login_required
 from app.forms import (
     ChangePassForm,
+    ClearQueueForm,
     DeleteUserForm,
     EditUserForm,
     ExportArchiveForm,
@@ -62,6 +63,15 @@ def is_safe_url(target):
 def _ticket_to_ns(ticket: Ticket):
     if ticket is None:
         return None
+    closed_by_name = (
+        ticket.wormhole_assistant.name
+        if ticket.wormhole_assistant and ticket.wormhole_assistant.name
+        else (
+            ticket.wormhole_assistant.username
+            if ticket.wormhole_assistant
+            else "Unassigned"
+        )
+    )
     return SimpleNamespace(
         id=ticket.id,
         name=ticket.student_name,
@@ -69,6 +79,8 @@ def _ticket_to_ns(ticket: Ticket):
         phClass=ticket.physics_course,
         time_create=ticket.created_at,
         num_students=ticket.number_of_students,
+        closed_reason=ticket.closed_reason,
+        closed_by=closed_by_name,
     )
 
 
@@ -131,12 +143,19 @@ def queue():
     cul = [_ticket_to_ns(t) for t in current_tickets]
     cll = [_ticket_to_ns(t) for t in closed_tickets]
 
-    # Use the dedicated form for the flush action (CSRF only)
-    form = FlushQueueForm()
+    # Use dedicated CSRF-protected forms for admin queue actions
+    flush_form = FlushQueueForm()
+    clear_form = ClearQueueForm()
 
     # Pass the real user object so permissions and usernames are correct in the template
     return render_template(
-        "queue.html", ol=ol, cul=cul, cll=cll, user=current_user_obj, form=form
+        "queue.html",
+        ol=ol,
+        cul=cul,
+        cll=cll,
+        user=current_user_obj,
+        flush_form=flush_form,
+        clear_form=clear_form,
     )
 
 
@@ -171,11 +190,45 @@ def flush():
     return redirect(url_for("views.queue"))
 
 
-@views_bp.route("/anonymize")
-@login_required
-def anonymize():
-    # Placeholder for anonymizing closed tickets
-    flash("Closed tickets anonymized", "info")
+@views_bp.route("/clear_queue", methods=["POST"])
+@admin_required
+def clear_queue():
+    """Permanently clear all queue ticket rows and reset ticket indexing."""
+    form = ClearQueueForm()
+    if not form.validate_on_submit():
+        flash("Invalid request or session expired.", "error")
+        return redirect(url_for("views.queue"))
+
+    cleared_count = Ticket.query.count()
+    bind = db.session.get_bind()
+    dialect_name = bind.dialect.name if bind and bind.dialect else ""
+
+    try:
+        if dialect_name == "postgresql":
+            db.session.execute(text("TRUNCATE TABLE tickets RESTART IDENTITY CASCADE"))
+        elif dialect_name in {"mysql", "mariadb"}:
+            db.session.execute(text("TRUNCATE TABLE tickets"))
+        else:
+            Ticket.query.delete(synchronize_session=False)
+            if dialect_name == "sqlite":
+                # Reset SQLite AUTOINCREMENT sequence (if sqlite_sequence exists).
+                try:
+                    db.session.execute(
+                        text("DELETE FROM sqlite_sequence WHERE name = 'tickets'")
+                    )
+                except Exception:
+                    pass
+
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        flash("Unable to clear queue data.", "error")
+        return redirect(url_for("views.queue"))
+
+    flash(
+        f"Queue data cleared permanently. {cleared_count} tickets removed.",
+        "info",
+    )
     return redirect(url_for("views.queue"))
 
 
@@ -630,6 +683,9 @@ def pastticket(username, tktid):
         # Delegate closing logic to the model method
         # Standardize num_stds retrieval logic
         num_stds = form.numStds.data if form.numStds.data is not None else 1
+
+        # Persist the user performing the close so history can show who resolved it.
+        t.wa_id = current_user_obj.id
 
         t.close_ticket(closed_reason=form.resolveReason.data, num_students=num_stds)
 

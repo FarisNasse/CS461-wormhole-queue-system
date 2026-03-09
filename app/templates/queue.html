@@ -9,6 +9,30 @@
             <h2>
                 Queue Dashboard
             </h2>
+            {% if user.is_admin %}
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <form action="{{ url_for('views.flush') }}"
+                          method="post"
+                          style="display:inline">
+                        {{ flush_form.hidden_tag() }}
+                        <button type="submit"
+                                class="btn-delete"
+                                onclick="return confirm('Are you sure you want to close all active tickets?');">
+                            Flush Queue
+                        </button>
+                    </form>
+                    <form action="{{ url_for('views.clear_queue') }}"
+                          method="post"
+                          style="display:inline">
+                        {{ clear_form.hidden_tag() }}
+                        <button type="submit"
+                                class="btn-delete"
+                                onclick="return confirm('The tickets will be permanently cleared. Make sure to create ticket archive to save history. Would you like to clear the queue data?');">
+                            Clear Queue
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
             <h3>
                 Open Tickets
             </h3>
@@ -39,25 +63,12 @@
             <ul>
                 {% for tk in cll %}
                     <li>
-                        {{ tk.name }} - {{ tk.time_create }}
+                        {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students or 1 }} - {{ tk.closed_by }}
                     </li>
                 {% endfor %}
             </ul>
             <div style="margin-top: 20px;">
                 <a href="{{ url_for('views.hardware_list') }}">Back to Hardware List</a>
-                {% if user.is_admin %}
-                    <span style="margin: 0 10px;">|</span>
-                    <form action="{{ url_for('views.flush') }}"
-                          method="post"
-                          style="display:inline">
-                        {{ form.hidden_tag() }}
-                        <button type="submit"
-                                class="btn-delete"
-                                onclick="return confirm('Are you sure you want to close all active tickets?');">
-                            Flush Queue
-                        </button>
-                    </form>
-                {% endif %}
             </div>
         </div>
     </div>
