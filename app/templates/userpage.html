@@ -9,14 +9,7 @@
 {% block content %}
     <div class="page">
         <div class="section tickets">
-            {% if user.tkt is none %}
-                <h2 style="text-align:center">
-                    Tickets (<span id='ticket-count'></span>)
-                </h2>
-                <h4 style="text-align:center">
-                    <a href="{{ url_for('views.getnewticket', username=user.username) }}">Get Next Request</a>
-                </h4>
-            {% else %}
+            {% if user.tkt is not none %}
                 <h4 style="text-align:center; margin-bottom: 5px;">
                     <a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}">Resolve Current Request</a>
                 </h4>
@@ -38,6 +31,13 @@
                     <br>
                     Class: {{ user.tkt.physics_course }}
                 </p>
+            {% else %}
+                <h2 style="text-align:center">
+                    Tickets (<span id='ticket-count'></span>)
+                </h2>
+                <h4 id="get-new-ticket" style="text-align:center">
+                    <a href="{{ url_for('views.getnewticket', username=user.username) }}">Get Next Request</a>
+                </h4>
             {% endif %}
         </div>
         <div class="section profile">
