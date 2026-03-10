@@ -48,7 +48,6 @@ def create_ticket():
 # GET: API route to get all open tickets that the current user has not skipped
 @tickets_bp.route("/unskippedtickets", methods=["GET"])
 def get_unskipped_tickets():
-    
     # skipped_subquery = get all tickets skipped by current user
     # get all live tickets not
     user_id = session["user_id"]
@@ -72,15 +71,12 @@ def get_unskipped_tickets():
 
     return jsonify([t.to_dict() for t in tickets])
 
+
 # GET: API route to get all open tickets
 @tickets_bp.route("/opentickets", methods=["GET"])
 def get_open_tickets():
-
     # Get all live tickets
-    tickets = (
-        Ticket.query.filter_by(status="live")
-        .all()
-    )
+    tickets = Ticket.query.filter_by(status="live").all()
 
     return jsonify([t.to_dict() for t in tickets])
 
