@@ -226,6 +226,188 @@
 }
 
 
+.wiki-page {
+    margin-top: 20px;
+}
+
+
+.wiki-shell {
+    width: 100%;
+    height: auto;
+    min-height: 450px;
+    text-indent: 0;
+    padding: 18px 22px;
+}
+
+
+.wiki-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+.wiki-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 2px dashed #002147;
+}
+
+
+.wiki-header h1 {
+    color: #10233b;
+    margin-bottom: 8px;
+}
+
+
+.wiki-header .subtitle {
+    color: #1e2c3d;
+}
+
+
+.wiki-search-section {
+    margin-bottom: 22px;
+    text-align: center;
+}
+
+
+.wiki-search-input {
+    width: 100%;
+    max-width: 540px;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid #9cb2ca;
+    border-radius: 8px;
+}
+
+
+.wiki-content {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 24px;
+}
+
+
+.wiki-sidebar {
+    background: #f5f8fc;
+    border: 1px solid #d4e0ed;
+    border-radius: 10px;
+    padding: 14px;
+    align-self: start;
+}
+
+
+.wiki-nav h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #10233b;
+}
+
+
+.wiki-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+.wiki-nav-list li {
+    margin-bottom: 8px;
+}
+
+
+.wiki-nav-list .nav-link {
+    display: block;
+    text-decoration: none;
+    color: #002147;
+    padding: 6px 9px;
+    border-radius: 6px;
+}
+
+
+.wiki-nav-list .nav-link:hover {
+    background: #eaf1f8;
+}
+
+
+.wiki-main {
+    min-width: 0;
+}
+
+
+.wiki-section {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #d6e1ec;
+}
+
+
+.wiki-section:last-of-type {
+    border-bottom: 0;
+}
+
+
+.wiki-section h2,
+.wiki-section h3,
+.wiki-section h4 {
+    color: #10233b;
+    margin-bottom: 10px;
+}
+
+
+.wiki-section p,
+.wiki-section li {
+    color: #1e2c3d;
+    line-height: 1.55;
+}
+
+
+.wiki-section p {
+    margin-bottom: 10px;
+}
+
+
+.wiki-section ul,
+.wiki-section ol {
+    padding-left: 24px;
+    margin: 8px 0 10px;
+}
+
+
+.wiki-footer {
+    text-align: center;
+    margin-top: 26px;
+    padding-top: 14px;
+    border-top: 1px solid #d6e1ec;
+}
+
+
+.back-to-top {
+    color: #002147;
+    text-decoration: none;
+    border: 1px solid #8ea8c3;
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+
+
+.back-to-top:hover {
+    background: #eaf1f8;
+}
+
+
+@media only screen and (width <= 960px) {
+    .wiki-content {
+        grid-template-columns: 1fr;
+    }
+
+
+    .wiki-sidebar {
+        margin-bottom: 8px;
+    }
+}
+
+
 .live-queue {
     background: #FFF;
     display: flex;
@@ -277,6 +459,16 @@
 }
 
 
+.subsection {
+    margin-bottom: 25px;
+}
+
+
+.subsection:last-child {
+    margin-bottom: 0;
+}
+
+
 .wormhole-content .subsection {
     margin-bottom: 28px;
     padding: 4px 2px;
@@ -309,37 +501,27 @@
 }
 
 
-.subsection {
-    margin-bottom: 25px;
-}
-
-
-.subsection:last-child {
-    margin-bottom: 0;
-}
-
-
-.Wormhole-Schedule {
+.wormhole-content .wormhole-schedule {
     padding: 10px 0;
 }
 
 
-.Wormhole-Schedule h3,
-.Wormhole-Schedule h4 {
+.wormhole-content .wormhole-schedule h3,
+.wormhole-content .wormhole-schedule h4 {
     color: #10233b;
     margin-bottom: 10px;
 }
 
 
-.Wormhole-Schedule p,
-.Wormhole-Schedule li {
+.wormhole-content .wormhole-schedule p,
+.wormhole-content .wormhole-schedule li {
     color: #1e2c3d;
     font-size: 1rem;
     line-height: 1.55;
 }
 
 
-.Wormhole-Schedule p {
+.wormhole-content .wormhole-schedule p {
     max-width: none;
     margin-left: 0;
     margin-right: 0;
@@ -347,13 +529,13 @@
 }
 
 
-.Wormhole-Schedule ul {
+.wormhole-content .wormhole-schedule ul {
     padding-left: 24px;
     margin: 8px 0 14px;
 }
 
 
-.Wormhole-Schedule iframe {
+.wormhole-content .wormhole-schedule iframe {
     margin-top: 14px;
     border: 1px solid #bccfe3 !important;
     border-radius: 10px;
@@ -409,7 +591,7 @@
 }
 
 
-.tick-info p {
+.section.tick-info p {
     padding-top: 1.5cm;
 }
 
