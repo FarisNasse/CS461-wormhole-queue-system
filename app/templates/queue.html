@@ -6,14 +6,14 @@
 {% block content %}
     <div class="page">
         <div class="section generic">
-            <h2>
+            <h2 class="queue-dashboard-title">
                 Queue Dashboard
             </h2>
             {% if user.is_admin %}
-                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <div class="queue-admin-actions">
                     <form action="{{ url_for('views.flush') }}"
                           method="post"
-                          style="display:inline">
+                          class="queue-admin-action-form">
                         {{ flush_form.hidden_tag() }}
                         <button type="submit"
                                 class="btn-delete"
@@ -23,7 +23,7 @@
                     </form>
                     <form action="{{ url_for('views.clear_queue') }}"
                           method="post"
-                          style="display:inline">
+                          class="queue-admin-action-form">
                         {{ clear_form.hidden_tag() }}
                         <button type="submit"
                                 class="btn-delete"
@@ -33,41 +33,47 @@
                     </form>
                 </div>
             {% endif %}
-            <h3>
-                Open Tickets
-            </h3>
-            <ul>
-                {% for tk in ol %}
-                    <li>
-                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}">
-                            {{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-            <h3>
-                Current Tickets (In Progress)
-            </h3>
-            <ul>
-                {% for tk in cul %}
-                    <li>
-                        <a href="{{ url_for('views.currentticket', tktid=tk.id) }}">
-                            {{ tk.name }} (Table {{ tk.table }})
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-            <h3>
-                Closed Tickets (History)
-            </h3>
-            <ul>
-                {% for tk in cll %}
-                    <li>
-                        {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students or 1 }} - {{ tk.closed_by }}
-                    </li>
-                {% endfor %}
-            </ul>
-            <div style="margin-top: 20px;">
+            <div class="subsection">
+                <h3>
+                    Open Tickets
+                </h3>
+                <ul>
+                    {% for tk in ol %}
+                        <li>
+                            <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}">
+                                {{ tk.name }} — {{ tk.phClass }} (Table {{ tk.table }})
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="subsection">
+                <h3>
+                    Current Tickets (In Progress)
+                </h3>
+                <ul>
+                    {% for tk in cul %}
+                        <li>
+                            <a href="{{ url_for('views.currentticket', tktid=tk.id) }}">
+                                {{ tk.name }} (Table {{ tk.table }})
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="subsection">
+                <h3>
+                    Closed Tickets (History)
+                </h3>
+                <ul>
+                    {% for tk in cll %}
+                        <li>
+                            {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students or 1 }} - {{ tk.closed_by }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="queue-back-link">
                 <a href="{{ url_for('views.hardware_list') }}">Back to Hardware List</a>
             </div>
         </div>

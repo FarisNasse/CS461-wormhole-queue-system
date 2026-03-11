@@ -202,6 +202,35 @@
 }
 
 
+.queue-dashboard-title {
+    margin-bottom: 18px;
+}
+
+
+.queue-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+
+.queue-admin-action-form {
+    display: inline-flex;
+}
+
+
+.queue-admin-actions .btn-delete {
+    padding: 5px 10px;
+    min-height: 30px;
+}
+
+
+.queue-back-link {
+    margin-top: 20px;
+}
+
+
 .profile {
     background: #BBA0CA;
     min-height: 250px;
