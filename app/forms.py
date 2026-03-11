@@ -134,3 +134,9 @@ class FlushQueueForm(FlaskForm):
     """Simple form to handle CSRF protection for the Flush Queue action."""
 
     submit = SubmitField("Flush Queue")
+
+
+class ClearQueueForm(FlaskForm):
+    """Simple form to handle CSRF protection for the Clear Queue action."""
+
+    submit = SubmitField("Clear Queue")
