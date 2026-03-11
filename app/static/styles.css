@@ -168,6 +168,64 @@
 }
 
 
+.create-ticket-panel {
+    height: auto;
+    min-height: 340px;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 22px 24px;
+}
+
+
+.create-ticket-title {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+
+.create-ticket-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+.create-ticket-field {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    line-height: 1.45;
+}
+
+
+.create-ticket-field label {
+    font-weight: 600;
+    min-width: 90px;
+    text-align: right;
+}
+
+
+.create-ticket-field input[type="text"],
+.create-ticket-field select {
+    min-height: 20px;
+    padding: 1px 6px;
+}
+
+
+.create-ticket-actions {
+    margin-top: 4px;
+    text-align: center;
+}
+
+
+.create-ticket-actions input,
+.create-ticket-actions button {
+    padding: 4px 10px;
+}
+
+
 .live-queue {
     background: #FFF;
     display: flex;
