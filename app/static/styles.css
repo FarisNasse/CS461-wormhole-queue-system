@@ -542,3 +542,139 @@
     font-size: 1.2em;
     padding-bottom: 8px;
 }
+
+
+.manage-user-page {
+    margin-bottom: 12px;
+}
+
+
+.manage-user-title {
+    color: #fff;
+}
+
+
+.manage-user-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    align-items: stretch;
+}
+
+
+.manage-user-panel {
+    width: 100%;
+    min-width: 0;
+    min-height: 350px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.manage-user-form {
+    margin-top: 10px;
+    flex: 1;
+}
+
+
+.manage-user-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+
+.manage-user-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+
+.manage-user-input label {
+    min-width: 95px;
+    font-weight: 600;
+}
+
+
+.manage-user-checkbox label {
+    min-width: auto;
+}
+
+
+.manage-user-current {
+    color: #1f1f1f;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+
+.manage-user-row-email {
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+
+.manage-user-row-email .manage-user-input {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.manage-user-row-email .manage-user-current {
+    white-space: nowrap;
+}
+
+
+.manage-user-actions {
+    margin-top: 16px;
+}
+
+
+.delete-user-note {
+    margin-bottom: 14px;
+    line-height: 1.45;
+}
+
+
+.form-error {
+    display: block;
+    color: #b00020;
+    margin-bottom: 8px;
+}
+
+
+@media only screen and (width <= 960px) {
+    .manage-user-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .manage-user-panel {
+        width: 100%;
+        min-height: auto;
+    }
+
+
+    .manage-user-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+
+    .manage-user-current {
+        white-space: normal;
+    }
+
+
+    .manage-user-row-email {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+}
