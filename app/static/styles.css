@@ -421,16 +421,6 @@
 }
 
 
-.refresh {
-    background: #002147;
-    height: 80px;
-    border: dashed;
-    border-color: #002147;
-    border-width: 2px;
-    max-width: 961px;
-}
-
-
 .tickets {
     background: #FFF;
     border-radius: 15px;
@@ -607,55 +597,6 @@
 }
 
 
-.old-ticket {
-    background: #BBA0CA;
-    min-height: 250px;
-    border-radius: 50px;
-    height: auto;
-}
-
-
-.container {
-    display: table;
-    width: 100%;
-}
-
-
-.open {
-    background: #BBA0CA;
-    height: auto;
-    min-height: 250px;
-    border-radius: 5px;
-    text-indent: 20px;
-    width: 100%;
-    margin: auto;
-    display: table-cell;
-}
-
-
-.current {
-    background: #BBA0CA;
-    height: auto;
-    min-height: 250px;
-    border-radius: 5px;
-    text-indent: 20px;
-    margin: auto;
-    width: 100%;
-    display: table-cell;
-}
-
-
-.closed {
-    background: #BBA0CA;
-    height: auto;
-    min-height: 250px;
-    border-radius: 5px; /* Removed space */
-    text-indent: 20px;
-    margin: auto;
-    width: 100%;
-}
-
-
 .dropdown-content a:hover {
     background-color: #f1f1f1; /* Added '#' */
 }
@@ -666,26 +607,10 @@
 }
 
 
-.resolve-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-}
-
-
-
-
 /* Mobile Styles */
 @media only screen and (width <= 400px) {
     body {
         background-color: #002147;
-    }
-
-
-    .col {
-        display: block;
-        width: 100%;
     }
 }
 
@@ -729,10 +654,6 @@
     }
 
 
-    .open,
-    .current {
-        width: 50%;
-    }
 }
 
 
