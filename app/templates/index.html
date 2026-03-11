@@ -1,45 +1,45 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="page">
-        <h1 style="text-align:center;">
+        <h1 class="index-page-title">
             Physics Collaboration and Help Center
         </h1>
         <!-- STUDENT SECTION -->
-        <div class="section student-home">
-            <h2 style="text-align:center;">
+        <div class="section student-home index-home-section">
+            <h2 class="index-section-title">
                 For Students
             </h2>
-            <p style="text-align:center;">
+            <p class="index-section-link">
                 <a href="{{ url_for('views.create_ticket_page') }}">Submit a Help Request</a>
             </p>
-            <p style="text-align:center;">
+            <p class="index-section-link">
                 <a href="https://oregonstate.zoom.us/j/95601298258">Join Zoom Meeting</a>
                 (password: <strong>Wormhole</strong>)
             </p>
-            <p style="text-align:center;">
+            <p class="index-section-link">
                 <a href="https://teams.microsoft.com/l/team/19%3APpRY4AEqZdtH64xvUccyQZUEtPyXkb98oJB3Mvxjtzk1%40thread.tacv2/conversations?groupId=8aef2617-21c6-493e-8ae5-42e11a9c9875&tenantId=ce6d05e1-3c5e-4d62-87a8-4c4a2713c113">
                     Join Microsoft Teams
                 </a>
             </p>
         </div>
         <!-- ASSISTANT SECTION -->
-        <div class="section ta-home">
-            <h2 style="text-align:center;">
+        <div class="section ta-home index-home-section">
+            <h2 class="index-section-title">
                 For Wormhole Assistants
             </h2>
             {% if current_user.is_anonymous %}
-                <p style="text-align:center;">
+                <p class="index-section-link">
                     <a href="{{ url_for('views.assistant_login') }}">Log In</a>
                 </p>
             {% else %}
-                <p style="text-align:center;">
+                <p class="index-section-link">
                     <a href="{{ url_for('views.userpage', username=current_user.username) }}">Profile</a>
                 </p>
             {% endif %}
         </div>
         <div class = "section generic wormhole-content">
             <!-- WORMHOLE SCHEDULE -->
-            <div class="subsection Wormhole-Schedule">
+            <div class="subsection wormhole-schedule">
                 <h3 class="center-align">
                     Wormhole Schedule
                 </h3>
@@ -60,10 +60,6 @@
                         <em>Martin Luther King Jr. Day</em> — Monday, January 19
                     </li>
                 </ul>
-                <p class="center-align">
-                    To request help (remote or in-person), click
-                    <strong>“Submit a Help Request”</strong> above.
-                </p>
                 <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRcotW2LQyMMUHgBjvig-ZcHnybkT4_0XfiHDp-IVeqkX7VGh4vtrXBuHmDfTAVHdmHM2jcHInYuwOn/pubhtml?widget=true&headers=false"
                         width="100%"
                         height="600"
@@ -83,7 +79,7 @@
                 </p>
                 <p>
                     If you or your group needs help with a physics question, send a request to the queue.
-                    In person, use the box on your table. Online, use the Submit link at the top of this page.
+                    In person, use the box on your table. Online, use this <a href="{{ url_for('views.create_ticket_page') }}">link</a>.
                     Only one person in the group needs to enter the request, and only one time for each
                     question, please. You can see your place in the help queue using the Live Queue link at
                     the top of the page. Multiple requests for a question won’t get you help any faster, and
