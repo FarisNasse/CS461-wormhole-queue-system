@@ -1,41 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="page">
-        <div class="section tickets">
-            <br />
-            <h2>
-                User List
-            </h2>
-            <p>
-                <table style="display:inline-block;">
-                    <tr>
-                        <th>
-                            Current Users
-                        </th>
-                    </tr>
-                    {% for u in new_users %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('views.delete_user', username=u.username) }}">{{ u.username }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-                <table style="display:inline-block;">
-                    <tr>
-                        <th>
-                            Old Users
-                        </th>
-                    </tr>
-                    {% for u in old_users %}
-                        <tr>
-                            <td>
-                                <a href="{{ url_for('views.delete_user', username=u.username) }}">{{ u.username }} (Inactive)</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </p>
+<div class="page">
+    <div class="section tickets">
+        <h2>User List</h2>
+
+        <div class="user-tables">
+            <table>
+                <tr>
+                    <th>Current Users</th>
+                </tr>
+                {% for u in new_users %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('views.delete_user', username=u.username) }}">
+                            {{ u.username }}
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <table>
+                <tr>
+                    <th>Old Users</th>
+                </tr>
+                {% for u in old_users %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('views.delete_user', username=u.username) }}">
+                            {{ u.username }}
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
     </div>
+</div>
 {% endblock %}
