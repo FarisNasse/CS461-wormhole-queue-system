@@ -124,6 +124,33 @@
 }
 
 
+.index-page-title {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+
+.index-home-section {
+    height: auto;
+    min-height: 170px;
+    padding: 16px;
+}
+
+
+.index-section-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+
+.index-section-link {
+    text-align: center;
+    margin-bottom: 8px;
+    line-height: 1.45;
+}
+
+
 .student-home {
     background: #FFF;
 }
@@ -192,6 +219,38 @@
 }
 
 
+.wormhole-content .subsection {
+    margin-bottom: 28px;
+    padding: 4px 2px;
+    text-indent: 0;
+}
+
+
+.wormhole-content .subsection h4 {
+    margin-bottom: 10px;
+    color: #10233b;
+}
+
+
+.wormhole-content .subsection p,
+.wormhole-content .subsection li {
+    color: #1e2c3d;
+    line-height: 1.55;
+}
+
+
+.wormhole-content .subsection p {
+    margin-bottom: 10px;
+}
+
+
+.wormhole-content .subsection ul,
+.wormhole-content .subsection ol {
+    padding-left: 24px;
+    margin: 8px 0 12px;
+}
+
+
 .subsection {
     margin-bottom: 25px;
 }
@@ -199,6 +258,48 @@
 
 .subsection:last-child {
     margin-bottom: 0;
+}
+
+
+.Wormhole-Schedule {
+    padding: 10px 0;
+}
+
+
+.Wormhole-Schedule h3,
+.Wormhole-Schedule h4 {
+    color: #10233b;
+    margin-bottom: 10px;
+}
+
+
+.Wormhole-Schedule p,
+.Wormhole-Schedule li {
+    color: #1e2c3d;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+
+.Wormhole-Schedule p {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 10px;
+}
+
+
+.Wormhole-Schedule ul {
+    padding-left: 24px;
+    margin: 8px 0 14px;
+}
+
+
+.Wormhole-Schedule iframe {
+    margin-top: 14px;
+    border: 1px solid #bccfe3 !important;
+    border-radius: 10px;
+    background: #fff;
 }
 
 
