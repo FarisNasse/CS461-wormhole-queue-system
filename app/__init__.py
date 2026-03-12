@@ -1,4 +1,6 @@
 # app/__init__.py
+import os
+
 from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
@@ -40,6 +42,13 @@ def create_app(testing=False):
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
+    elif not os.environ.get("DATABASE_URL") and os.environ.get(
+        "ALLOW_SQLITE_FALLBACK"
+    ) != "1":
+        raise RuntimeError(
+            "DATABASE_URL must be set for non-testing environments. "
+            "Set ALLOW_SQLITE_FALLBACK=1 only for local development."
+        )
 
     # ---------------------------------------------------
     # Initialize Extensions
