@@ -1,0 +1,21 @@
+[Unit]
+Description=Wormhole Queue System
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/CS461-wormhole-queue-system
+Environment="PORT=5001"
+Environment="SECRET_KEY=change-this-to-a-strong-random-secret"
+Environment="FLASK_DEBUG=0"
+ExecStart=/home/ubuntu/CS461-wormhole-queue-system/venv/bin/gunicorn \
+    --worker-class eventlet \
+    --workers 1 \
+    --bind 0.0.0.0:5001 \
+    --timeout 120 \
+    "run:app"
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

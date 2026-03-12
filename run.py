@@ -1,4 +1,6 @@
 # run.py
+import os
+
 import sqlalchemy as sa
 from sqlalchemy import orm
 
@@ -21,4 +23,6 @@ def make_shell_context():
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5001))
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    socketio.run(app, debug=debug, host="0.0.0.0", port=port)
