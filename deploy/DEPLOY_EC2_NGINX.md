@@ -18,7 +18,7 @@ sudo systemctl start nginx
    - sudo nano /etc/wormhole/wormhole.env
 3. Edit these values:
    - SECRET_KEY
-   - DATABASE_URL
+   - DATABASE_URL or ALLOW_SQLITE_FALLBACK
 4. Enable and start service:
    - sudo systemctl daemon-reload
    - sudo systemctl enable wormhole
@@ -26,6 +26,17 @@ sudo systemctl start nginx
 5. Verify:
    - sudo systemctl status wormhole
    - curl http://127.0.0.1:8000/health
+
+### Database options
+
+PostgreSQL:
+- Set `DATABASE_URL=postgresql://username:password@db-host:5432/dbname`
+
+SQLite on the same EC2 instance:
+- Set `DATABASE_URL=sqlite:////home/ec2-user/CS461-wormhole-queue-system/app.db`
+- Or omit `DATABASE_URL` and set `ALLOW_SQLITE_FALLBACK=1`
+- Ensure `ec2-user` has read/write access to the SQLite file and its parent directory
+- Do not expose the SQLite file via Nginx or place it in a temporary directory
 
 ## 3) Configure Nginx
 

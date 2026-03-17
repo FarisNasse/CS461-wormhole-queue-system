@@ -60,6 +60,8 @@ def create_app(testing=False):
     def enforce_https():
         if not app.config.get("FORCE_HTTPS", False):
             return None
+        if request.path == "/health":
+            return None
         if request.is_secure:
             return None
         if request.headers.get("X-Forwarded-Proto", "http").lower() == "https":
