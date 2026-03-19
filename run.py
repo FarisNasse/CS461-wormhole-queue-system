@@ -3,7 +3,6 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from dotenv import load_dotenv
 result = load_dotenv('wormhole.env')
-print(result)  # True if a .env file was found and loaded, False if not
 
 from app import create_app, db, socketio
 from app.models import Skipped, Ticket, User
