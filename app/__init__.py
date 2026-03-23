@@ -28,7 +28,7 @@ def _build_csp_header():
     policy = {
         "default-src": "'self'",
         "script-src": "'self' https://cdn.socket.io",
-        "style-src": "'self' 'unsafe-inline'",
+        "style-src": "'self'",
         "img-src": "'self' data:",
         "font-src": "'self' data:",
         "connect-src": "'self' ws: wss:",

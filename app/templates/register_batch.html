@@ -19,7 +19,7 @@
                     {{ form.emailcsv(size=32) }}
                     <br>
                     {% for er in form.emailcsv.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
+                        <span class="inline-error">[{{ er }}]</span>
                     {% endfor %}
                 </p>
                 <p>

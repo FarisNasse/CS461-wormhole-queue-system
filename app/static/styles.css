@@ -842,3 +842,97 @@
         align-items: flex-start;
     }
 }
+
+.site-title {
+    color: #fff;
+    text-align: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.centered-form {
+    text-align: center;
+}
+
+.text-center-form {
+    text-align: center;
+}
+
+.inline-error {
+    color: red;
+}
+
+.archive-field {
+    margin-bottom: 1rem;
+}
+
+.archive-actions {
+    margin-top: 1.5rem;
+}
+
+.current-ticket-table {
+    margin-left: 30px;
+    width: 75%;
+    text-align: left;
+    border-collapse: separate;
+    border-spacing: 10px;
+}
+
+.current-ticket-timestamp {
+    text-align: center;
+    vertical-align: bottom;
+}
+
+.hardware-table {
+    width: 100%;
+    align-self: center;
+}
+
+.hardware-legend-table {
+    table-layout: fixed;
+}
+
+.hardware-header-row {
+    padding: 15px;
+}
+
+.hardware-cell {
+    padding: 8px;
+    text-align: center;
+}
+
+.battery-green {
+    background-color: green;
+}
+
+.battery-yellow {
+    background-color: yellow;
+}
+
+.battery-orange {
+    background-color: orange;
+}
+
+.battery-red,
+.battery-red-row {
+    background-color: red;
+}
+
+.schedule-embed {
+    border: none;
+}
+
+.livequeue-table {
+    width: 100%;
+    text-align: center;
+}
+
+.profile-current-link {
+    margin-bottom: 5px;
+}
+
+.profile-copy {
+    margin: 10px;
+}

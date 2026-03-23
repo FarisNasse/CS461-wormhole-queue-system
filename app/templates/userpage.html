@@ -7,11 +7,11 @@
     <div class="page">
         <div class="section tickets">
             {% if user.tkt is not none %}
-                <h4 style="text-align:center; margin-bottom: 5px;">
+                <h4 class="text-center profile-current-link">
                     <a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}">Resolve Current Request</a>
                 </h4>
                 <br>
-                <p style="text-align:center">
+                <p class="text-center">
                     <b>Current Ticket:</b>
                     <br>
                     {% if user.tkt.student_name %}
@@ -29,19 +29,19 @@
                     Class: {{ user.tkt.physics_course }}
                 </p>
             {% else %}
-                <h2 style="text-align:center">
+                <h2 class="text-center">
                     Tickets (<span id='ticket-count'></span>)
                 </h2>
-                <h4 id="get-new-ticket" style="text-align:center">
+                <h4 id="get-new-ticket" class="text-center">
                     <a href="{{ url_for('views.getnewticket', username=user.username) }}">Get Next Request</a>
                 </h4>
             {% endif %}
         </div>
         <div class="section profile">
-            <h2 style="text-align:center">
+            <h2 class="text-center">
                 Profile
             </h2>
-            <p style="margin:10px">
+            <p class="profile-copy">
                 <b>Username: </b>{{ user.username }}
                 <br>
                 <b>Email: </b>{{ user.email }}
@@ -53,22 +53,22 @@
                 {% endif %}
             </p>
             {% if current_user.is_admin %}
-                <h3 style="text-align:center">
+                <h3 class="text-center">
                     Admin Utilities
                 </h3>
-                <p style="margin:10px">
+                <p class="profile-copy">
                     <a href="{{ url_for('views.register') }}">Register New User</a>
                 </p>
-                <p style="margin:10px">
+                <p class="profile-copy">
                     <a href="{{ url_for('views.queue') }}">Queue</a>
                 </p>
-                <p style="margin:10px">
+                <p class="profile-copy">
                     <a href="{{ url_for('views.archive') }}">Archive</a>
                 </p>
-                <p style="margin:10px">
+                <p class="profile-copy">
                     <a href="{{ url_for('views.register_batch') }}">Register Users in Batch</a>
                 </p>
-                <p style="margin:10px">
+                <p class="profile-copy">
                     <a href="{{ url_for('views.user_list') }}">WA List</a>
                 </p>
             {% endif %}

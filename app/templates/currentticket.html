@@ -6,15 +6,10 @@
 {% block content %}
     <div class="page">
         <div class="section tick-info">
-            <h3 style="text-align:center">
+            <h3 class="text-center">
                 Current Help Request
             </h3>
-            <table id="tickets"
-                   style="margin-left:30px;
-                          width: 75%;
-                          text-align: left;
-                          border-collapse:separate;
-                          border-spacing:10px">
+            <table id="tickets" class="current-ticket-table">
                 <tr>
                     <th>
                         Name: <b>{{ ticket.name }}</b>
@@ -37,19 +32,19 @@
                     </th>
                 </tr>
             </table>
-            <p style="text-align:center; vertical-align:bottom;">
+            <p class="current-ticket-timestamp">
                 Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b>
             </p>
         </div>
         <div class="section tick-resol">
-            <h3 style="text-align:center">
+            <h3 class="text-center">
                 Resolve As:
             </h3>
             <form id="resolve-form"
                   action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
                   method="post"
                   novalidate
-                  style="text-align:center;">
+                  class="text-center-form">
                 <button type="submit" name="resolve" value="duplicate">Duplicate</button>
                 <button type="submit" name="resolve" value="helped">Helped</button>
                 <button type="submit" name="resolve" value="no_show">No Show</button>

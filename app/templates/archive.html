@@ -13,21 +13,21 @@
             </h3>
             <form action="{{ url_for('views.export_archive') }}" method="post">
                 {{ form.hidden_tag() }}
-                <div style="margin-bottom: 1rem;">
+                <div class="archive-field">
                     {{ form.start_date.label() }}
                     {{ form.start_date(type="date") }}
                     {% for error in form.start_date.errors %}
-                        <span style="color: red;">{{ error }}</span>
+                        <span class="inline-error">{{ error }}</span>
                     {% endfor %}
                 </div>
-                <div style="margin-bottom: 1rem;">
+                <div class="archive-field">
                     {{ form.end_date.label() }}
                     {{ form.end_date(type="date") }}
                     {% for error in form.end_date.errors %}
-                        <span style="color: red;">{{ error }}</span>
+                        <span class="inline-error">{{ error }}</span>
                     {% endfor %}
                 </div>
-                <div style="margin-top: 1.5rem;">
+                <div class="archive-actions">
                     <button type="submit" class="btn-success">
                         Download CSV
                     </button>
