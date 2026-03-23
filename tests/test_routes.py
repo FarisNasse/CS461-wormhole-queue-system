@@ -1,9 +1,58 @@
 # tests/test_routes.py
 from datetime import datetime, timedelta, timezone
 
-from app import db
+from app import create_app, db
 from app.models import Ticket, User
 
+
+def test_health_check_route(test_client):
+    """Test the /health route returns 200 and the correct JSON message."""
+    response = test_client.get("/health")
+    assert response.status_code == 200
+    assert response.get_json() == {"message": "Wormhole Queue System API is running"}
+
+
+def test_security_headers_present(test_client):
+    """Baseline security headers should be attached to normal responses."""
+    response = test_client.get("/health")
+
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["X-Frame-Options"] == "SAMEORIGIN"
+    assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
+    assert response.headers["Permissions-Policy"] == (
+        "camera=(), microphone=(), geolocation=()"
+    )
+    assert "default-src 'self'" in response.headers["Content-Security-Policy"]
+
+
+def test_http_redirect_enabled_for_insecure_requests():
+    """When enabled, insecure HTTP traffic should be redirected to HTTPS."""
+    app = create_app()
+    app.config["ENABLE_HTTPS_REDIRECT"] = True
+
+    client = app.test_client()
+    response = client.get("/health", base_url="http://example.com")
+
+    assert response.status_code == 301
+    assert response.headers["Location"] == "https://example.com/health"
+
+
+def test_hsts_header_is_added_for_secure_requests_when_enabled():
+    """HSTS should only be emitted on secure requests when the setting is enabled."""
+    app = create_app()
+    app.config["ENABLE_HSTS"] = True
+
+    client = app.test_client()
+    response = client.get(
+        "/health",
+        base_url="https://example.com",
+        headers={"X-Forwarded-Proto": "https"},
+    )
+
+    assert response.status_code == 200
+    assert response.headers["Strict-Transport-Security"] == (
+        "max-age=31536000; includeSubDomains"
+    )
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""

@@ -1,8 +1,9 @@
 # app/__init__.py
-from flask import Flask, jsonify
+from flask import Flask, jsonify, redirect, request
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config
 
@@ -10,6 +11,36 @@ from config import Config
 db = SQLAlchemy()
 migrate = Migrate()
 socketio = SocketIO()
+
+
+def _request_is_secure():
+    """Respect direct TLS and reverse-proxy forwarded HTTPS headers."""
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", "")
+    if forwarded_proto:
+        first_hop = forwarded_proto.split(",", maxsplit=1)[0].strip().lower()
+        if first_hop == "https":
+            return True
+    return request.is_secure
+
+
+def _build_csp_header():
+    """Return a CSP that matches the app's current templates and assets."""
+    policy = {
+        "default-src": "'self'",
+        "script-src": (
+            "'self' 'unsafe-inline' https://cdn.socket.io https://code.jquery.com"
+        ),
+        "style-src": "'self' 'unsafe-inline'",
+        "img-src": "'self' data:",
+        "font-src": "'self' data:",
+        "connect-src": "'self' ws: wss:",
+        "frame-src": "'self' https://docs.google.com",
+        "object-src": "'none'",
+        "base-uri": "'self'",
+        "form-action": "'self'",
+        "frame-ancestors": "'self'",
+    }
+    return "; ".join(f"{directive} {value}" for directive, value in policy.items())
 
 
 def create_app(testing=False):
@@ -29,6 +60,7 @@ def create_app(testing=False):
         The configured Flask application instance.
     """
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # ---------------------------------------------------
     # Configuration
@@ -40,13 +72,55 @@ def create_app(testing=False):
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
+        app.config["SESSION_COOKIE_SECURE"] = False
+        app.config["ENABLE_HTTPS_REDIRECT"] = False
+        app.config["ENABLE_HSTS"] = False
 
     # ---------------------------------------------------
     # Initialize Extensions
     # ---------------------------------------------------
     db.init_app(app)
     migrate.init_app(app, db)
-    socketio.init_app(app, cors_allowed_origins="*")
+    socketio.init_app(
+        app,
+        cors_allowed_origins=app.config.get("SOCKETIO_CORS_ALLOWED_ORIGINS"),
+    )
+
+    # ---------------------------------------------------
+    # Security Headers / HTTPS Enforcement
+    # ---------------------------------------------------
+    @app.before_request
+    def enforce_https():
+        if not app.config.get("ENABLE_HTTPS_REDIRECT"):
+            return None
+
+        if _request_is_secure():
+            return None
+
+        secure_url = request.url.replace("http://", "https://", 1)
+        status_code = 301 if request.method in {"GET", "HEAD", "OPTIONS"} else 308
+        return redirect(secure_url, code=status_code)
+
+    @app.after_request
+    def apply_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        response.headers.setdefault(
+            "Referrer-Policy", "strict-origin-when-cross-origin"
+        )
+        response.headers.setdefault(
+            "Permissions-Policy",
+            "camera=(), microphone=(), geolocation=()",
+        )
+        response.headers.setdefault("Content-Security-Policy", _build_csp_header())
+
+        if app.config.get("ENABLE_HSTS") and _request_is_secure():
+            response.headers.setdefault(
+                "Strict-Transport-Security",
+                "max-age=31536000; includeSubDomains",
+            )
+
+        return response
 
     # ---------------------------------------------------
     # Internal Imports & Registration
