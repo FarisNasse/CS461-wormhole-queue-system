@@ -17,13 +17,14 @@ def test_security_headers_present(test_client):
 
 
 def test_csp_disallows_inline_scripts(test_client):
-    """CSP should allow current external Socket.IO but reject inline scripts."""
+    """CSP should allow current external Socket.IO while rejecting inline script/style."""
     response = test_client.get("/health")
     csp = response.headers["Content-Security-Policy"]
 
     assert "script-src 'self' https://cdn.socket.io" in csp
     assert "script-src 'self' 'unsafe-inline'" not in csp
-    assert "style-src 'self' 'unsafe-inline'" in csp
+    assert "style-src 'self'" in csp
+    assert "style-src 'self' 'unsafe-inline'" not in csp
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
