@@ -4,17 +4,6 @@ from datetime import datetime, timedelta, timezone
 from app import create_app, db
 from app.models import Ticket, User
 
-def test_security_headers_present(test_client):
-    """Baseline security headers should be attached to normal responses."""
-    response = test_client.get("/health")
-
-    assert response.headers["X-Content-Type-Options"] == "nosniff"
-    assert response.headers["X-Frame-Options"] == "SAMEORIGIN"
-    assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
-    assert response.headers["Permissions-Policy"] == (
-        "camera=(), microphone=(), geolocation=()"
-    )
-
 
 def test_csp_is_self_only_for_scripts(test_client):
     """CSP should only allow same-origin scripts and should reject inline code."""
@@ -24,12 +13,6 @@ def test_csp_is_self_only_for_scripts(test_client):
     assert "script-src 'self'" in csp
     assert "https://cdn.socket.io" not in csp
     assert "'unsafe-inline'" not in csp
-
-def test_health_check_route(test_client):
-    """Test the /health route returns 200 and the correct JSON message."""
-    response = test_client.get("/health")
-    assert response.status_code == 200
-    assert response.get_json() == {"message": "Wormhole Queue System API is running"}
 
 
 def test_security_headers_present(test_client):
@@ -73,6 +56,7 @@ def test_hsts_header_is_added_for_secure_requests_when_enabled():
     assert response.headers["Strict-Transport-Security"] == (
         "max-age=31536000; includeSubDomains"
     )
+
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
@@ -372,13 +356,14 @@ def test_flash_message_category_rendering(test_client):
     assert b'class="flash-success"' in response.data
     assert b"User created successfully!" in response.data
 
+
 def test_wiki_page_uses_external_script_file(test_client):
     """Wiki page behavior should be loaded from a static JS file, not an inline block."""
     response = test_client.get("/wiki")
 
     assert response.status_code == 200
-    assert b'js/wiki.js' in response.data
-    assert b'Search functionality' not in response.data
+    assert b"js/wiki.js" in response.data
+    assert b"Search functionality" not in response.data
 
 
 def test_queue_page_uses_data_driven_confirmations(test_client, test_app):
@@ -397,14 +382,16 @@ def test_queue_page_uses_data_driven_confirmations(test_client, test_app):
     response = test_client.get("/queue")
 
     assert response.status_code == 200
-    assert b'data-confirm-message=' in response.data
-    assert b'onclick=' not in response.data
-    assert b'js/queue-confirmations.js' in response.data
+    assert b"data-confirm-message=" in response.data
+    assert b"onclick=" not in response.data
+    assert b"js/queue-confirmations.js" in response.data
 
 
 def test_queue_page_uses_local_socketio_script(test_client, test_app):
     with test_app.app_context():
-        admin = User(username="admin_socketio", email="socketio@test.com", is_admin=True)
+        admin = User(
+            username="admin_socketio", email="socketio@test.com", is_admin=True
+        )
         admin.set_password("pass")
         db.session.add(admin)
         db.session.commit()
@@ -417,13 +404,13 @@ def test_queue_page_uses_local_socketio_script(test_client, test_app):
     response = test_client.get("/queue")
 
     assert response.status_code == 200
-    assert b'vendor/socket.io/4.6.1/socket.io.min.js' in response.data
-    assert b'https://cdn.socket.io' not in response.data
+    assert b"vendor/socket.io/4.6.1/socket.io.min.js" in response.data
+    assert b"https://cdn.socket.io" not in response.data
 
 
 def test_livequeue_page_uses_local_socketio_script(test_client):
     response = test_client.get("/livequeue")
 
     assert response.status_code == 200
-    assert b'vendor/socket.io/4.6.1/socket.io.min.js' in response.data
-    assert b'https://cdn.socket.io' not in response.data
+    assert b"vendor/socket.io/4.6.1/socket.io.min.js" in response.data
+    assert b"https://cdn.socket.io" not in response.data

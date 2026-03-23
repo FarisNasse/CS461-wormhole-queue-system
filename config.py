@@ -35,9 +35,7 @@ class Config:
     SESSION_COOKIE_SECURE = _env_flag("SESSION_COOKIE_SECURE", default=is_production)
 
     PREFERRED_URL_SCHEME = "https"
-    ENABLE_HTTPS_REDIRECT = _env_flag(
-        "ENABLE_HTTPS_REDIRECT", default=is_production
-    )
+    ENABLE_HTTPS_REDIRECT = _env_flag("ENABLE_HTTPS_REDIRECT", default=is_production)
     ENABLE_HSTS = _env_flag("ENABLE_HSTS", default=is_production)
 
     SOCKETIO_CORS_ALLOWED_ORIGINS = _env_list("SOCKETIO_CORS_ALLOWED_ORIGINS")
