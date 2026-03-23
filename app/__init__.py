@@ -27,7 +27,7 @@ def _build_csp_header():
     """Return a CSP that disallows inline scripts but preserves current styling."""
     policy = {
         "default-src": "'self'",
-        "script-src": "'self' https://cdn.socket.io",
+        "script-src": "'self'",
         "style-src": "'self'",
         "img-src": "'self' data:",
         "font-src": "'self' data:",

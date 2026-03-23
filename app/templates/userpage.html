@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block scripts %}
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='vendor/socket.io/4.6.1/socket.io.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/userpage.js') }}"></script>
 {% endblock %}
 {% block content %}

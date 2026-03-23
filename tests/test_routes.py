@@ -16,15 +16,14 @@ def test_security_headers_present(test_client):
     )
 
 
-def test_csp_disallows_inline_scripts(test_client):
-    """CSP should allow current external Socket.IO while rejecting inline script/style."""
+def test_csp_is_self_only_for_scripts(test_client):
+    """CSP should only allow same-origin scripts and should reject inline code."""
     response = test_client.get("/health")
     csp = response.headers["Content-Security-Policy"]
 
-    assert "script-src 'self' https://cdn.socket.io" in csp
-    assert "script-src 'self' 'unsafe-inline'" not in csp
-    assert "style-src 'self'" in csp
-    assert "style-src 'self' 'unsafe-inline'" not in csp
+    assert "script-src 'self'" in csp
+    assert "https://cdn.socket.io" not in csp
+    assert "'unsafe-inline'" not in csp
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
@@ -401,3 +400,30 @@ def test_queue_page_uses_data_driven_confirmations(test_client, test_app):
     assert b'data-confirm-message=' in response.data
     assert b'onclick=' not in response.data
     assert b'js/queue-confirmations.js' in response.data
+
+
+def test_queue_page_uses_local_socketio_script(test_client, test_app):
+    with test_app.app_context():
+        admin = User(username="admin_socketio", email="socketio@test.com", is_admin=True)
+        admin.set_password("pass")
+        db.session.add(admin)
+        db.session.commit()
+        admin_id = admin.id
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin_id
+        sess["is_admin"] = True
+
+    response = test_client.get("/queue")
+
+    assert response.status_code == 200
+    assert b'vendor/socket.io/4.6.1/socket.io.min.js' in response.data
+    assert b'https://cdn.socket.io' not in response.data
+
+
+def test_livequeue_page_uses_local_socketio_script(test_client):
+    response = test_client.get("/livequeue")
+
+    assert response.status_code == 200
+    assert b'vendor/socket.io/4.6.1/socket.io.min.js' in response.data
+    assert b'https://cdn.socket.io' not in response.data
