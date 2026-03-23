@@ -14,7 +14,7 @@ socketio = SocketIO()
 
 
 def _request_is_secure():
-    """Respect direct TLS and reverse-proxy forwarded HTTPS headers."""
+    """Return True for direct HTTPS or proxied HTTPS requests."""
     forwarded_proto = request.headers.get("X-Forwarded-Proto", "")
     if forwarded_proto:
         first_hop = forwarded_proto.split(",", maxsplit=1)[0].strip().lower()
@@ -24,12 +24,10 @@ def _request_is_secure():
 
 
 def _build_csp_header():
-    """Return a CSP that matches the app's current templates and assets."""
+    """Return a CSP that disallows inline scripts but preserves current styling."""
     policy = {
         "default-src": "'self'",
-        "script-src": (
-            "'self' 'unsafe-inline' https://cdn.socket.io https://code.jquery.com"
-        ),
+        "script-src": "'self' https://cdn.socket.io",
         "style-src": "'self' 'unsafe-inline'",
         "img-src": "'self' data:",
         "font-src": "'self' data:",
@@ -87,7 +85,7 @@ def create_app(testing=False):
     )
 
     # ---------------------------------------------------
-    # Security Headers / HTTPS Enforcement
+    # Security / HTTPS enforcement
     # ---------------------------------------------------
     @app.before_request
     def enforce_https():
@@ -125,9 +123,6 @@ def create_app(testing=False):
     # ---------------------------------------------------
     # Internal Imports & Registration
     # ---------------------------------------------------
-    # Moving these inside create_app prevents circular imports and E402 errors.
-    # The '# noqa: F401' tells Ruff that although the import isn't used directly
-    # in this file, it is intentional (for registering models and events).
     from app import models  # noqa: F401
     from app.routes import queue_events  # noqa: F401
     from app.routes.auth import auth_bp
@@ -170,7 +165,6 @@ def create_app(testing=False):
                         )
                     }
         except Exception:
-            # keep silent on DB errors; fall back to anonymous
             pass
 
         return {

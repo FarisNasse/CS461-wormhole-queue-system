@@ -1,8 +1,5 @@
 {% extends "base.html" %}
 {% block scripts %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJ+YRFb2v3l+6Gk5bQ5f5Q5h5Yt1lV9l8a5Qg="
-            crossorigin="anonymous"></script>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/userpage.js') }}"></script>
 {% endblock %}
@@ -44,7 +41,6 @@
             <h2 style="text-align:center">
                 Profile
             </h2>
-            <!-- Base profile atributes -->
             <p style="margin:10px">
                 <b>Username: </b>{{ user.username }}
                 <br>
@@ -63,7 +59,6 @@
                 <p style="margin:10px">
                     <a href="{{ url_for('views.register') }}">Register New User</a>
                 </p>
-                <!--<p><a href="{{ url_for('views.changepass') }}">Change User Password</a></p>-->
                 <p style="margin:10px">
                     <a href="{{ url_for('views.queue') }}">Queue</a>
                 </p>

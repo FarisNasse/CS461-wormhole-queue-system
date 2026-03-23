@@ -4,6 +4,26 @@ from datetime import datetime, timedelta, timezone
 from app import create_app, db
 from app.models import Ticket, User
 
+def test_security_headers_present(test_client):
+    """Baseline security headers should be attached to normal responses."""
+    response = test_client.get("/health")
+
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["X-Frame-Options"] == "SAMEORIGIN"
+    assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
+    assert response.headers["Permissions-Policy"] == (
+        "camera=(), microphone=(), geolocation=()"
+    )
+
+
+def test_csp_disallows_inline_scripts(test_client):
+    """CSP should allow current external Socket.IO but reject inline scripts."""
+    response = test_client.get("/health")
+    csp = response.headers["Content-Security-Policy"]
+
+    assert "script-src 'self' https://cdn.socket.io" in csp
+    assert "script-src 'self' 'unsafe-inline'" not in csp
+    assert "style-src 'self' 'unsafe-inline'" in csp
 
 def test_health_check_route(test_client):
     """Test the /health route returns 200 and the correct JSON message."""
@@ -351,3 +371,32 @@ def test_flash_message_category_rendering(test_client):
     assert response.status_code == 200
     assert b'class="flash-success"' in response.data
     assert b"User created successfully!" in response.data
+
+def test_wiki_page_uses_external_script_file(test_client):
+    """Wiki page behavior should be loaded from a static JS file, not an inline block."""
+    response = test_client.get("/wiki")
+
+    assert response.status_code == 200
+    assert b'js/wiki.js' in response.data
+    assert b'Search functionality' not in response.data
+
+
+def test_queue_page_uses_data_driven_confirmations(test_client, test_app):
+    """Queue confirmation prompts should no longer rely on inline onclick handlers."""
+    with test_app.app_context():
+        admin = User(username="admin_queue_page", email="queue@test.com", is_admin=True)
+        admin.set_password("pass")
+        db.session.add(admin)
+        db.session.commit()
+        admin_id = admin.id
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin_id
+        sess["is_admin"] = True
+
+    response = test_client.get("/queue")
+
+    assert response.status_code == 200
+    assert b'data-confirm-message=' in response.data
+    assert b'onclick=' not in response.data
+    assert b'js/queue-confirmations.js' in response.data

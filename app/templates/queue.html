@@ -13,21 +13,19 @@
                 <div class="queue-admin-actions">
                     <form action="{{ url_for('views.flush') }}"
                           method="post"
-                          class="queue-admin-action-form">
+                          class="queue-admin-action-form"
+                          data-confirm-message="Are you sure you want to close all active tickets?">
                         {{ flush_form.hidden_tag() }}
-                        <button type="submit"
-                                class="btn-delete"
-                                onclick="return confirm('Are you sure you want to close all active tickets?');">
+                        <button type="submit" class="btn-delete">
                             Flush Queue
                         </button>
                     </form>
                     <form action="{{ url_for('views.clear_queue') }}"
                           method="post"
-                          class="queue-admin-action-form">
+                          class="queue-admin-action-form"
+                          data-confirm-message="The tickets will be permanently cleared. Make sure to create ticket archive to save history. Would you like to clear the queue data?">
                         {{ clear_form.hidden_tag() }}
-                        <button type="submit"
-                                class="btn-delete"
-                                onclick="return confirm('The tickets will be permanently cleared. Make sure to create ticket archive to save history. Would you like to clear the queue data?');">
+                        <button type="submit" class="btn-delete">
                             Clear Queue
                         </button>
                     </form>
@@ -78,4 +76,7 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block body_scripts %}
+    <script src="{{ url_for('static', filename='js/queue-confirmations.js') }}"></script>
 {% endblock %}

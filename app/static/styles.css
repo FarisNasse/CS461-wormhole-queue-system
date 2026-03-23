@@ -381,6 +381,9 @@
     border-top: 1px solid #d6e1ec;
 }
 
+.wiki-section-hidden {
+    display: none;
+}
 
 .back-to-top {
     color: #002147;
