@@ -524,6 +524,14 @@ def getnewticket(username):
         return redirect(url_for("views.userpage", username=username))
 
     t.assign_to(u)
+
+    try:
+        from app.routes.queue_events import broadcast_ticket_update
+
+        broadcast_ticket_update(t.id)
+    except Exception:
+        pass
+
     return redirect(url_for("views.currentticket", tktid=t.id))
 
 

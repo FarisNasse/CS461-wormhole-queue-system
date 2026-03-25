@@ -27,30 +27,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateTicketTable() {
-        // Implementation for addding tickets dynamically
-        fetch('/api/opentickets')
+        fetch('/api/livequeuetickets')
             .then(response => {
                 console.log('Response status', response.status);
-                return response.json()
+                return response.json();
             })
             .then(tickets => {
-                console.log('API tickets:', tickets); // Check structure
+                console.log('API tickets:', tickets);
 
                 const ticketTableBody = document.querySelector('#tickets tbody');
-                ticketTableBody.innerHTML = ''; // Clear existing rows
+                ticketTableBody.innerHTML = '';
+
                 tickets.forEach((ticket, index) => {
                     const row = document.createElement('tr');
                     row.id = `ticket-${ticket.id}`;
+
+                    const positionOrStatus = ticket.status === 'in_progress'
+                        ? 'IN PROGRESS'
+                        : index + 1;
+
                     row.innerHTML = `
-                        <td>${index + 1}</td>
+                        <td>${positionOrStatus}</td>
                         <td>${ticket.student_name}</td>
                         <td>${ticket.table}</td>
                         <td>${ticket.physics_course}</td>
                     `;
+
                     ticketTableBody.appendChild(row);
                 });
-                //document.getElementById('ticket-count').textContent = tickets.length;
-                document.getElementById('refresh-time').textContent = new Date().toLocaleTimeString();
+
+                document.getElementById('refresh-time').textContent =
+                    new Date().toLocaleTimeString();
             })
             .catch(error => console.error('Error fetching tickets:', error));
     }

@@ -302,3 +302,32 @@ def test_flash_message_category_rendering(test_client):
     assert response.status_code == 200
     assert b'class="flash-success"' in response.data
     assert b"User created successfully!" in response.data
+
+
+def test_livequeuetickets_includes_in_progress_in_order(test_client):
+    """Public live queue API should include both live and in-progress tickets in queue order."""
+    t1 = Ticket(
+        student_name="First", table="T1", physics_course="Ph 211", status="live"
+    )
+    t2 = Ticket(
+        student_name="Second",
+        table="T2",
+        physics_course="Ph 212",
+        status="in_progress",
+    )
+    t3 = Ticket(
+        student_name="Third", table="T3", physics_course="Ph 213", status="live"
+    )
+    db.session.add_all([t1, t2, t3])
+    db.session.commit()
+
+    response = test_client.get("/api/livequeuetickets")
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert [ticket["student_name"] for ticket in payload] == [
+        "First",
+        "Second",
+        "Third",
+    ]
+    assert [ticket["status"] for ticket in payload] == ["live", "in_progress", "live"]
