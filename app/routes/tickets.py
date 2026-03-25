@@ -92,6 +92,7 @@ def get_livequeue_tickets():
 
     return jsonify([t.to_dict() for t in tickets])
 
+
 # API route to handle ticket resolution form submission
 @tickets_bp.route("/resolveticket/<int:ticket_id>", methods=["POST"])
 def resolve_ticket(ticket_id):
