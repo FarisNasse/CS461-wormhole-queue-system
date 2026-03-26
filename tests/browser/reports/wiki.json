@@ -1,0 +1,11 @@
+{
+  "ttfb": 3.5999999046325684,
+  "fcp": null,
+  "dom_content_loaded": 167.79999995231628,
+  "load_event": 168.89999997615814,
+  "dom_interactive": 161.79999995231628,
+  "transfer_size": 37718,
+  "encoded_body_size": 37418,
+  "cls": 0,
+  "url": "http://127.0.0.1:5555/wiki"
+}

@@ -1,0 +1,11 @@
+{
+  "ttfb": 2.9000000953674316,
+  "fcp": 192,
+  "dom_content_loaded": 133.89999997615814,
+  "load_event": 835.3999999761581,
+  "dom_interactive": 132.30000007152557,
+  "transfer_size": 16266,
+  "encoded_body_size": 15966,
+  "cls": 0,
+  "url": "http://127.0.0.1:5555/"
+}
