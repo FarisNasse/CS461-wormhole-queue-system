@@ -1,841 +1,1080 @@
+:root {
+    --bg: #0f1724;
+    --bg-soft: #172235;
+    --surface: #fff;
+    --surface-soft: #f7f8fb;
+    --surface-tint: #f4f7fb;
+    --border: #d7dee8;
+    --border-strong: #b8c4d4;
+    --text: #132033;
+    --text-soft: #415066;
+    --text-inverse: #f8fbff;
+    --osu-orange: #d73f09;
+    --osu-orange-deep: #b33207;
+    --accent-navy: #1f3556;
+    --accent-blue: #dce8f6;
+    --assistant-blue: #eaf3ff;
+    --success: #1f7a46;
+    --warning: #8a5d00;
+    --danger: #9f2730;
+    --shadow: 0 20px 50px rgb(5 12 25 / 20%);
+    --radius-lg: 22px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --max-width: 1120px;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-
-.section {
-    width: 100%;
-    height: 200px;
-    place-content: center center;
-    border: dashed;
-    border-color: #000;
-    border-width: 2px;
-    border-radius: 15px 50px;
+html {
+    color-scheme: dark;
 }
 
-
-.header {
-    width: 100%;
-    min-height: 100px;
-    place-content: center center;
-    border: dashed;
-    border-color: #002147;
-    border-width: 2px;
-    border-radius: 10px;
-    background: #000;
-    height: auto;
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top, rgb(215 63 9 / 16%), transparent 28%),
+        radial-gradient(circle at 20% 20%, rgb(255 255 255 / 8%) 0 2px, transparent 2px),
+        radial-gradient(circle at 80% 12%, rgb(255 255 255 / 7%) 0 1.5px, transparent 1.5px),
+        linear-gradient(180deg, #0a1321 0%, #10203a 100%);
+    min-height: 100vh;
 }
 
+img {
+    max-width: 100%;
+    display: block;
+}
+
+main,
+section,
+header,
+nav,
+article,
+aside {
+    display: block;
+}
+
+a {
+    color: var(--osu-orange);
+    text-underline-offset: 0.18em;
+}
+
+a:hover {
+    color: var(--osu-orange-deep);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+    cursor: pointer;
+}
+
+:focus-visible {
+    outline: 3px solid rgb(215 63 9 / 55%);
+    outline-offset: 3px;
+}
+
+.page {
+    width: min(calc(100% - 32px), var(--max-width));
+    margin: 0 auto;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 18px 0 12px;
+    backdrop-filter: blur(12px);
+    background: linear-gradient(180deg, rgb(8 14 25 / 88%), rgb(8 14 25 / 62%));
+    border-bottom: 1px solid rgb(255 255 255 / 8%);
+}
+
+.header-shell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.brand-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--text-inverse);
+    text-decoration: none;
+    min-width: 0;
+}
+
+.brand-lockup:hover {
+    color: var(--text-inverse);
+}
+
+.brand-mark {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    border: 1px solid rgb(255 255 255 / 14%);
+    background: rgb(255 255 255 / 8%);
+    padding: 8px;
+    box-shadow: 0 10px 28px rgb(0 0 0 / 24%);
+}
+
+.brand-copy {
+    min-width: 0;
+}
+
+.brand-kicker,
+.site-tagline {
+    color: rgb(248 251 255 / 78%);
+    font-size: 0.92rem;
+}
+
+.brand-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+}
+
+.site-title {
+    font-size: clamp(1.3rem, 2vw, 1.75rem);
+    line-height: 1.15;
+}
+
+.nav-shell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
 
 .navbar {
     display: flex;
     align-items: center;
-    gap: 10px;
-    justify-content: space-evenly;
-    flex-wrap: nowrap;
-    padding: 0 40px;
-    background-color: #000;
-}
-
-
-.navbar a {
-    float: left;
-    padding: 5px;
-    color: white;
-    font-size: 17px;
-    text-align: center;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-
-.message {
-    max-width: 960px;
-    place-content: center center;
-    border: solid;
-    border-color: #FFF;
-    border-width: 2px;
-    border-radius: 10px;
-    background: #FFF;
-    height: auto;
-    margin-left: auto;
-    margin-right: auto;
-    list-style-type: none;
-}
-
-
-.message ul {
-    list-style-type: none;
-}
-
-
-.dropdown {
-    float: left;
-    overflow: hidden;
-    text-align: center;
-}
-
-
-.dropdown .dropbtn {
-    font-size: 17px;
-    border: none;
-    color: white;
-    padding: 12px;
-    background-color: inherit;
-    font-family: inherit;
-    margin: 0;
-    text-align: center;
-}
-
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #000;
-    padding: 8px;
-    white-space: nowrap;
-}
-
-
-.dropdown-content a {
-    display: inline-block;
-    color: white;
-    padding: 6px 12px;
-    text-decoration: none;
-    font-size: 17px;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-}
-
-
-.admin-links {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-
-.page {
-    display: flex;
+    gap: 8px;
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
-
-.index-page-title {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 18px;
-}
-
-
-.index-home-section {
-    height: auto;
-    min-height: 170px;
-    padding: 16px;
-}
-
-
-.index-section-title {
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-
-.index-section-link {
-    text-align: center;
-    margin-bottom: 8px;
-    line-height: 1.45;
-}
-
-
-.student-home {
-    background: #FFF;
-}
-
-
-.ta-home {
-    background-color: #a2ceff;
-}
-
-
-.create-ticket {
-    background: #FFF;
-    padding: 10px;
-    height: 300px;
-}
-
-
-.create-ticket-panel {
-    height: auto;
-    min-height: 340px;
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 22px 24px;
-}
-
-
-.create-ticket-title {
-    text-align: center;
-    margin-bottom: 16px;
-}
-
-
-.create-ticket-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-
-.create-ticket-field {
-    display: flex;
+.nav-link,
+.user-menu-toggle {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    line-height: 1.45;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    color: var(--text-inverse);
+    text-decoration: none;
+    background: transparent;
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
 }
 
-
-.create-ticket-field label {
-    font-weight: 600;
-    min-width: 90px;
-    text-align: right;
+.nav-link:hover,
+.user-menu-toggle:hover,
+.nav-link.is-active {
+    color: var(--text-inverse);
+    background: rgb(255 255 255 / 8%);
+    border-color: rgb(255 255 255 / 12%);
 }
 
-
-.create-ticket-field input[type="text"],
-.create-ticket-field select {
-    min-height: 20px;
-    padding: 1px 6px;
+.nav-link.is-active {
+    box-shadow: inset 0 -2px 0 var(--osu-orange);
 }
 
-
-.create-ticket-actions {
-    margin-top: 4px;
-    text-align: center;
+.user-menu {
+    position: relative;
 }
 
-
-.create-ticket-actions input,
-.create-ticket-actions button {
-    padding: 4px 10px;
+.menu-caret {
+    margin-left: 8px;
+    font-size: 0.9rem;
 }
 
-
-.wiki-page {
-    margin-top: 20px;
+.user-menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    min-width: 240px;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgb(255 255 255 / 14%);
+    background: #101a2b;
+    box-shadow: var(--shadow);
 }
 
-
-.wiki-shell {
-    width: 100%;
-    height: auto;
-    min-height: 450px;
-    text-indent: 0;
-    padding: 18px 22px;
+.user-menu-group + .user-menu-group {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgb(255 255 255 / 10%);
 }
 
-
-.wiki-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-
-.wiki-header {
-    text-align: center;
-    margin-bottom: 24px;
-    padding-bottom: 14px;
-    border-bottom: 2px dashed #002147;
-}
-
-
-.wiki-header h1 {
-    color: #10233b;
+.user-menu-label {
+    color: rgb(248 251 255 / 72%);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: 8px;
 }
 
-
-.wiki-header .subtitle {
-    color: #1e2c3d;
-}
-
-
-.wiki-search-section {
-    margin-bottom: 22px;
-    text-align: center;
-}
-
-
-.wiki-search-input {
-    width: 100%;
-    max-width: 540px;
-    min-height: 34px;
-    padding: 6px 10px;
-    border: 1px solid #9cb2ca;
-    border-radius: 8px;
-}
-
-
-.wiki-content {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    gap: 24px;
-}
-
-
-.wiki-sidebar {
-    background: #f5f8fc;
-    border: 1px solid #d4e0ed;
+.user-menu-panel a {
+    display: block;
+    color: var(--text-inverse);
+    text-decoration: none;
     border-radius: 10px;
-    padding: 14px;
-    align-self: start;
+    padding: 9px 10px;
 }
 
-
-.wiki-nav h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #10233b;
+.user-menu-panel a:hover,
+.user-menu-panel a:focus-visible {
+    background: rgb(255 255 255 / 10%);
+    color: var(--text-inverse);
 }
 
+.site-main {
+    padding: 32px 0 64px;
+}
 
-.wiki-nav-list {
+.flash-slot {
+    min-height: 88px;
+    margin-bottom: 20px;
+}
+
+.flash-stack {
+    display: grid;
+    gap: 12px;
+    min-height: 56px;
+    margin-bottom: 20px;
+}
+
+.flash-stack-empty {
+    min-height: 56px;
+}
+
+.flash-list {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: grid;
+    gap: 12px;
 }
 
-
-.wiki-nav-list li {
-    margin-bottom: 8px;
+.flash-list li,
+.flash-message {
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    min-height: 56px;
+    display: flex;
+    align-items: center;
 }
 
+.flash-success {
+    border-color: rgb(31 122 70 / 28%);
+    background: rgb(31 122 70 / 10%);
+}
 
-.wiki-nav-list .nav-link {
-    display: block;
+.flash-error,
+.flash-danger {
+    border-color: rgb(159 39 48 / 28%);
+    background: rgb(159 39 48 / 10%);
+}
+
+.flash-info {
+    border-color: rgb(31 53 86 / 22%);
+}
+
+.livequeue-meta {
+    color: var(--text-soft);
+    margin-bottom: 18px;
+    font-weight: 700;
+    min-height: 24px;
+}
+
+#refresh-time {
+    display: inline-block;
+    min-width: 11ch;
+}
+
+.table-shell {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    min-height: 260px;
+}
+
+.section {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.generic,
+.live-queue,
+.tickets,
+.profile,
+.tick-info,
+.tick-resol,
+.create-ticket,
+.message {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.home-page {
+    display: grid;
+    gap: 24px;
+}
+
+.hero-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.9fr);
+    gap: 24px;
+    padding: 34px;
+    align-items: stretch;
+}
+
+.eyebrow {
+    color: var(--osu-orange);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.hero-copy h1,
+.section-heading h1,
+.index-page-title,
+.manage-user-title,
+.wiki-header h1,
+.queue-dashboard-title,
+.create-ticket-title {
+    line-height: 1.12;
+    color: var(--text);
+}
+
+.hero-copy h1 {
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    max-width: 12ch;
+    margin-bottom: 16px;
+}
+
+.hero-description,
+.card-copy,
+.profile-copy,
+.wiki-header .subtitle,
+.current-ticket-timestamp,
+.delete-user-note,
+.archive-field,
+.archive-actions,
+.queue-back-link,
+.index-section-link,
+.wiki-section p,
+.wiki-section li,
+.wormhole-content .subsection p,
+.wormhole-content .subsection li,
+.livequeue-table,
+.hardware-table,
+.current-ticket-table,
+.manage-user-current {
+    color: var(--text-soft);
+}
+
+.hero-description {
+    max-width: 62ch;
+    margin-bottom: 24px;
+    font-size: 1.03rem;
+}
+
+.hero-actions,
+.queue-admin-actions,
+.manage-user-actions,
+.archive-actions,
+.create-ticket-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn,
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.btn-success,
+.btn-delete {
+    appearance: none;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    min-height: 44px;
+    padding: 0 18px;
     text-decoration: none;
-    color: #002147;
-    padding: 6px 9px;
-    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background-color 0.18s ease,
+        border-color 0.18s ease;
 }
 
-
-.wiki-nav-list .nav-link:hover {
-    background: #eaf1f8;
+.btn:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover {
+    transform: translateY(-1px);
 }
 
-
-.wiki-main {
-    min-width: 0;
+.btn-primary,
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.btn-success {
+    background: var(--osu-orange);
+    color: #fff;
+    box-shadow: 0 12px 24px rgb(215 63 9 / 24%);
 }
 
-
-.wiki-section {
-    margin-bottom: 28px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid #d6e1ec;
+.btn-primary:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+.btn-success:hover {
+    background: var(--osu-orange-deep);
+    color: #fff;
 }
 
-
-.wiki-section:last-of-type {
-    border-bottom: 0;
+.btn-secondary,
+.btn-delete {
+    background: var(--surface-soft);
+    color: var(--accent-navy);
+    border-color: var(--border-strong);
+    box-shadow: none;
 }
 
+.btn-secondary:hover,
+.btn-delete:hover {
+    background: #edf2f8;
+    color: var(--accent-navy);
+}
 
+.support-note {
+    margin-top: 14px;
+    font-size: 0.96rem;
+}
+
+.status-card,
+.action-card,
+.content-card {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
+}
+
+.status-card {
+    padding: 24px;
+    background: linear-gradient(180deg, #15233a 0%, #101b2f 100%);
+    border-color: rgb(255 255 255 / 10%);
+    color: var(--text-inverse);
+}
+
+.status-card h2,
+.status-card strong,
+.status-card .support-note {
+    color: var(--text-inverse);
+}
+
+.status-card h2 {
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+}
+
+.list-compact {
+    padding-left: 20px;
+    display: grid;
+    gap: 8px;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.index-home-section,
+.action-card {
+    min-height: 100%;
+    padding: 24px;
+}
+
+.student-home {
+    background: linear-gradient(180deg, #fff 0%, #fbfbfd 100%);
+}
+
+.ta-home {
+    background: linear-gradient(180deg, #edf5ff 0%, #f7fbff 100%);
+}
+
+.remote-card {
+    background: linear-gradient(180deg, #fff8f4 0%, #fffdfb 100%);
+}
+
+.index-section-title,
 .wiki-section h2,
 .wiki-section h3,
-.wiki-section h4 {
-    color: #10233b;
+.wiki-section h4,
+.profile h2,
+.tickets h2,
+.tick-info h3,
+.tick-resol h3,
+.hardware-table th,
+.user-tables th,
+.current-ticket-table th,
+.wormhole-content .subsection h4,
+.wormhole-content .wormhole-schedule h3,
+.wormhole-content .wormhole-schedule h4 {
+    color: var(--text);
     margin-bottom: 10px;
 }
 
-
-.wiki-section p,
-.wiki-section li {
-    color: #1e2c3d;
-    line-height: 1.55;
+.stacked-links {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
 }
 
-
-.wiki-section p {
-    margin-bottom: 10px;
-}
-
-
-.wiki-section ul,
-.wiki-section ol {
-    padding-left: 24px;
-    margin: 8px 0 10px;
-}
-
-
-.wiki-footer {
-    text-align: center;
-    margin-top: 26px;
-    padding-top: 14px;
-    border-top: 1px solid #d6e1ec;
-}
-
-
-.back-to-top {
-    color: #002147;
-    text-decoration: none;
-    border: 1px solid #8ea8c3;
-    border-radius: 6px;
-    padding: 6px 10px;
-}
-
-
-.back-to-top:hover {
-    background: #eaf1f8;
-}
-
-
-@media only screen and (width <= 960px) {
-    .wiki-content {
-        grid-template-columns: 1fr;
-    }
-
-
-    .wiki-sidebar {
-        margin-bottom: 8px;
-    }
-}
-
-
-.live-queue {
-    background: #FFF;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+.text-link {
+    display: inline-flex;
+    align-items: center;
     justify-content: flex-start;
-    padding: 25px;
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--accent-navy);
+    font-weight: 700;
+}
+
+.text-link:hover {
+    background: var(--surface-tint);
+    color: var(--accent-navy);
+}
+
+.wormhole-content,
+.info-panel,
+.wiki-shell,
+.generic,
+.live-queue,
+.tickets,
+.profile,
+.tick-info,
+.tick-resol,
+.create-ticket,
+.manage-user-panel {
+    padding: 28px;
     height: auto;
-    max-width: 961px;
-    border-radius: 50px;
+    min-height: unset;
 }
 
-
-.tickets {
-    background: #FFF;
-    border-radius: 15px;
-    height: auto;
-    min-height: 350px;
-    text-indent: 10px;
-    vertical-align: top;
+.content-header {
+    margin-bottom: 24px;
 }
 
-
-.generic {
-    background: #FFF;
-    border-radius: 15px;
-    height: auto;
-    min-height: 350px;
-    text-indent: 10px;
-    padding: 15px;
+.info-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 22px;
 }
 
-
-.wormhole-content { /* Renamed to kebab-case */
-    padding: 25px;
-    margin-top: 30px;
-    border: dashed 2px #000;
-    border-radius: 20px;
+.content-stack {
+    display: grid;
+    gap: 18px;
+    align-content: start;
 }
 
-
-.subsection {
-    margin-bottom: 25px;
+.content-card {
+    padding: 20px;
 }
 
-
-.subsection:last-child {
+.wormhole-content .subsection {
     margin-bottom: 0;
 }
 
-
-.wormhole-content .subsection {
-    margin-bottom: 28px;
-    padding: 4px 2px;
-    text-indent: 0;
+.wiki-nav-list li + li {
+    margin-top: 8px;
 }
 
-
-.wormhole-content .subsection h4 {
-    margin-bottom: 10px;
-    color: #10233b;
-}
-
-
+.wiki-section p,
+.wiki-section li,
 .wormhole-content .subsection p,
-.wormhole-content .subsection li {
-    color: #1e2c3d;
-    line-height: 1.55;
+.wormhole-content .subsection li,
+.profile-copy,
+.current-ticket-timestamp,
+.delete-user-note {
+    line-height: 1.7;
 }
 
-
-.wormhole-content .subsection p {
-    margin-bottom: 10px;
-}
-
-
+.wiki-section ul,
+.wiki-section ol,
 .wormhole-content .subsection ul,
-.wormhole-content .subsection ol {
+.wormhole-content .subsection ol,
+.browser-default {
     padding-left: 24px;
-    margin: 8px 0 12px;
+    margin: 8px 0 0;
 }
 
-
-.wormhole-content .wormhole-schedule {
-    padding: 10px 0;
+.schedule-card {
+    padding: 22px;
 }
 
-
-.wormhole-content .wormhole-schedule h3,
-.wormhole-content .wormhole-schedule h4 {
-    color: #10233b;
-    margin-bottom: 10px;
-}
-
-
-.wormhole-content .wormhole-schedule p,
-.wormhole-content .wormhole-schedule li {
-    color: #1e2c3d;
-    font-size: 1rem;
-    line-height: 1.55;
-}
-
-
-.wormhole-content .wormhole-schedule p {
-    max-width: none;
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: 10px;
-}
-
-
-.wormhole-content .wormhole-schedule ul {
-    padding-left: 24px;
-    margin: 8px 0 14px;
-}
-
-
+.schedule-embed,
 .wormhole-content .wormhole-schedule iframe {
-    margin-top: 14px;
-    border: 1px solid #bccfe3 !important;
-    border-radius: 10px;
+    width: 100%;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: #fff;
+    margin-top: 16px;
+}
+
+.create-ticket-panel {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.create-ticket-form,
+.centered-form,
+.manage-user-form,
+.archive-form,
+.generic form {
+    display: grid;
+    gap: 16px;
+}
+
+.create-ticket-field,
+.archive-field,
+.manage-user-row,
+.form-group {
+    display: grid;
+    gap: 8px;
+}
+
+.create-ticket-field label,
+.archive-field label,
+.manage-user-input label,
+.centered-form label,
+.generic form label {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.create-ticket-field input[type="text"],
+.create-ticket-field select,
+.archive-field input,
+.manage-user-input input,
+.manage-user-input select,
+.generic input[type="text"],
+.generic input[type="password"],
+.generic input[type="email"],
+.generic input[type="date"],
+.generic select,
+.centered-form input[type="text"],
+.centered-form input[type="password"],
+.centered-form input[type="email"],
+.wiki-search-input {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--text);
+}
+
+.form-error,
+.inline-error,
+.error-msg {
+    color: var(--danger);
+    font-size: 0.92rem;
+}
+
+.text-center,
+.center-align,
+.create-ticket-title,
+.wiki-header,
+.queue-dashboard-title,
+.profile h2,
+.tickets h2,
+.tick-info h3,
+.tick-resol h3,
+.hardware-table th,
+.user-tables th,
+.current-ticket-table th,
+.profile-current-link,
+.archive-actions,
+.create-ticket-actions,
+.livequeue-meta {
+    text-align: center;
+}
+
+.text-center-form {
+    display: grid;
+    gap: 10px;
+}
+
+.live-queue {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.section-heading {
+    margin-bottom: 22px;
+}
+
+.livequeue-table,
+.hardware-table,
+.current-ticket-table,
+.user-tables table,
+.wiki-nav-list {
+    width: 100%;
+}
+
+.livequeue-table,
+.hardware-table,
+.current-ticket-table,
+.user-tables table {
+    border-collapse: collapse;
     background: #fff;
 }
 
+.livequeue-table th,
+.livequeue-table td,
+.hardware-table th,
+.hardware-table td,
+.current-ticket-table th,
+.current-ticket-table td,
+.user-tables th,
+.user-tables td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e7ecf3;
+    text-align: left;
+}
+
+.livequeue-table thead,
+.hardware-header-row,
+.user-tables th {
+    background: var(--surface-tint);
+}
+
+.livequeue-table tbody tr:hover,
+.hardware-table tbody tr:hover,
+.user-tables table tbody tr:hover {
+    background: #fafbfd;
+}
+
+.hardware-list,
+.user-tables {
+    display: grid;
+    gap: 18px;
+}
+
+.hardware-cell {
+    vertical-align: middle;
+}
+
+.battery-green {
+    color: #14613a;
+    font-weight: 700;
+}
+
+.battery-yellow {
+    color: #8a5d00;
+    font-weight: 700;
+}
+
+.battery-orange {
+    color: #b05b00;
+    font-weight: 700;
+}
+
+.battery-red,
+.battery-red-row {
+    color: #8c1d24;
+    font-weight: 700;
+}
 
 .queue-dashboard-title {
     margin-bottom: 18px;
 }
 
-
 .queue-admin-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
-
 
 .queue-admin-action-form {
     display: inline-flex;
 }
 
-
-.queue-admin-actions .btn-delete {
-    padding: 5px 10px;
-    min-height: 30px;
-}
-
-
 .queue-back-link {
-    margin-top: 20px;
+    margin-top: 22px;
 }
 
-
-.profile {
-    background: #BBA0CA;
-    min-height: 250px;
-    border-radius: 15px;
-    height: auto;
+.profile,
+.tickets {
+    min-height: 100%;
 }
 
-
-.tick-info {
-    background: #BBA0CA;
-    min-height: 250px;
-    border-radius: 0;
-    height: 370px;
-    text-indent: 20px;
-    max-width: 400px;
-    margin: auto;
+.profile-copy {
+    margin-bottom: 16px;
 }
 
-
-.section.tick-info p {
-    padding-top: 1.5cm;
+.tick-info,
+.tick-resol {
+    max-width: none;
 }
 
-
-.tick-resol { /* Renamed to kebab-case */
-    background: #BBA0CA;
-    min-height: 250px;
-    border-radius: 0;
-    height: 370px;
-    text-indent: 20px;
-    max-width: 400px;
-    margin: auto;
+.current-ticket-table {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
 }
 
-
-.dropdown-content a:hover {
-    background-color: #f1f1f1; /* Added '#' */
-}
-
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-
-/* Mobile Styles */
-@media only screen and (width <= 400px) {
-    body {
-        background-color: #002147;
-    }
-}
-
-
-/* Tablet Styles */
-@media only screen and (width >= 401px) and (width <= 960px) {
-    body {
-        background-color: #002147;
-    }
-}
-
-
-/* Desktop Styles */
-@media only screen and (width >= 961px) {
-    body {
-        background-color: #002147;
-    }
-
-
-    .page {
-        width: 960px;
-        margin: 0 auto;
-    }
-
-
-    .student-home,
-    .ta-home {
-        width: 50%;
-    }
-
-
-    .tick-info,
-    .tick-resol { /* Renamed to kebab-case */
-        width: 50%;
-    }
-
-
-    .tickets,
-    .profile {
-        width: 50%;
-    }
-
-
-}
-
-
-/* Flash Message Styles */
-.flash-success {
-    color: #155724;
-    background-color: #d4edda;
-    border: 1px solid #c3e6cb;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-}
-
-
-.flash-error {
-    color: #721c24;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-}
-
-
-.flash-info {
-    color: #0c5460;
-    background-color: #d1ecf1;
-    border: 1px solid #bee5eb;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-}
-
-.user-tables {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    margin: 15px;
-}
-
-.user-tables table {
-    border-collapse: collapse;
-}
-
-.user-tables th {
+.current-ticket-timestamp {
+    margin-top: 18px;
     text-align: center;
-    font-size: 1.2em;
-    padding-bottom: 8px;
 }
 
+.wiki-page {
+    margin-top: 0;
+}
+
+.wiki-header {
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.wiki-search-section {
+    margin-bottom: 22px;
+}
+
+.wiki-content {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 24px;
+}
+
+.wiki-sidebar {
+    align-self: start;
+    background: var(--surface-tint);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 18px;
+}
+
+.wiki-nav-list {
+    list-style: none;
+}
+
+.wiki-nav-list .nav-link,
+.back-to-top {
+    color: var(--accent-navy);
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    justify-content: flex-start;
+}
+
+.wiki-nav-list .nav-link:hover,
+.back-to-top:hover {
+    color: var(--accent-navy);
+    background: var(--surface-soft);
+}
+
+.wiki-section {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.wiki-section:last-of-type {
+    border-bottom: 0;
+}
+
+.wiki-section-hidden {
+    display: none;
+}
+
+.wiki-footer {
+    margin-top: 24px;
+    text-align: center;
+}
 
 .manage-user-page {
-    margin-bottom: 12px;
+    margin-bottom: 18px;
 }
-
 
 .manage-user-title {
-    color: #fff;
+    color: var(--text-inverse);
 }
 
-
-.manage-user-grid {
+.manage-user-grid,
+.dashboard-grid,
+.ticket-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 22px;
-    align-items: stretch;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
 }
 
-
-.manage-user-panel {
-    width: 100%;
-    min-width: 0;
-    min-height: 350px;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
+.manage-user-current {
+    font-size: 0.93rem;
 }
 
-
-.manage-user-form {
-    margin-top: 10px;
-    flex: 1;
-}
-
-
-.manage-user-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 12px;
-}
-
-
-.manage-user-input {
+.manage-user-checkbox {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-wrap: wrap;
 }
-
-
-.manage-user-input label {
-    min-width: 95px;
-    font-weight: 600;
-}
-
-
-.manage-user-checkbox label {
-    min-width: auto;
-}
-
-
-.manage-user-current {
-    color: #1f1f1f;
-    white-space: normal;
-    overflow-wrap: anywhere;
-}
-
-
-.manage-user-row-email {
-    flex-wrap: nowrap;
-    align-items: center;
-}
-
-
-.manage-user-row-email .manage-user-input {
-    flex: 1;
-    min-width: 0;
-}
-
-
-.manage-user-row-email .manage-user-current {
-    white-space: nowrap;
-}
-
-
-.manage-user-actions {
-    margin-top: 16px;
-}
-
 
 .delete-user-note {
-    margin-bottom: 14px;
-    line-height: 1.45;
+    margin-bottom: 6px;
 }
 
-
-.form-error {
-    display: block;
-    color: #b00020;
-    margin-bottom: 8px;
+.user-tables {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
 }
 
+.user-tables table {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
 
-@media only screen and (width <= 960px) {
-    .manage-user-grid {
+.archive-field,
+.archive-actions {
+    max-width: 380px;
+}
+
+.message {
+    max-width: 960px;
+    margin: 0 auto 20px;
+}
+
+@media only screen and (width <= 1080px) {
+    .hero-section,
+    .info-grid,
+    .wiki-content,
+    .manage-user-grid,
+    .dashboard-grid,
+    .ticket-grid,
+    .action-grid,
+    .user-tables {
         grid-template-columns: 1fr;
     }
+}
 
-
-    .manage-user-panel {
-        width: 100%;
-        min-height: auto;
+@media only screen and (width <= 820px) {
+    .site-header {
+        position: static;
     }
 
-
-    .manage-user-row {
-        align-items: flex-start;
+    .header-shell {
         flex-direction: column;
-        gap: 6px;
+        align-items: stretch;
     }
 
-
-    .manage-user-current {
-        white-space: normal;
+    .nav-shell,
+    .navbar {
+        justify-content: flex-start;
     }
 
+    .hero-section,
+    .wormhole-content,
+    .wiki-shell,
+    .generic,
+    .live-queue,
+    .tickets,
+    .profile,
+    .tick-info,
+    .tick-resol,
+    .create-ticket,
+    .manage-user-panel {
+        padding: 22px;
+    }
+}
 
-    .manage-user-row-email {
-        flex-wrap: wrap;
+@media only screen and (width <= 560px) {
+    .page {
+        width: min(calc(100% - 20px), var(--max-width));
+    }
+
+    .brand-lockup {
         align-items: flex-start;
+    }
+
+    .brand-mark {
+        width: 52px;
+        height: 52px;
+    }
+
+    .nav-link,
+    .user-menu-toggle,
+    .btn,
+    button,
+    input[type="submit"],
+    input[type="button"],
+    input[type="reset"],
+    .btn-success,
+    .btn-delete,
+    .text-link,
+    .text-center-form button {
+        width: 100%;
+    }
+
+    .hero-copy h1 {
+        max-width: none;
+    }
+
+    .livequeue-table th,
+    .livequeue-table td,
+    .hardware-table th,
+    .hardware-table td,
+    .current-ticket-table th,
+    .current-ticket-table td,
+    .user-tables th,
+    .user-tables td {
+        padding: 12px;
     }
 }

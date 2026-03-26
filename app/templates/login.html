@@ -2,35 +2,35 @@
 {% block content %}
     <div class='page'>
         <div class='section create-ticket'>
-            <h2 style="text-align:center">
+            <h2 class="text-center">
                 Assistant Login
             </h2>
-            <h3 style="text-align:center">
+            <h3 class="text-center">
                 Sign In
             </h3>
-            <form align="center" action="" method="post" novalidate>
+            <form class="centered-form" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
-                <p style="text-align:center">
+                <p class="text-center">
                     {{ form.username.label }}  {{ form.username(size=32) }}
                     <br>
                     {% for er in form.username.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
+                        <span class="inline-error">[{{ er }}]</span>
                     {% endfor %}
                 </p>
-                <p style="text-align:center">
+                <p class="text-center">
                     {{ form.password.label }}  {{ form.password(size=32) }}
                     <br>
                     {% for er in form.password.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
+                        <span class="inline-error">[{{ er }}]</span>
                     {% endfor %}
                 </p>
-                <p style="text-align:center">
+                <p class="text-center">
                     {{ form.remember_me() }} {{ form.remember_me.label }}
                 </p>
-                <p style="text-align:center">
+                <p class="text-center">
                     {{ form.submit() }}
                 </p>
-                <p style="text-align:center">
+                <p class="text-center">
                     <a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a>
                 </p>
             </form>

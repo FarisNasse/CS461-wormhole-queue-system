@@ -3,11 +3,11 @@
     <div class="page">
         <div class="section live-queue">
             <br>
-            <h2 style="text-align:center;">
+            <h2 class="text-center">
                 Hardware List
             </h2>
-            <table style="width:100%; align-self:center;">
-                <tr style="padding:15px;">
+            <table class="hardware-table">
+                <tr class="hardware-header-row">
                     <th>
                         Name
                     </th>
@@ -21,49 +21,49 @@
                 {% for box in boxes %}
                     {% if box.Battery_Status == 'Green' and box.Box_Name != 'Tyson' %}
                         <tr>
-                            <td style="padding:8px; text-align:center;">
+                            <td class="hardware-cell">
                                 {{ box.Box_Name }}
                             </td>
-                            <td bgcolor="green" style="padding:8px; text-align:center;">
+                            <td class="hardware-cell battery-green">
                                 {{ box.Battery_Status }}
                             </td>
-                            <td style="padding:8px; text-align:center;">
+                            <td class="hardware-cell">
                                 {{ box.update_time }}
                             </td>
                         </tr>
                     {% elif box.Battery_Status == 'Yellow' and box.Box_Name != 'Tyson' %}
                         <tr>
-                            <td style="padding:8px; text-align:center;">
+                            <td class="hardware-cell">
                                 {{ box.Box_Name }}
                             </td>
-                            <td bgcolor="yellow" style="padding:8px; text-align:center;">
+                            <td class="hardware-cell battery-yellow">
                                 {{ box.Battery_Status }}
                             </td>
-                            <td style="padding:8px; text-align:center;">
+                            <td class="hardware-cell">
                                 {{ box.update_time }}
                             </td>
                         </tr>
                     {% elif box.Battery_Status == 'Orange' and box.Box_Name != 'Tyson' %}
                         <tr>
-                            <td style="padding:8px; text-align:center;">
+                            <td class="hardware-cell">
                                 {{ box.Box_Name }}
                             </td>
-                            <td bgcolor="orange" style="padding:8px; text-align:center;">
+                            <td class="hardware-cell battery-orange">
                                 {{ box.Battery_Status }}
                             </td>
-                            <td style="padding:8px; text-align:center;">
+                            <td class="hardware-cell">
                                 {{ box.update_time }}
                             </td>
                         </tr>
                     {% elif box.Box_Name != 'Tyson' %}
-                        <tr bgcolor="red">
-                            <td style="padding:8px; text-align:center;">
+                        <tr class="battery-red-row">
+                            <td class="hardware-cell">
                                 {{ box.Box_Name }}
                             </td>
-                            <td style="padding:8px; text-align:center;">
+                            <td class="hardware-cell">
                                 {{ box.Battery_Status }}
                             </td>
-                            <td style="padding:8px; text-align:center;">
+                            <td class="hardware-cell">
                                 {{ box.update_time }}
                             </td>
                         </tr>
@@ -71,25 +71,25 @@
                 {% endfor %}
             </table>
             <br>
-            <h4 style="text-align:center;">
+            <h4 class="text-center">
                 Last API post: {{ update_time }}
             </h4>
             <br>
-            <h4 style="text-align:center;">
+            <h4 class="text-center">
                 Legend
             </h4>
-            <table style="width:100%; align-self:center; table-layout:fixed;">
-                <tr style="padding:15px;">
-                    <th bgcolor="green">
+            <table class="hardware-table hardware-legend-table">
+                <tr class="hardware-header-row">
+                    <th class="battery-green">
                         Good Battery Life
                     </th>
-                    <th bgcolor="yellow">
+                    <th class="battery-yellow">
                         Mid Battery Life
                     </th>
-                    <th bgcolor="orange">
+                    <th class="battery-orange">
                         Charge Battery
                     </th>
-                    <th bgcolor="red">
+                    <th class="battery-red">
                         Offline
                     </th>
                 </tr>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         {% if title %}
             <title>{{ title }}</title>
         {% else %}
             <title>Wormhole Queue System</title>
         {% endif %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {% block scripts %}
         {% endblock %}
         <link rel="icon"
@@ -13,66 +15,96 @@
               sizes="32x32"
               href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}">
         <link rel="shortcut icon"
-              href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}" />
+              href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}">
         <link rel="stylesheet"
               href="{{ url_for('static', filename='styles.css') }}"
               type="text/css">
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     </head>
     <body>
-        <div class = "page">
-            <div class = "header">
-                <h1 style="color:#FFFFFF;text-align:center">
-                    Oregon State University Wormhole
-                </h1>
-                <div class="navbar">
-                    <a href="{{ url_for('views.index') }}">Home</a>
-                    <a href="{{ url_for('views.create_ticket_page') }}">Submit Request</a>
-                    <a href="{{ url_for('views.livequeue') }}">Live Queue</a>
-                    <a href="{{ url_for('views.wiki') }}">Wiki</a>
-                    <div class="dropdown">
-                        <button class="dropbtn">
+        <header class="site-header">
+            <div class="page header-shell">
+                <a class="brand-lockup"
+                   href="{{ url_for('views.index') }}"
+                   aria-label="Wormhole Queue System home page">
+                    <img class="brand-mark"
+                         src="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}"
+                         alt="Wormhole Queue System logo">
+                    <div class="brand-copy">
+                        <p class="brand-kicker">
+                            Oregon State University
+                        </p>
+                        <h1 class="site-title">
+                            Wormhole Queue System
+                        </h1>
+                        <p class="site-tagline">
+                            Physics collaboration and help center
+                        </p>
+                    </div>
+                </a>
+                <div class="nav-shell">
+                    <nav class="navbar" aria-label="Primary">
+                        <a class="nav-link{% if request.endpoint == 'views.index' %} is-active{% endif %}"
+                           href="{{ url_for('views.index') }}">Home</a>
+                        <a class="nav-link{% if request.endpoint == 'views.create_ticket_page' %} is-active{% endif %}"
+                           href="{{ url_for('views.create_ticket_page') }}">Submit Request</a>
+                        <a class="nav-link{% if request.endpoint == 'views.livequeue' %} is-active{% endif %}"
+                           href="{{ url_for('views.livequeue') }}">Live Queue</a>
+                        <a class="nav-link{% if request.endpoint == 'views.wiki' %} is-active{% endif %}"
+                           href="{{ url_for('views.wiki') }}">Wiki</a>
+                    </nav>
+                    <div class="user-menu">
+                        <button class="user-menu-toggle"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="user-menu-panel">
                             User
+                            <span class="menu-caret" aria-hidden="true">▾</span>
                         </button>
-                        <div class="dropdown-content">
+                        <div class="user-menu-panel" id="user-menu-panel" hidden>
                             {% if current_user.is_admin %}
-                                <div class = "admin-links">
+                                <div class="user-menu-group">
+                                    <p class="user-menu-label">
+                                        Administration
+                                    </p>
                                     <a href="{{ url_for('views.register') }}">Register New User</a>
-                                    <a href="{{ url_for('views.queue') }}">Queue</a>
-                                    <a href="{{ url_for('views.archive') }}">Archive</a>
+                                    <a href="{{ url_for('views.queue') }}">Queue Dashboard</a>
+                                    <a href="{{ url_for('views.archive') }}">Archive Export</a>
                                 </div>
                             {% endif %}
-                            {% if current_user.is_anonymous %}
-                                <a href="{{ url_for('views.assistant_login') }}">Log In</a>
-                            {% else %}
-                                <a href="{{ url_for('views.userpage', username=current_user.username) }}">Profile</a>
-                                <a href="{{ url_for('views.hardware_list') }}">Hardware List</a>
-                                <a href="{{ url_for('views.logout') }}">Log Out</a>
-                            {% endif %}
+                            <div class="user-menu-group">
+                                <p class="user-menu-label">
+                                    Account
+                                </p>
+                                {% if current_user.is_anonymous %}
+                                    <a href="{{ url_for('views.assistant_login') }}">Log In</a>
+                                {% else %}
+                                    <a href="{{ url_for('views.userpage', username=current_user.username) }}">Profile</a>
+                                    <a href="{{ url_for('views.hardware_list') }}">Hardware List</a>
+                                    <a href="{{ url_for('views.logout') }}">Log Out</a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {# Update get_flashed_messages to include categories (success, error, info) #}
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class ="section message">
-                    <ul>
+        </header>
+        <main class="site-main">
+            <div class="page flash-slot" aria-live="polite">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    <div class="flash-stack{% if not messages %} flash-stack-empty{% endif %}">
                         {% for category, ms in messages %}
-                            {# Apply a class based on the category (e.g., flash-success, flash-error) #}
-                            <li class="flash-{{ category }}">
+                            <div class="flash-message flash-{{ category }}" role="status">
                                 {{ ms }}
-                            </li>
+                            </div>
                         {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-        {% endwith %}
-        {% block content %}
+                    </div>
+                {% endwith %}
+            </div>
+            {% block content %}
+            {% endblock %}
+        </main>
+        <script src="{{ url_for('static', filename='js/nav-menu.js') }}"></script>
+        {% block body_scripts %}
         {% endblock %}
     </body>
-    {% block body_scripts %}
-    {% endblock %}
 </html>
