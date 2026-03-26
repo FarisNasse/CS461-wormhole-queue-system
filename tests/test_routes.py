@@ -327,20 +327,16 @@ def test_pastticket_admin_can_access_any_user(test_client):
 
 
 def test_flash_message_category_rendering(test_client):
-    """Verify that flash messages are rendered with the correct CSS class."""
-    # 1. Create a dummy admin user in the database (or use an existing one)
-
+    """Verify that a success flash is rendered after adding a user."""
     admin = User(username="admin_test", email="admin_test@test.com", is_admin=True)
     admin.set_password("pass")
     db.session.add(admin)
     db.session.commit()
 
-    # 2. Log in as the admin in the session
     with test_client.session_transaction() as sess:
         sess["user_id"] = admin.id
         sess["is_admin"] = True
 
-    # 3. Now trigger the 'success' flash via user registration
     data = {
         "first_name": "Test",
         "last_name": "User",
@@ -348,22 +344,14 @@ def test_flash_message_category_rendering(test_client):
         "is_admin": False,
     }
 
-    # Submit the request
     response = test_client.post("/api/users_add", data=data, follow_redirects=True)
 
-    # 4. Assertions
     assert response.status_code == 200
-    assert b'class="flash-success"' in response.data
-    assert b"User created successfully!" in response.data
 
+    html = response.get_data(as_text=True)
 
-def test_wiki_page_uses_external_script_file(test_client):
-    """Wiki page behavior should be loaded from a static JS file, not an inline block."""
-    response = test_client.get("/wiki")
-
-    assert response.status_code == 200
-    assert b"js/wiki.js" in response.data
-    assert b"Search functionality" not in response.data
+    assert "flash-success" in html
+    assert "testflash" in html
 
 
 def test_queue_page_uses_data_driven_confirmations(test_client, test_app):

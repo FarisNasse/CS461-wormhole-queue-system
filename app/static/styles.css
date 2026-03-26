@@ -396,8 +396,6 @@ input[type="reset"] {
 .index-section-link,
 .wiki-section p,
 .wiki-section li,
-.wormhole-content .subsection p,
-.wormhole-content .subsection li,
 .livequeue-table,
 .hardware-table,
 .current-ticket-table,
@@ -445,14 +443,6 @@ input[type="reset"],
         border-color 0.18s ease;
 }
 
-.btn:hover,
-button:hover,
-input[type="submit"]:hover,
-input[type="button"]:hover,
-input[type="reset"]:hover {
-    transform: translateY(-1px);
-}
-
 .btn-primary,
 button,
 input[type="submit"],
@@ -464,6 +454,22 @@ input[type="reset"],
     box-shadow: 0 12px 24px rgb(215 63 9 / 24%);
 }
 
+.btn-secondary,
+.btn-delete {
+    background: var(--surface-soft);
+    color: var(--accent-navy);
+    border-color: var(--border-strong);
+    box-shadow: none;
+}
+
+.btn:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover {
+    transform: translateY(-1px);
+}
+
 .btn-primary:hover,
 button:hover,
 input[type="submit"]:hover,
@@ -472,14 +478,6 @@ input[type="reset"]:hover,
 .btn-success:hover {
     background: var(--osu-orange-deep);
     color: #fff;
-}
-
-.btn-secondary,
-.btn-delete {
-    background: var(--surface-soft);
-    color: var(--accent-navy);
-    border-color: var(--border-strong);
-    box-shadow: none;
 }
 
 .btn-secondary:hover,
@@ -559,10 +557,7 @@ input[type="reset"]:hover,
 .tick-resol h3,
 .hardware-table th,
 .user-tables th,
-.current-ticket-table th,
-.wormhole-content .subsection h4,
-.wormhole-content .wormhole-schedule h3,
-.wormhole-content .wormhole-schedule h4 {
+.current-ticket-table th {
     color: var(--text);
     margin-bottom: 10px;
 }
@@ -632,24 +627,20 @@ input[type="reset"]:hover,
     margin-bottom: 0;
 }
 
-.wiki-nav-list li + li {
-    margin-top: 8px;
-}
-
 .wiki-section p,
 .wiki-section li,
-.wormhole-content .subsection p,
-.wormhole-content .subsection li,
 .profile-copy,
 .current-ticket-timestamp,
 .delete-user-note {
     line-height: 1.7;
 }
 
+.wiki-nav-list li + li {
+    margin-top: 8px;
+}
+
 .wiki-section ul,
 .wiki-section ol,
-.wormhole-content .subsection ul,
-.wormhole-content .subsection ol,
 .browser-default {
     padding-left: 24px;
     margin: 8px 0 0;
@@ -990,6 +981,26 @@ input[type="reset"]:hover,
 .message {
     max-width: 960px;
     margin: 0 auto 20px;
+}
+
+/* Wormhole Specifics - Specificity Order Fixes */
+.wormhole-content .subsection h4,
+.wormhole-content .wormhole-schedule h3,
+.wormhole-content .wormhole-schedule h4 {
+    color: var(--text);
+    margin-bottom: 10px;
+}
+
+.wormhole-content .subsection p,
+.wormhole-content .subsection li {
+    color: var(--text-soft);
+    line-height: 1.7;
+}
+
+.wormhole-content .subsection ul,
+.wormhole-content .subsection ol {
+    padding-left: 24px;
+    margin: 8px 0 0;
 }
 
 @media only screen and (width <= 1080px) {

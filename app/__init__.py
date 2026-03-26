@@ -3,12 +3,6 @@ import mimetypes
 import os
 from types import SimpleNamespace
 
-# Ignore broken Windows/system MIME mappings
-mimetypes.init([])
-mimetypes.add_type("application/javascript", ".js", strict=True)
-mimetypes.add_type("application/javascript", ".mjs", strict=True)
-mimetypes.add_type("text/css", ".css", strict=True)
-
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
@@ -16,6 +10,12 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config
+
+# Ignore broken Windows/system MIME mappings
+mimetypes.init([])
+mimetypes.add_type("application/javascript", ".js", strict=True)
+mimetypes.add_type("application/javascript", ".mjs", strict=True)
+mimetypes.add_type("text/css", ".css", strict=True)
 
 db = SQLAlchemy()
 migrate = Migrate()
