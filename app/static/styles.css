@@ -914,6 +914,7 @@ input[type="reset"]:hover,
 }
 
 .wiki-section {
+    scroll-margin-top: 120px;
     padding-bottom: 20px;
     margin-bottom: 20px;
     border-bottom: 1px solid var(--border);
@@ -981,6 +982,11 @@ input[type="reset"]:hover,
 .message {
     max-width: 960px;
     margin: 0 auto 20px;
+}
+
+.wiki-faq-item p {
+    padding: 0 18px 18px;
+    margin: 0;
 }
 
 /* Wormhole Specifics - Specificity Order Fixes */
@@ -1087,5 +1093,191 @@ input[type="reset"]:hover,
     .user-tables th,
     .user-tables td {
         padding: 12px;
+    }
+}
+
+/* --- Wiki page completion block --- */
+.wiki-docs-shell {
+    display: grid;
+    gap: 24px;
+}
+
+.wiki-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.wiki-search-wrap {
+    flex: 1 1 380px;
+}
+
+.wiki-search-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.wiki-search-status {
+    margin: 0;
+    color: var(--text-soft);
+    font-weight: 700;
+}
+
+.wiki-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.wiki-summary-card {
+    padding: 22px;
+}
+
+.wiki-badge-grid,
+.wiki-role-grid,
+.wiki-page-grid,
+.wiki-status-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.wiki-badge-grid,
+.wiki-status-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.wiki-role-grid,
+.wiki-page-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 18px;
+}
+
+.wiki-badge-card,
+.wiki-mini-card,
+.wiki-status-card,
+.wiki-issue-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
+    padding: 18px;
+}
+
+.wiki-badge-label,
+.wiki-section-kicker {
+    display: inline-block;
+    color: var(--osu-orange);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.wiki-steps-list {
+    padding-left: 22px;
+    display: grid;
+    gap: 10px;
+}
+
+.wiki-section-header {
+    margin-bottom: 14px;
+}
+
+.wiki-callout {
+    margin: 18px 0;
+    padding: 16px 18px;
+    border-left: 4px solid var(--osu-orange);
+    border-radius: 14px;
+    background: #fff7f2;
+    color: var(--text);
+}
+
+.wiki-callout-warning {
+    border-left-color: var(--warning);
+    background: #fff9eb;
+}
+
+.wiki-nav-title {
+    color: var(--text);
+    margin-bottom: 12px;
+}
+
+.wiki-side-link {
+    display: inline-flex;
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: #fff;
+    color: var(--accent-navy);
+    text-decoration: none;
+    font-weight: 700;
+    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.wiki-side-link:hover,
+.wiki-side-link.is-current {
+    background: var(--surface-soft);
+    border-color: var(--osu-orange);
+    color: var(--accent-navy);
+}
+
+.wiki-main {
+    display: grid;
+    gap: 20px;
+}
+
+.wiki-issue-list,
+.wiki-faq-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.wiki-faq-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    padding: 0;
+    overflow: hidden;
+}
+
+.wiki-faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 16px 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.wiki-faq-item[open] summary {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-tint);
+}
+
+@media only screen and (width <= 1080px) {
+    .wiki-overview-grid,
+    .wiki-role-grid,
+    .wiki-page-grid,
+    .wiki-badge-grid,
+    .wiki-status-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media only screen and (width <= 820px) {
+    .wiki-toolbar {
+        align-items: stretch;
+    }
+
+    .wiki-search-status {
+        width: 100%;
     }
 }

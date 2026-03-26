@@ -1,134 +1,672 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="page wiki-page">
-        <div class="section generic wiki-shell">
-            <div class="wiki-container">
-                <div class="wiki-header">
-                    <h1>
-                        Wormhole Queue System - Wiki
-                    </h1>
-                    <p class="subtitle">
-                        Comprehensive guide and documentation for the queue management system
-                    </p>
-                </div>
-                <div class="wiki-search-section">
+        <div class="section generic wiki-shell wiki-docs-shell">
+            <div class="wiki-header">
+                <p class="eyebrow">
+                    Documentation
+                </p>
+                <h1>
+                    Wormhole Queue System — Wiki
+                </h1>
+                <p class="subtitle">
+                    Comprehensive guide and documentation for students, Wormhole Assistants, and administrators using the queue management system.
+                </p>
+            </div>
+            <div class="wiki-toolbar" aria-label="Wiki tools">
+                <div class="wiki-search-wrap">
+                    <label class="wiki-search-label" for="wikiSearch">
+                        Search the wiki
+                    </label>
                     <input type="text"
                            id="wikiSearch"
                            class="wiki-search-input"
-                           placeholder="Search wiki articles...">
+                           placeholder="Search features, workflows, or troubleshooting steps..."
+                           autocomplete="off">
                 </div>
-                <div class="wiki-content">
-                    <aside class="wiki-sidebar">
-                        <nav class="wiki-nav">
-                            <h3>
-                                Documentation
-                            </h3>
-                            <ul class="wiki-nav-list">
-                                <li>
-                                    <a href="#getting-started" class="nav-link">Getting Started</a>
-                                </li>
-                                <li>
-                                    <a href="#student-guide" class="nav-link">Student Guide</a>
-                                </li>
-                                <li>
-                                    <a href="#website-overview" class="nav-link">Website Overview</a>
-                                </li>
-                                <li>
-                                    <a href="#wormhole-assistants" class="nav-link">Wormhole Assistants</a>
-                                </li>
-                                <li>
-                                    <a href="#admin-features" class="nav-link">Admin Features</a>
-                                </li>
-                                <li>
-                                    <a href="#troubleshooting" class="nav-link">Troubleshooting</a>
-                                </li>
-                                <li>
-                                    <a href="#faq" class="nav-link">FAQ</a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </aside>
-                    <main class="wiki-main">
-                        <section id="getting-started" class="wiki-section">
+                <p id="wikiSearchStatus" class="wiki-search-status" aria-live="polite">
+                    Showing all sections.
+                </p>
+            </div>
+            <div class="wiki-overview-grid">
+                <section class="content-card wiki-summary-card"
+                         aria-labelledby="wiki-quickstart-title">
+                    <h2 id="wiki-quickstart-title">
+                        Quick Start
+                    </h2>
+                    <ol class="wiki-steps-list">
+                        <li>
+                            Students can submit help requests without logging in.
+                        </li>
+                        <li>
+                            Use the <strong>Live Queue</strong> page to monitor active requests.
+                        </li>
+                        <li>
+                            Wormhole Assistants log in through the <strong>User</strong> menu.
+                        </li>
+                        <li>
+                            Administrators can manage users, queue tools, and exports.
+                        </li>
+                    </ol>
+                </section>
+                <section class="content-card wiki-summary-card"
+                         aria-labelledby="wiki-at-a-glance-title">
+                    <h2 id="wiki-at-a-glance-title">
+                        At a Glance
+                    </h2>
+                    <div class="wiki-badge-grid">
+                        <div class="wiki-badge-card">
+                            <span class="wiki-badge-label">Students</span>
+                            <p>
+                                Submit requests, monitor the queue, and access online help links.
+                            </p>
+                        </div>
+                        <div class="wiki-badge-card">
+                            <span class="wiki-badge-label">Assistants</span>
+                            <p>
+                                Claim tickets, work requests, and resolve issues efficiently.
+                            </p>
+                        </div>
+                        <div class="wiki-badge-card">
+                            <span class="wiki-badge-label">Admins</span>
+                            <p>
+                                Manage users, queue operations, and archive/export actions.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="wiki-content">
+                <aside class="wiki-sidebar" aria-label="Wiki section navigation">
+                    <nav class="wiki-nav">
+                        <h2 class="wiki-nav-title">
+                            Documentation
+                        </h2>
+                        <ul class="wiki-nav-list">
+                            <li>
+                                <a href="#getting-started" class="wiki-side-link">Getting Started</a>
+                            </li>
+                            <li>
+                                <a href="#student-guide" class="wiki-side-link">Student Guide</a>
+                            </li>
+                            <li>
+                                <a href="#website-overview" class="wiki-side-link">Website Overview</a>
+                            </li>
+                            <li>
+                                <a href="#wormhole-assistants" class="wiki-side-link">Wormhole Assistants</a>
+                            </li>
+                            <li>
+                                <a href="#admin-features" class="wiki-side-link">Admin Features</a>
+                            </li>
+                            <li>
+                                <a href="#troubleshooting" class="wiki-side-link">Troubleshooting</a>
+                            </li>
+                            <li>
+                                <a href="#faq" class="wiki-side-link">FAQ</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </aside>
+                <main class="wiki-main">
+                    <section id="getting-started"
+                             class="wiki-section"
+                             data-title="Getting Started">
+                        <div class="wiki-section-header">
+                            <p class="wiki-section-kicker">
+                                System basics
+                            </p>
                             <h2>
                                 Getting Started
                             </h2>
-                            <p>
-                                Welcome to the Wormhole Queue System wiki! This guide will help you get up and running with our queue management platform.
+                        </div>
+                        <p>
+                            Welcome to the Wormhole Queue System wiki. This guide explains how the site works for students, Wormhole Assistants, and administrators. The system is designed to help students request assistance, allow staff to manage requests clearly, and keep the queue visible in real time.
+                        </p>
+                        <div class="wiki-callout">
+                            <strong>Important:</strong> students do <em>not</em> need to log in to request help. Accounts are mainly for staff and administrators.
+                        </div>
+                        <h3>
+                            Creating your account
+                        </h3>
+                        <ol>
+                            <li>
+                                Open the <strong>User</strong> menu in the top navigation bar.
+                            </li>
+                            <li>
+                                Select <strong>Log In</strong>.
+                            </li>
+                            <li>
+                                Enter your assigned username or email and password.
+                            </li>
+                            <li>
+                                After login, staff-only tools will appear in the User menu and profile pages.
+                            </li>
+                        </ol>
+                        <h3>
+                            What each role can do
+                        </h3>
+                        <div class="wiki-role-grid">
+                            <article class="wiki-mini-card">
+                                <h4>
+                                    Students
+                                </h4>
+                                <ul>
+                                    <li>
+                                        Submit online help requests
+                                    </li>
+                                    <li>
+                                        Request in-person help from table hardware
+                                    </li>
+                                    <li>
+                                        Watch the live queue
+                                    </li>
+                                    <li>
+                                        Open schedule and meeting resources from Home
+                                    </li>
+                                </ul>
+                            </article>
+                            <article class="wiki-mini-card">
+                                <h4>
+                                    Wormhole Assistants
+                                </h4>
+                                <ul>
+                                    <li>
+                                        Log in and claim tickets
+                                    </li>
+                                    <li>
+                                        Work active requests
+                                    </li>
+                                    <li>
+                                        Resolve completed tickets
+                                    </li>
+                                    <li>
+                                        Monitor queue activity
+                                    </li>
+                                </ul>
+                            </article>
+                            <article class="wiki-mini-card">
+                                <h4>
+                                    Administrators
+                                </h4>
+                                <ul>
+                                    <li>
+                                        Create and manage staff users
+                                    </li>
+                                    <li>
+                                        Use queue maintenance tools
+                                    </li>
+                                    <li>
+                                        Export archive data
+                                    </li>
+                                    <li>
+                                        Support troubleshooting and oversight
+                                    </li>
+                                </ul>
+                            </article>
+                        </div>
+                    </section>
+                    <section id="student-guide" class="wiki-section" data-title="Student Guide">
+                        <div class="wiki-section-header">
+                            <p class="wiki-section-kicker">
+                                Using the queue
                             </p>
-                            <h3>
-                                Creating Your Account
-                            </h3>
-                            <p>
-                                To get started, create an account by opening the "User" menu in the navigation bar and selecting "Log In." Provide your email address and password.
-                            </p>
-                        </section>
-                        <section id="student-guide" class="wiki-section">
                             <h2>
                                 Student Guide
                             </h2>
-                            <h3>
-                                Getting Help Online
-                            </h3>
-                            <p>
-                                On the "Home" page, there is a section called "For Students." First, submit a help request by clicking the link. Enter a name that the Wormhole Assistant will be able to identify on your platform of choice. Choose your class from the dropdown. Select the platform through which an assistant can reach you. You will automatically be redirected to the "Live Queue" page. Here you can see your place in line. Navigate back to the For Students section on the Home page to access the Zoom or Teams of the wormhole assistants.
+                        </div>
+                        <h3>
+                            Getting help online
+                        </h3>
+                        <ol>
+                            <li>
+                                Go to the <strong>Home</strong> page.
+                            </li>
+                            <li>
+                                In the <strong>For Students</strong> section, open the help request form.
+                            </li>
+                            <li>
+                                Enter a name the Wormhole Assistant will recognize on your platform of choice.
+                            </li>
+                            <li>
+                                Select your class from the dropdown menu.
+                            </li>
+                            <li>
+                                Choose the platform the assistant should use to reach you.
+                            </li>
+                            <li>
+                                Submit the request.
+                            </li>
+                            <li>
+                                You will be redirected to the <strong>Live Queue</strong> page so you can monitor your position.
+                            </li>
+                        </ol>
+                        <p>
+                            If you need the online meeting links, return to the <strong>Home</strong> page and use the student resource section to access the active Zoom or Teams links for the Wormhole.
+                        </p>
+                        <h3>
+                            Getting help in person
+                        </h3>
+                        <ol>
+                            <li>
+                                Go to an available table with a button box.
+                            </li>
+                            <li>
+                                Press the button for the class you need help with.
+                            </li>
+                            <li>
+                                A ticket is added to the queue with your table and course.
+                            </li>
+                            <li>
+                                The ticket appears on the live queue display.
+                            </li>
+                            <li>
+                                A Wormhole Assistant will come to your table when they are available.
+                            </li>
+                        </ol>
+                        <h3>
+                            Understanding queue status
+                        </h3>
+                        <div class="wiki-status-grid">
+                            <article class="wiki-status-card">
+                                <h4>
+                                    Numbered position
+                                </h4>
+                                <p>
+                                    Your ticket is waiting in line and has not yet been claimed by an assistant.
+                                </p>
+                            </article>
+                            <article class="wiki-status-card">
+                                <h4>
+                                    IN PROGRESS
+                                </h4>
+                                <p>
+                                    An assistant has already claimed your ticket and is currently working with you.
+                                </p>
+                            </article>
+                            <article class="wiki-status-card">
+                                <h4>
+                                    Removed from queue
+                                </h4>
+                                <p>
+                                    The request has been resolved or cleared from the active queue.
+                                </p>
+                            </article>
+                        </div>
+                        <h3>
+                            Student tips
+                        </h3>
+                        <ul>
+                            <li>
+                                Use a recognizable display name for online help.
+                            </li>
+                            <li>
+                                Keep the Live Queue page open after submitting a request.
+                            </li>
+                            <li>
+                                Stay available on the contact platform you selected.
+                            </li>
+                            <li>
+                                If you no longer need help, notify staff if possible.
+                            </li>
+                        </ul>
+                    </section>
+                    <section id="website-overview"
+                             class="wiki-section"
+                             data-title="Website Overview">
+                        <div class="wiki-section-header">
+                            <p class="wiki-section-kicker">
+                                Pages and navigation
                             </p>
-                            <h3>
-                                In-person Help
-                            </h3>
-                            <p>
-                                Find a table with a button box on it. Simply press the button that corresponds to the class you need help with. A ticket with your table name and the class will be added to the queue displayed on the TV and a wormhole assistant will be with you when they are available.
-                            </p>
-                        </section>
-                        <section id="website-overview" class="wiki-section">
                             <h2>
                                 Website Overview
                             </h2>
-                            <h3>
-                                Home
-                            </h3>
-                            <p>
-                                The Home page provides an overview of the Wormhole, including quick links to key features and resources. It shows the schedule for the Wormhole as well as the breakdown of wormhole assistant who will be available.
+                        </div>
+                        <div class="wiki-page-grid">
+                            <article class="wiki-mini-card">
+                                <h3>
+                                    Home
+                                </h3>
+                                <p>
+                                    The Home page is the main entry point for the system. It provides quick links, Wormhole schedule information, assistant availability, and key student resources.
+                                </p>
+                            </article>
+                            <article class="wiki-mini-card">
+                                <h3>
+                                    Submit Request
+                                </h3>
+                                <p>
+                                    This page is where students create online help tickets. It collects identifying information, class selection, and contact method details.
+                                </p>
+                            </article>
+                            <article class="wiki-mini-card">
+                                <h3>
+                                    Live Queue
+                                </h3>
+                                <p>
+                                    The Live Queue displays active help requests and shows whether a ticket is waiting or currently in progress.
+                                </p>
+                            </article>
+                            <article class="wiki-mini-card">
+                                <h3>
+                                    Wiki
+                                </h3>
+                                <p>
+                                    The Wiki serves as the central documentation space for students, staff, and administrators.
+                                </p>
+                            </article>
+                            <article class="wiki-mini-card">
+                                <h3>
+                                    User Menu
+                                </h3>
+                                <p>
+                                    The User menu provides access to login, profile pages, hardware tools, registration, queue dashboard tools, and logout actions depending on role permissions.
+                                </p>
+                            </article>
+                        </div>
+                        <h3>
+                            What users should expect
+                        </h3>
+                        <ul>
+                            <li>
+                                Students can use the request and queue pages without needing staff credentials.
+                            </li>
+                            <li>
+                                Staff tools appear only after successful login.
+                            </li>
+                            <li>
+                                Administrators see additional management and export tools.
+                            </li>
+                            <li>
+                                The site should prioritize quick navigation and current queue visibility.
+                            </li>
+                        </ul>
+                    </section>
+                    <section id="wormhole-assistants"
+                             class="wiki-section"
+                             data-title="Wormhole Assistants">
+                        <div class="wiki-section-header">
+                            <p class="wiki-section-kicker">
+                                Staff workflow
                             </p>
-                            <h3>
-                                Viewing the Live Queue
-                            </h3>
-                            <p>
-                                The live queue page shows real-time information about the current queue status. Tickets are handled first come first serve, and in progress tickets will have an "in progress" label instead of a number in line.
-                            </p>
-                            <h3>
-                                Wiki
-                            </h3>
-                            <p>
-                                This wiki page provides comprehensive documentation, acting as a guide for using the Wormhole Queue System.
-                            </p>
-                            <h3>
-                                User
-                            </h3>
-                            <p>
-                                Use the "User" menu to access account and staff tools. Students do not need to log in to request physics help.
-                            </p>
-                        </section>
-                        <section id="wormhole-assistants" class="wiki-section">
-                            <h3>
+                            <h2>
                                 Wormhole Assistants
-                            </h3>
-                        </section>
-                        <section id="admin-features" class="wiki-section">
+                            </h2>
+                        </div>
+                        <h3>
+                            Assistant workflow
+                        </h3>
+                        <ol>
+                            <li>
+                                Log in through the <strong>User</strong> menu.
+                            </li>
+                            <li>
+                                Open your profile or queue dashboard page.
+                            </li>
+                            <li>
+                                Claim the next available ticket using the queue controls.
+                            </li>
+                            <li>
+                                Contact the student or go to the student’s table.
+                            </li>
+                            <li>
+                                Work the request.
+                            </li>
+                            <li>
+                                Resolve the ticket once the interaction is complete.
+                            </li>
+                        </ol>
+                        <h3>
+                            Claiming tickets
+                        </h3>
+                        <p>
+                            When an assistant claims the next ticket, the ticket should leave the waiting state and appear as <strong>IN PROGRESS</strong> on the live queue. This keeps the queue accurate for both students and other staff members.
+                        </p>
+                        <h3>
+                            Best practices
+                        </h3>
+                        <ul>
+                            <li>
+                                Claim tickets promptly when available.
+                            </li>
+                            <li>
+                                Communicate clearly with students, especially for online requests.
+                            </li>
+                            <li>
+                                Resolve tickets only after the interaction is actually complete.
+                            </li>
+                            <li>
+                                Use skip, clear, or maintenance tools carefully.
+                            </li>
+                            <li>
+                                Keep queue information accurate so students can trust the display.
+                            </li>
+                        </ul>
+                    </section>
+                    <section id="admin-features" class="wiki-section" data-title="Admin Features">
+                        <div class="wiki-section-header">
+                            <p class="wiki-section-kicker">
+                                Management tools
+                            </p>
                             <h2>
                                 Admin Features
                             </h2>
-                        </section>
-                        <section id="troubleshooting" class="wiki-section">
+                        </div>
+                        <h3>
+                            User management
+                        </h3>
+                        <p>
+                            Administrators can register staff accounts, manage permissions, and maintain access to the system. This ensures that only authorized personnel can use queue management tools.
+                        </p>
+                        <h3>
+                            Queue tools
+                        </h3>
+                        <ul>
+                            <li>
+                                Monitor the current queue state
+                            </li>
+                            <li>
+                                Clear or reset queue information when needed
+                            </li>
+                            <li>
+                                Support staff during live operations
+                            </li>
+                            <li>
+                                Validate that tickets are transitioning correctly between waiting, in progress, and resolved states
+                            </li>
+                        </ul>
+                        <h3>
+                            Archive and export actions
+                        </h3>
+                        <p>
+                            Administrative views may include archive export or review tools that allow historical ticket information to be saved, examined, or reported. These tools are useful for documentation, oversight, and system review.
+                        </p>
+                        <div class="wiki-callout wiki-callout-warning">
+                            <strong>Administrative caution:</strong> queue reset, flush, or export actions should be used carefully during active support sessions because they can affect live student requests.
+                        </div>
+                    </section>
+                    <section id="troubleshooting"
+                             class="wiki-section"
+                             data-title="Troubleshooting">
+                        <div class="wiki-section-header">
+                            <p class="wiki-section-kicker">
+                                Common issues
+                            </p>
                             <h2>
                                 Troubleshooting
                             </h2>
-                        </section>
-                        <div class="wiki-footer">
-                            <a href="#" class="back-to-top">Back to Top</a>
                         </div>
-                    </main>
-                </div>
+                        <div class="wiki-issue-list">
+                            <article class="wiki-issue-card">
+                                <h3>
+                                    I submitted a request, but I do not see it in the queue
+                                </h3>
+                                <ul>
+                                    <li>
+                                        Refresh the Live Queue page.
+                                    </li>
+                                    <li>
+                                        Confirm the request form was submitted successfully.
+                                    </li>
+                                    <li>
+                                        Check that all required fields were filled in.
+                                    </li>
+                                    <li>
+                                        Confirm that the ticket is not already marked <strong>IN PROGRESS</strong>.
+                                    </li>
+                                </ul>
+                            </article>
+                            <article class="wiki-issue-card">
+                                <h3>
+                                    The Live Queue is not updating
+                                </h3>
+                                <ul>
+                                    <li>
+                                        Refresh the page or hard refresh your browser.
+                                    </li>
+                                    <li>
+                                        Check whether JavaScript files are loading correctly.
+                                    </li>
+                                    <li>
+                                        Inspect the browser console for MIME type or script errors.
+                                    </li>
+                                    <li>
+                                        Ask an administrator to verify server-side queue events.
+                                    </li>
+                                </ul>
+                            </article>
+                            <article class="wiki-issue-card">
+                                <h3>
+                                    The User menu does not open
+                                </h3>
+                                <ul>
+                                    <li>
+                                        Refresh the page.
+                                    </li>
+                                    <li>
+                                        Verify that JavaScript is enabled.
+                                    </li>
+                                    <li>
+                                        Check for console errors related to <code>nav-menu.js</code>.
+                                    </li>
+                                </ul>
+                            </article>
+                            <article class="wiki-issue-card">
+                                <h3>
+                                    I cannot log in
+                                </h3>
+                                <ul>
+                                    <li>
+                                        Check your username or email.
+                                    </li>
+                                    <li>
+                                        Verify the password.
+                                    </li>
+                                    <li>
+                                        Confirm that your account was created correctly.
+                                    </li>
+                                    <li>
+                                        Contact an administrator if the issue continues.
+                                    </li>
+                                </ul>
+                            </article>
+                            <article class="wiki-issue-card">
+                                <h3>
+                                    Wiki navigation links are not working
+                                </h3>
+                                <ul>
+                                    <li>
+                                        Refresh the page.
+                                    </li>
+                                    <li>
+                                        Confirm that the section anchors match the link targets.
+                                    </li>
+                                    <li>
+                                        Check the console for JavaScript selector errors.
+                                    </li>
+                                </ul>
+                            </article>
+                            <article class="wiki-issue-card">
+                                <h3>
+                                    Styles or scripts are not loading
+                                </h3>
+                                <ul>
+                                    <li>
+                                        Verify that static files are being served correctly.
+                                    </li>
+                                    <li>
+                                        Check the browser console for content-type or MIME errors.
+                                    </li>
+                                    <li>
+                                        Confirm that CSS and JS files are loading from the correct project path.
+                                    </li>
+                                </ul>
+                            </article>
+                        </div>
+                    </section>
+                    <section id="faq" class="wiki-section" data-title="FAQ">
+                        <div class="wiki-section-header">
+                            <p class="wiki-section-kicker">
+                                Frequently asked questions
+                            </p>
+                            <h2>
+                                FAQ
+                            </h2>
+                        </div>
+                        <div class="wiki-faq-list">
+                            <details class="wiki-faq-item">
+                                <summary>
+                                    Do students need to log in to request help?
+                                </summary>
+                                <p>
+                                    No. Students can submit requests without logging in.
+                                </p>
+                            </details>
+                            <details class="wiki-faq-item">
+                                <summary>
+                                    How do I know where I am in line?
+                                </summary>
+                                <p>
+                                    Use the Live Queue page after submitting a request. Waiting tickets show a queue position, while active claims show <strong>IN PROGRESS</strong>.
+                                </p>
+                            </details>
+                            <details class="wiki-faq-item">
+                                <summary>
+                                    What does “IN PROGRESS” mean?
+                                </summary>
+                                <p>
+                                    It means an assistant has already claimed the ticket and is actively working with that student.
+                                </p>
+                            </details>
+                            <details class="wiki-faq-item">
+                                <summary>
+                                    Can I request help online and in person?
+                                </summary>
+                                <p>
+                                    Yes. The system supports online requests and in-person help through table hardware.
+                                </p>
+                            </details>
+                            <details class="wiki-faq-item">
+                                <summary>
+                                    What happens when my ticket is resolved?
+                                </summary>
+                                <p>
+                                    The ticket leaves the active queue. Depending on system configuration, the request may still be stored in archived records.
+                                </p>
+                            </details>
+                            <details class="wiki-faq-item">
+                                <summary>
+                                    Who can manage users?
+                                </summary>
+                                <p>
+                                    Administrators are responsible for user creation, permission changes, and staff account maintenance.
+                                </p>
+                            </details>
+                        </div>
+                    </section>
+                    <div class="wiki-footer">
+                        <a href="#top" class="back-to-top">Back to Top</a>
+                    </div>
+                </main>
             </div>
         </div>
     </div>
