@@ -75,7 +75,7 @@ class TestHomepagePerformance:
         ), f"DOMContentLoaded {metrics['dom_content_loaded']:.0f} ms"
 
     def test_cls(self, page: Page, server: str):
-        metrics = _navigate_and_collect(page, server + "/")
+        _navigate_and_collect(page, server + "/")
         page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         page.wait_for_timeout(500)
         cls = get_cls(page)

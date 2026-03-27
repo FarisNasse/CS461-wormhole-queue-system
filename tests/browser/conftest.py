@@ -15,16 +15,24 @@ import threading
 import time
 from pathlib import Path
 
-import pytest
+sys.path.insert(
+    0,
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")),
+)
+
+import pytest  # noqa: E402
 
 pytest.importorskip(
     "playwright.sync_api",
     reason="Playwright is not installed; browser tests are optional.",
 )
-from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
 
-# Allow imports from the project root
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from playwright.sync_api import (  # noqa: E402
+    Browser,
+    BrowserContext,
+    Page,
+    sync_playwright,
+)
 
 from app import create_app, db  # noqa: E402
 from app.models import User  # noqa: E402
