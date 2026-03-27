@@ -67,7 +67,7 @@ def create_app(testing: bool = False, database_uri: str | None = None):
         The configured Flask application instance.
     """
     app = Flask(__name__, static_folder=None)
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # type: ignore[method-assign]
 
     @app.route("/static/<path:filename>", endpoint="static")
     def static_files(filename):
