@@ -1,11 +1,11 @@
 {
   "ttfb": 2.799999952316284,
-  "fcp": 160,
-  "dom_content_loaded": 31,
-  "load_event": 627.7999999523163,
-  "dom_interactive": 29.799999952316284,
+  "fcp": 196,
+  "dom_content_loaded": 139.89999997615814,
+  "load_event": 561.5,
+  "dom_interactive": 138.89999997615814,
   "transfer_size": 16264,
   "encoded_body_size": 15964,
   "cls": 0,
-  "url": "http://127.0.0.1:55202/"
+  "url": "http://127.0.0.1:51756/"
 }

@@ -24,7 +24,7 @@
         <header class="site-header">
             <div class="page header-shell">
                 <a class="brand-lockup"
-                   href="{{ url_for('views.index') }}"
+                   href="{{ url_for("views.index") }}"
                    aria-label="Wormhole Queue System home page">
                     <img class="brand-mark"
                          src="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}"
@@ -46,13 +46,13 @@
                 <div class="nav-shell">
                     <nav class="navbar" aria-label="Primary">
                         <a class="nav-link{% if request.endpoint == 'views.index' %} is-active{% endif %}"
-                           href="{{ url_for('views.index') }}">Home</a>
+                           href="{{ url_for("views.index") }}">Home</a>
                         <a class="nav-link{% if request.endpoint == 'views.create_ticket_page' %} is-active{% endif %}"
-                           href="{{ url_for('views.create_ticket_page') }}">Submit Request</a>
+                           href="{{ url_for("views.create_ticket_page") }}">Submit Request</a>
                         <a class="nav-link{% if request.endpoint == 'views.livequeue' %} is-active{% endif %}"
-                           href="{{ url_for('views.livequeue') }}">Live Queue</a>
+                           href="{{ url_for("views.livequeue") }}">Live Queue</a>
                         <a class="nav-link{% if request.endpoint == 'views.wiki' %} is-active{% endif %}"
-                           href="{{ url_for('views.wiki') }}">Wiki</a>
+                           href="{{ url_for("views.wiki") }}">Wiki</a>
                     </nav>
                     <div class="user-menu">
                         <button class="user-menu-toggle"
@@ -68,9 +68,9 @@
                                     <p class="user-menu-label">
                                         Administration
                                     </p>
-                                    <a href="{{ url_for('views.register') }}">Register New User</a>
-                                    <a href="{{ url_for('views.queue') }}">Queue Dashboard</a>
-                                    <a href="{{ url_for('views.archive') }}">Archive Export</a>
+                                    <a href="{{ url_for("views.register") }}">Register New User</a>
+                                    <a href="{{ url_for("views.queue") }}">Queue Dashboard</a>
+                                    <a href="{{ url_for("views.archive") }}">Archive Export</a>
                                 </div>
                             {% endif %}
                             <div class="user-menu-group">
@@ -78,11 +78,11 @@
                                     Account
                                 </p>
                                 {% if current_user.is_anonymous %}
-                                    <a href="{{ url_for('views.assistant_login') }}">Log In</a>
+                                    <a href="{{ url_for("views.assistant_login") }}">Log In</a>
                                 {% else %}
                                     <a href="{{ url_for('views.userpage', username=current_user.username) }}">Profile</a>
-                                    <a href="{{ url_for('views.hardware_list') }}">Hardware List</a>
-                                    <a href="{{ url_for('views.logout') }}">Log Out</a>
+                                    <a href="{{ url_for("views.hardware_list") }}">Hardware List</a>
+                                    <a href="{{ url_for("views.logout") }}">Log Out</a>
                                 {% endif %}
                             </div>
                         </div>

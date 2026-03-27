@@ -11,7 +11,7 @@
             </h2>
             {% if user.is_admin %}
                 <div class="queue-admin-actions">
-                    <form action="{{ url_for('views.flush') }}"
+                    <form action="{{ url_for("views.flush") }}"
                           method="post"
                           class="queue-admin-action-form"
                           data-confirm-message="Are you sure you want to close all active tickets?">
@@ -20,7 +20,7 @@
                             Flush Queue
                         </button>
                     </form>
-                    <form action="{{ url_for('views.clear_queue') }}"
+                    <form action="{{ url_for("views.clear_queue") }}"
                           method="post"
                           class="queue-admin-action-form"
                           data-confirm-message="The tickets will be permanently cleared. Make sure to create ticket archive to save history. Would you like to clear the queue data?">
@@ -72,7 +72,7 @@
                 </ul>
             </div>
             <div class="queue-back-link">
-                <a href="{{ url_for('views.hardware_list') }}">Back to Hardware List</a>
+                <a href="{{ url_for("views.hardware_list") }}">Back to Hardware List</a>
             </div>
         </div>
     </div>

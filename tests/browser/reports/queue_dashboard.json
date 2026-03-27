@@ -1,11 +1,11 @@
 {
-  "ttfb": 9.399999976158142,
-  "fcp": 112,
-  "dom_content_loaded": 53.300000071525574,
-  "load_event": 57,
-  "dom_interactive": 47.5,
+  "ttfb": 9.299999952316284,
+  "fcp": 104,
+  "dom_content_loaded": 74.30000007152557,
+  "load_event": 74.60000002384186,
+  "dom_interactive": 65.80000007152557,
   "transfer_size": 5330,
   "encoded_body_size": 5030,
   "cls": 0,
-  "url": "http://127.0.0.1:55202/queue"
+  "url": "http://127.0.0.1:51756/queue"
 }

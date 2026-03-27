@@ -1,11 +1,11 @@
 {
-  "ttfb": 5.5,
-  "fcp": 168,
-  "dom_content_loaded": 130.90000009536743,
-  "load_event": 131.5,
-  "dom_interactive": 119.10000002384186,
+  "ttfb": 4.699999928474426,
+  "fcp": 140,
+  "dom_content_loaded": 102.20000004768372,
+  "load_event": 102.5,
+  "dom_interactive": 93.40000009536743,
   "transfer_size": 5646,
   "encoded_body_size": 5346,
   "cls": 0,
-  "url": "http://127.0.0.1:55202/livequeue"
+  "url": "http://127.0.0.1:51756/livequeue"
 }

@@ -1,11 +1,11 @@
 {
-  "ttfb": 4.399999976158142,
+  "ttfb": 3.5,
   "fcp": null,
-  "dom_content_loaded": 99.10000002384186,
-  "load_event": 99.10000002384186,
-  "dom_interactive": 97.79999995231628,
+  "dom_content_loaded": 86.89999997615814,
+  "load_event": 87,
+  "dom_interactive": 85.79999995231628,
   "transfer_size": 5302,
   "encoded_body_size": 5002,
   "cls": 0,
-  "url": "http://127.0.0.1:55202/createticket"
+  "url": "http://127.0.0.1:51756/createticket"
 }
