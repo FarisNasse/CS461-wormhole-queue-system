@@ -64,34 +64,36 @@ class TestHomepagePerformance:
     def test_ttfb(self, page: Page, server: str):
         metrics = _navigate_and_collect(page, server + "/")
         _save_report("homepage", metrics)
-        assert metrics["ttfb"] <= THRESHOLDS["ttfb_ms"], (
-            f"TTFB {metrics['ttfb']:.0f} ms exceeds {THRESHOLDS['ttfb_ms']} ms"
-        )
+        assert (
+            metrics["ttfb"] <= THRESHOLDS["ttfb_ms"]
+        ), f"TTFB {metrics['ttfb']:.0f} ms exceeds {THRESHOLDS['ttfb_ms']} ms"
 
     def test_dom_content_loaded(self, page: Page, server: str):
         metrics = _navigate_and_collect(page, server + "/")
-        assert metrics["dom_content_loaded"] <= THRESHOLDS["dom_content_loaded_ms"], (
-            f"DOMContentLoaded {metrics['dom_content_loaded']:.0f} ms"
-        )
+        assert (
+            metrics["dom_content_loaded"] <= THRESHOLDS["dom_content_loaded_ms"]
+        ), f"DOMContentLoaded {metrics['dom_content_loaded']:.0f} ms"
 
     def test_cls(self, page: Page, server: str):
         metrics = _navigate_and_collect(page, server + "/")
         page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         page.wait_for_timeout(500)
         cls = get_cls(page)
-        assert cls <= THRESHOLDS["cls"], (
-            f"CLS {cls:.4f} on homepage exceeds threshold {THRESHOLDS['cls']}"
-        )
+        assert (
+            cls <= THRESHOLDS["cls"]
+        ), f"CLS {cls:.4f} on homepage exceeds threshold {THRESHOLDS['cls']}"
 
     def test_no_render_blocking_resources(self, page: Page, server: str):
         page.goto(server + "/")
         page.wait_for_load_state("load")
 
-        blocking = page.evaluate("""() => {
+        blocking = page.evaluate(
+            """() => {
             return performance.getEntriesByType('resource')
                 .filter(r => ['script','link'].includes(r.initiatorType) && r.renderBlockingStatus === 'blocking')
                 .map(r => ({ name: r.name, duration: Math.round(r.duration) }));
-        }""")
+        }"""
+        )
 
         if blocking:
             names = ", ".join(r["name"].split("/")[-1] for r in blocking)
@@ -111,7 +113,10 @@ class TestLiveQueuePerformance:
 
     def test_no_console_errors_on_load(self, page: Page, server: str):
         errors: list[str] = []
-        page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
+        page.on(
+            "console",
+            lambda msg: errors.append(msg.text) if msg.type == "error" else None,
+        )
 
         page.goto(server + "/livequeue")
         page.wait_for_load_state("load")

@@ -20,7 +20,9 @@ def test_debug_backend_login():
         db.session.add(user)
         db.session.commit()
 
-        saved = db.session.query(User).filter_by(username="browser_test_assistant").first()
+        saved = (
+            db.session.query(User).filter_by(username="browser_test_assistant").first()
+        )
         print("\n=== USER IN DB ===")
         print(saved.username, saved.email, saved.is_admin, saved.is_active)
         print("PASSWORD OK:", saved.check_password("browser_test_password"))

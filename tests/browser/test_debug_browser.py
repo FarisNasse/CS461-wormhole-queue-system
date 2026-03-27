@@ -9,13 +9,15 @@ def test_debug_homepage_h1s(page: Page, server: str):
     page.goto(server + "/")
     page.wait_for_load_state("load")
 
-    h1_data = page.evaluate("""
+    h1_data = page.evaluate(
+        """
     () => Array.from(document.querySelectorAll("h1")).map((el, i) => ({
         index: i,
         text: (el.textContent || "").trim(),
         html: el.outerHTML
     }))
-    """)
+    """
+    )
 
     print("\n=== H1 DEBUG ===")
     print(h1_data)
@@ -26,7 +28,11 @@ def test_debug_login_submission(page: Page, server: str):
     responses = []
 
     def record_response(resp):
-        if "assistant-login" in resp.url or "queue" in resp.url or "hardware_list" in resp.url:
+        if (
+            "assistant-login" in resp.url
+            or "queue" in resp.url
+            or "hardware_list" in resp.url
+        ):
             responses.append(
                 {
                     "url": resp.url,
@@ -110,7 +116,8 @@ def test_debug_assistant_login_page_structure(page: Page, server: str):
     page.goto(server + "/assistant-login")
     page.wait_for_load_state("load")
 
-    data = page.evaluate("""
+    data = page.evaluate(
+        """
     () => ({
         title: document.title,
         forms: Array.from(document.querySelectorAll("form")).map(f => f.outerHTML),
@@ -125,7 +132,8 @@ def test_debug_assistant_login_page_structure(page: Page, server: str):
         })),
         bodyText: document.body.innerText
     })
-    """)
+    """
+    )
 
     print("\n=== ASSISTANT LOGIN STRUCTURE ===")
     print(data)

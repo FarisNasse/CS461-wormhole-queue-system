@@ -77,14 +77,18 @@ def _run_axe(page: Page, url: str, report_name: str) -> list[dict]:
 def _format_violations(violations: list[dict]) -> str:
     lines = []
     for v in violations:
-        lines.append(f"  [{v.get('impact', '?').upper()}] {v.get('id')} — {v.get('description')}")
+        lines.append(
+            f"  [{v.get('impact', '?').upper()}] {v.get('id')} — {v.get('description')}"
+        )
         for node in v.get("nodes", [])[:2]:
             lines.append(f"      selector: {node.get('target')}")
     return "\n".join(lines)
 
 
 @pytest.mark.parametrize("route,name", PUBLIC_PAGES.items())
-def test_no_critical_or_serious_violations(page: Page, server: str, route: str, name: str):
+def test_no_critical_or_serious_violations(
+    page: Page, server: str, route: str, name: str
+):
     violations = _run_axe(page, server + route, name.lower().replace(" ", "_"))
 
     blocking = [v for v in violations if v.get("impact") in FAIL_ON_IMPACT]
@@ -117,17 +121,22 @@ class TestSemanticStructure:
         for route in PUBLIC_PAGES:
             page.goto(server + route)
             page.wait_for_load_state("load")
-            imgs_without_alt = page.evaluate("""() =>
+            imgs_without_alt = page.evaluate(
+                """() =>
                 [...document.querySelectorAll('img')]
                     .filter(img => !img.hasAttribute('alt'))
                     .map(img => img.src)
-            """)
-            assert not imgs_without_alt, f"{route}: images missing alt attribute: {imgs_without_alt}"
+            """
+            )
+            assert (
+                not imgs_without_alt
+            ), f"{route}: images missing alt attribute: {imgs_without_alt}"
 
     def test_form_inputs_have_labels(self, page: Page, server: str):
         page.goto(server + "/createticket")
         page.wait_for_load_state("load")
-        unlabelled = page.evaluate("""() => {
+        unlabelled = page.evaluate(
+            """() => {
             const inputs = [...document.querySelectorAll('input, select, textarea')]
                 .filter(el => el.type !== 'hidden' && el.type !== 'submit');
             return inputs
@@ -137,8 +146,11 @@ class TestSemanticStructure:
                     return !hasLabel && !hasAria;
                 })
                 .map(el => el.outerHTML.slice(0, 80));
-        }""")
-        assert not unlabelled, f"Form inputs on /createticket without labels: {unlabelled}"
+        }"""
+        )
+        assert (
+            not unlabelled
+        ), f"Form inputs on /createticket without labels: {unlabelled}"
 
     def test_main_landmark_present(self, page: Page, server: str):
         for route in PUBLIC_PAGES:
@@ -150,7 +162,9 @@ class TestSemanticStructure:
         page.goto(server + "/")
         page.wait_for_load_state("load")
         nav = page.locator("nav[aria-label]")
-        assert nav.count() >= 1, "Primary <nav> should have an aria-label for screen-reader users"
+        assert (
+            nav.count() >= 1
+        ), "Primary <nav> should have an aria-label for screen-reader users"
 
     def test_live_queue_has_aria_live_region(self, page: Page, server: str):
         page.goto(server + "/livequeue")

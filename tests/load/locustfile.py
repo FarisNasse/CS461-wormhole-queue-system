@@ -36,20 +36,28 @@ class PublicPagesUser(HttpUser):
             if response.status_code != 200:
                 response.failure(f"Expected 200, got {response.status_code}")
             elif "Wormhole" not in body:
-                response.failure("Homepage loaded but expected Wormhole branding was missing")
+                response.failure(
+                    "Homepage loaded but expected Wormhole branding was missing"
+                )
 
     @task(3)
     def live_queue(self):
-        with self.client.get("/livequeue", name="GET /livequeue", catch_response=True) as response:
+        with self.client.get(
+            "/livequeue", name="GET /livequeue", catch_response=True
+        ) as response:
             body = response.text
             if response.status_code != 200:
                 response.failure(f"Expected 200, got {response.status_code}")
             elif "Live Queue" not in body:
-                response.failure("Live Queue page loaded but expected heading was missing")
+                response.failure(
+                    "Live Queue page loaded but expected heading was missing"
+                )
 
     @task(2)
     def wiki(self):
-        with self.client.get("/wiki", name="GET /wiki", catch_response=True) as response:
+        with self.client.get(
+            "/wiki", name="GET /wiki", catch_response=True
+        ) as response:
             body = response.text
             if response.status_code != 200:
                 response.failure(f"Expected 200, got {response.status_code}")
@@ -111,14 +119,18 @@ class StudentTicketUser(HttpUser):
                 response.failure(f"Open tickets did not return valid JSON: {exc}")
                 return
 
-            if not any(ticket.get("student_name") == self.student_name for ticket in tickets):
+            if not any(
+                ticket.get("student_name") == self.student_name for ticket in tickets
+            ):
                 response.failure(
                     f"Created ticket for {self.student_name} was not visible in /api/opentickets"
                 )
 
     @task(3)
     def watch_live_queue(self):
-        with self.client.get("/livequeue", name="GET /livequeue", catch_response=True) as response:
+        with self.client.get(
+            "/livequeue", name="GET /livequeue", catch_response=True
+        ) as response:
             if response.status_code != 200:
                 response.failure(f"Expected 200, got {response.status_code}")
 
@@ -191,7 +203,9 @@ class AssistantWorkflowUser(HttpUser):
 
     @task(2)
     def queue_dashboard(self):
-        with self.client.get("/queue", name="GET /queue", catch_response=True) as response:
+        with self.client.get(
+            "/queue", name="GET /queue", catch_response=True
+        ) as response:
             if response.status_code != 200:
                 response.failure(f"Expected 200, got {response.status_code}")
 
@@ -243,11 +257,15 @@ class AssistantWorkflowUser(HttpUser):
             try:
                 tickets = response.json()
             except Exception as exc:
-                response.failure(f"Open tickets did not return valid JSON after resolve: {exc}")
+                response.failure(
+                    f"Open tickets did not return valid JSON after resolve: {exc}"
+                )
                 return
 
             if any(ticket.get("id") == ticket_id for ticket in tickets):
-                response.failure(f"Resolved ticket {ticket_id} still appears in open tickets")
+                response.failure(
+                    f"Resolved ticket {ticket_id} still appears in open tickets"
+                )
 
     def on_stop(self) -> None:
         if self.username and self.password:
@@ -258,6 +276,7 @@ class WormholeStages(LoadTestShape):
     """
     Warm up -> steady state -> spike -> cool down
     """
+
     stages = [
         {"duration": 60, "users": 10, "spawn_rate": 2},
         {"duration": 180, "users": 25, "spawn_rate": 5},

@@ -117,7 +117,9 @@ def server(live_app, browser_test_port, base_url):
     deadline = time.time() + 10
     while time.time() < deadline:
         try:
-            with socket.create_connection(("127.0.0.1", browser_test_port), timeout=0.5):
+            with socket.create_connection(
+                ("127.0.0.1", browser_test_port), timeout=0.5
+            ):
                 break
         except OSError:
             time.sleep(0.1)
@@ -179,7 +181,8 @@ def authenticated_page(context: BrowserContext, server) -> Page:
 
 
 def get_nav_timing(page: Page) -> dict:
-    raw = page.evaluate("""() => {
+    raw = page.evaluate(
+        """() => {
         const t = performance.getEntriesByType('navigation')[0];
         return {
             ttfb:               t.responseStart   - t.requestStart,
@@ -193,12 +196,14 @@ def get_nav_timing(page: Page) -> dict:
             transfer_size:      t.transferSize,
             encoded_body_size:  t.encodedBodySize,
         };
-    }""")
+    }"""
+    )
     return raw
 
 
 def get_cls(page: Page) -> float:
-    return page.evaluate("""() => {
+    return page.evaluate(
+        """() => {
         return new Promise((resolve) => {
             let cls = 0;
             const observer = new PerformanceObserver((list) => {
@@ -211,4 +216,5 @@ def get_cls(page: Page) -> float:
             } catch (_) {}
             setTimeout(() => { observer.disconnect(); resolve(cls); }, 300);
         });
-    }""")
+    }"""
+    )

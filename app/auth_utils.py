@@ -26,9 +26,8 @@ from functools import wraps
 
 from flask import jsonify, session
 
-from app.models import User
-
 from app import db
+from app.models import User
 
 
 def login_required(f):

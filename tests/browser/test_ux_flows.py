@@ -48,7 +48,9 @@ class TestStudentTicketFlow:
                 timeout=5,
             )
             if resp.status_code != 201:
-                pytest.skip(f"API ticket creation returned {resp.status_code}; skipping queue check")
+                pytest.skip(
+                    f"API ticket creation returned {resp.status_code}; skipping queue check"
+                )
         except Exception as exc:
             pytest.skip(f"Could not reach API: {exc}")
 
@@ -85,7 +87,9 @@ class TestAssistantWorkflowFlow:
         expect(page.locator("input[name='username']")).to_be_visible()
         expect(page.locator("input[name='password']")).to_be_visible()
         expect(
-            page.locator("form input[type='submit'], form button[type='submit'], form button").first
+            page.locator(
+                "form input[type='submit'], form button[type='submit'], form button"
+            ).first
         ).to_be_visible()
 
     def test_invalid_login_shows_error(self, page: Page, server: str):
@@ -97,9 +101,9 @@ class TestAssistantWorkflowFlow:
             page.locator("form").first.evaluate("(form) => form.requestSubmit()")
 
         body = page.inner_text("body").lower()
-        assert any(word in body for word in ("invalid", "incorrect", "failed", "error")), (
-            "Expected an error message for bad credentials but none was found"
-        )
+        assert any(
+            word in body for word in ("invalid", "incorrect", "failed", "error")
+        ), "Expected an error message for bad credentials but none was found"
 
     def test_valid_login_redirects_to_app(self, page: Page, server: str):
         page.goto(server + "/assistant-login")
@@ -109,7 +113,9 @@ class TestAssistantWorkflowFlow:
         with page.expect_navigation(wait_until="load"):
             page.locator("form").first.evaluate("(form) => form.requestSubmit()")
 
-        assert "/assistant-login" not in page.url, f"Login did not redirect; still on {page.url}"
+        assert (
+            "/assistant-login" not in page.url
+        ), f"Login did not redirect; still on {page.url}"
 
     def test_authenticated_can_reach_dashboard(
         self, authenticated_page: Page, server: str
@@ -117,9 +123,10 @@ class TestAssistantWorkflowFlow:
         authenticated_page.goto(server + "/hardware_list")
         authenticated_page.wait_for_load_state("load")
         page_text = authenticated_page.inner_text("body").lower()
-        assert any(token in page_text for token in ("hardware", "wormhole", "assistant", "queue")), (
-            "/hardware_list did not render expected content for logged-in assistant"
-        )
+        assert any(
+            token in page_text
+            for token in ("hardware", "wormhole", "assistant", "queue")
+        ), "/hardware_list did not render expected content for logged-in assistant"
 
     def test_claim_and_resolve_full_cycle(self, authenticated_page: Page, server: str):
         import requests
@@ -158,9 +165,9 @@ class TestAssistantWorkflowFlow:
         open_resp = requests.get(server + "/api/opentickets", timeout=5)
         tickets = open_resp.json()
         ticket_id = int(current_url.rstrip("/").split("/")[-1])
-        assert not any(t.get("id") == ticket_id for t in tickets), (
-            f"Resolved ticket {ticket_id} still appears in /api/opentickets"
-        )
+        assert not any(
+            t.get("id") == ticket_id for t in tickets
+        ), f"Resolved ticket {ticket_id} still appears in /api/opentickets"
 
 
 class TestNavigationFlow:
@@ -180,18 +187,19 @@ class TestNavigationFlow:
         page.wait_for_load_state("load")
         page.locator(f"nav a:has-text('{label}')").click()
         page.wait_for_load_state("load")
-        assert page.url.endswith(expected_path) or expected_path in page.url, (
-            f"Nav link '{label}' led to {page.url}, expected path containing '{expected_path}'"
-        )
+        assert (
+            page.url.endswith(expected_path) or expected_path in page.url
+        ), f"Nav link '{label}' led to {page.url}, expected path containing '{expected_path}'"
 
     def test_brand_lockup_returns_home(self, page: Page, server: str):
         page.goto(server + "/wiki")
         page.locator("a.brand-lockup").click()
         page.wait_for_load_state("load")
 
-        assert page.url.rstrip("/") in {server, f"{server}/index"}, (
-            f"Brand lockup did not return to homepage; ended at {page.url}"
-        )
+        assert page.url.rstrip("/") in {
+            server,
+            f"{server}/index",
+        }, f"Brand lockup did not return to homepage; ended at {page.url}"
 
     def test_active_nav_state_applied(self, page: Page, server: str):
         routes_and_texts = [
@@ -225,9 +233,9 @@ class TestMobileViewport:
         viewport_meta = mobile_page.locator("meta[name='viewport']")
         expect(viewport_meta).to_have_count(1)
         content = viewport_meta.get_attribute("content") or ""
-        assert "width=device-width" in content, (
-            f"viewport meta missing 'width=device-width': {content}"
-        )
+        assert (
+            "width=device-width" in content
+        ), f"viewport meta missing 'width=device-width': {content}"
 
     def test_user_menu_toggle_opens_panel(self, mobile_page: Page, server: str):
         toggle = mobile_page.locator("button.user-menu-toggle")
@@ -241,6 +249,4 @@ class TestMobileViewport:
         overflow = mobile_page.evaluate(
             "() => document.documentElement.scrollWidth > document.documentElement.clientWidth"
         )
-        assert not overflow, (
-            "Horizontal overflow detected at 390 px viewport width – content is wider than screen"
-        )
+        assert not overflow, "Horizontal overflow detected at 390 px viewport width – content is wider than screen"
