@@ -12,6 +12,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash
 
+from app import db
 from app.forms import ResetPasswordForm, ResetPasswordRequestForm
 from app.models import User
 
@@ -58,7 +59,7 @@ def logout():
 def check_session():
     if "user_id" in session:
         # ensure account still exists and is active
-        user = User.query.get(session.get("user_id"))
+        user = db.session.get(User, session.get("user_id"))
         if user is None or not user.is_active:
             session.clear()
             return jsonify({"logged_in": False}), 200

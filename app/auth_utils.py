@@ -28,6 +28,8 @@ from flask import jsonify, session
 
 from app.models import User
 
+from app import db
+
 
 def login_required(f):
     """
@@ -58,7 +60,7 @@ def login_required(f):
             return jsonify({"error": "Authentication required"}), 401
 
         # check whether account still exists and is active
-        user = User.query.get(session.get("user_id"))
+        user = db.session.get(User, session.get("user_id"))
         if user is None or not user.is_active:
             session.clear()
             return jsonify({"error": "Authentication required"}), 401
@@ -102,7 +104,7 @@ def admin_required(f):
         if "user_id" not in session:
             return jsonify({"error": "Authentication required"}), 401
 
-        user = User.query.get(session.get("user_id"))
+        user = db.session.get(User, session.get("user_id"))
         if user is None or not user.is_active:
             session.clear()
             return jsonify({"error": "Authentication required"}), 401

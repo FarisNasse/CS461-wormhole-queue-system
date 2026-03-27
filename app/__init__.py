@@ -50,7 +50,7 @@ def _build_csp_header():
     return "; ".join(f"{directive} {value}" for directive, value in policy.items())
 
 
-def create_app(testing=False):
+def create_app(testing: bool = False, database_uri: str | None = None):
     """
     Create and configure the Flask application instance.
 
@@ -96,12 +96,21 @@ def create_app(testing=False):
 
     if testing:
         app.config["TESTING"] = True
-        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+        app.config["SQLALCHEMY_DATABASE_URI"] = (
+            database_uri or os.getenv("TEST_DATABASE_URI") or "sqlite:///:memory:"
+        )
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
         app.config["SESSION_COOKIE_SECURE"] = False
         app.config["ENABLE_HTTPS_REDIRECT"] = False
         app.config["ENABLE_HSTS"] = False
+
+        if app.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite"):
+            engine_options = dict(app.config.get("SQLALCHEMY_ENGINE_OPTIONS", {}))
+            connect_args = dict(engine_options.get("connect_args", {}))
+            connect_args.setdefault("check_same_thread", False)
+            engine_options["connect_args"] = connect_args
+            app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
 
     # ---------------------------------------------------
     # Initialize Extensions

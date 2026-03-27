@@ -1,0 +1,40 @@
+{
+  "url": "http://127.0.0.1:55202/",
+  "violations": [
+    {
+      "id": "landmark-complementary-is-top-level",
+      "impact": "moderate",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ],
+      "description": "Ensure the complementary landmark or aside is at top level",
+      "help": "Aside should not be contained in another landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-complementary-is-top-level?application=axeAPI",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "landmark-is-top-level",
+              "data": {
+                "role": null
+              },
+              "relatedNodes": [],
+              "impact": "moderate",
+              "message": "The null landmark is contained in another landmark."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "moderate",
+          "html": "<aside class=\"status-card\">",
+          "target": [
+            "aside"
+          ],
+          "failureSummary": "Fix any of the following:\n  The null landmark is contained in another landmark."
+        }
+      ]
+    }
+  ],
+  "passes": 35
+}
