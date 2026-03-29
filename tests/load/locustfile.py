@@ -5,7 +5,11 @@ import random
 import string
 from typing import Optional
 
-from locust import HttpUser, LoadTestShape, constant_pacing, task
+from locust import HttpUser, LoadTestShape, constant_pacing, events, task
+
+from app import create_app, db
+from app.models import User
+
 
 COURSES = [
     "PH 201",
@@ -18,14 +22,73 @@ COURSES = [
     "PH 253",
 ]
 
+DEFAULT_HOST = os.getenv("LOCUST_HOST", "http://127.0.0.1:5000").strip()
+DEFAULT_ASSISTANT_USERNAME = os.getenv(
+    "LOCUST_ASSISTANT_USERNAME", "ci_test_assistant"
+).strip()
+DEFAULT_ASSISTANT_PASSWORD = os.getenv(
+    "LOCUST_ASSISTANT_PASSWORD", "ci_test_password"
+).strip()
+
 
 def random_student_name(prefix: str = "student") -> str:
     suffix = "".join(random.choices(string.ascii_lowercase + string.digits, k=6))
     return f"{prefix}_{suffix}"
 
 
+def should_auto_seed_user() -> bool:
+    """
+    Only auto-seed the assistant user for local/dev hosts by default.
+    This avoids accidentally mutating a shared or remote environment.
+    """
+    auto_seed = os.getenv("LOCUST_AUTO_SEED_USER", "1").strip().lower()
+    if auto_seed in {"0", "false", "no"}:
+        return False
+
+    host = DEFAULT_HOST.lower()
+    return "127.0.0.1" in host or "localhost" in host
+
+
+def ensure_locust_assistant_user() -> None:
+    """
+    Create or refresh the assistant account used by AssistantWorkflowUser.
+    Safe by default for local testing only.
+    """
+    if not should_auto_seed_user():
+        return
+
+    if not DEFAULT_ASSISTANT_USERNAME or not DEFAULT_ASSISTANT_PASSWORD:
+        return
+
+    app = create_app()
+
+    with app.app_context():
+        user = User.query.filter_by(username=DEFAULT_ASSISTANT_USERNAME).first()
+
+        if user is None:
+            user = User(
+                username=DEFAULT_ASSISTANT_USERNAME,
+                email=f"{DEFAULT_ASSISTANT_USERNAME}@example.com",
+                is_admin=False,
+                is_active=True,
+            )
+            user.set_password(DEFAULT_ASSISTANT_PASSWORD)
+            db.session.add(user)
+        else:
+            user.set_password(DEFAULT_ASSISTANT_PASSWORD)
+            if hasattr(user, "is_active"):
+                user.is_active = True
+
+        db.session.commit()
+
+
+@events.test_start.add_listener
+def seed_default_assistant_user(environment, **kwargs):
+    ensure_locust_assistant_user()
+
+
 class PublicPagesUser(HttpUser):
-    # More stable pacing than a random wait, so the test is easier to compare run to run
+    host = DEFAULT_HOST
     wait_time = constant_pacing(4)
     weight = 5
 
@@ -76,6 +139,7 @@ class PublicPagesUser(HttpUser):
 
 
 class StudentTicketUser(HttpUser):
+    host = DEFAULT_HOST
     wait_time = constant_pacing(6)
     weight = 3
 
@@ -148,11 +212,12 @@ class StudentTicketUser(HttpUser):
 
 
 class AssistantWorkflowUser(HttpUser):
+    host = DEFAULT_HOST
     wait_time = constant_pacing(7)
     weight = 2
 
-    username = os.getenv("LOCUST_ASSISTANT_USERNAME", "ci_test_assistant").strip()
-    password = os.getenv("LOCUST_ASSISTANT_PASSWORD", "ci_test_password").strip()
+    username = DEFAULT_ASSISTANT_USERNAME
+    password = DEFAULT_ASSISTANT_PASSWORD
 
     def on_start(self) -> None:
         if not self.username or not self.password:
@@ -168,6 +233,27 @@ class AssistantWorkflowUser(HttpUser):
                 response.failure(
                     f"Assistant login failed: {response.status_code} {response.text}"
                 )
+                return
+
+        with self.client.get(
+            "/api/check-session",
+            name="GET /api/check-session",
+            catch_response=True,
+        ) as response:
+            if response.status_code != 200:
+                response.failure(
+                    f"Session check failed after login: {response.status_code}"
+                )
+                return
+
+            try:
+                body = response.json()
+            except Exception as exc:
+                response.failure(f"Session check did not return valid JSON: {exc}")
+                return
+
+            if not body.get("logged_in"):
+                response.failure(f"Assistant session was not active after login: {body}")
 
     def _claim_next_ticket(self) -> Optional[int]:
         if not self.username:
@@ -188,7 +274,6 @@ class AssistantWorkflowUser(HttpUser):
             location = response.headers.get("Location", "")
 
             if "/currentticket/" not in location:
-                # No ticket available; not a failure
                 response.success()
                 return None
 
@@ -242,7 +327,6 @@ class AssistantWorkflowUser(HttpUser):
                 )
                 return
 
-        # Verify resolved ticket no longer appears in open tickets
         with self.client.get(
             "/api/opentickets",
             name="GET /api/opentickets",
