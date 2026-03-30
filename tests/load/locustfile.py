@@ -10,7 +10,6 @@ from locust import HttpUser, LoadTestShape, constant_pacing, events, task
 from app import create_app, db
 from app.models import User
 
-
 COURSES = [
     "PH 201",
     "PH 202",
@@ -253,7 +252,9 @@ class AssistantWorkflowUser(HttpUser):
                 return
 
             if not body.get("logged_in"):
-                response.failure(f"Assistant session was not active after login: {body}")
+                response.failure(
+                    f"Assistant session was not active after login: {body}"
+                )
 
     def _claim_next_ticket(self) -> Optional[int]:
         if not self.username:

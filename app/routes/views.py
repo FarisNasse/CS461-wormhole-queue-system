@@ -1,24 +1,18 @@
 # app/routes/views.py
 import csv
 import io
-from datetime import datetime, time, timezone
+import os
+import re
+from datetime import datetime, time, timezone, tzinfo
 from types import SimpleNamespace
 from urllib.parse import urljoin, urlparse
-import re
-import time as time_module
-from urllib.request import Request, urlopen
-import os
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-
-from flask import current_app
-
-from bs4 import BeautifulSoup
-from flask import current_app
 
 from flask import (
     Blueprint,
     Response,
     abort,
+    current_app,
     flash,
     redirect,
     render_template,
@@ -54,7 +48,11 @@ views_bp = Blueprint("views", __name__)
 # --- Helper Functions ---
 
 DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-SCHEDULE_CSV_RELATIVE_PATH = os.path.join("static", "files", "wormhole_schedule_sp26.csv")
+SCHEDULE_CSV_RELATIVE_PATH = os.path.join(
+    "static", "files", "wormhole_schedule_sp26.csv"
+)
+
+PACIFIC_TZ: tzinfo
 
 try:
     PACIFIC_TZ = ZoneInfo("America/Los_Angeles")
@@ -99,7 +97,14 @@ def _parse_time_range(label: str):
     if not match:
         return None, None
 
-    start_hour, start_minute, start_ampm, end_hour, end_minute, end_ampm = match.groups()
+    (
+        start_hour,
+        start_minute,
+        start_ampm,
+        end_hour,
+        end_minute,
+        end_ampm,
+    ) = match.groups()
     start_hour = int(start_hour)
     end_hour = int(end_hour)
     start_minute = int(start_minute or 0)
@@ -192,7 +197,9 @@ def get_weekly_schedule():
                         "start_time": start_time,
                         "end_time": end_time,
                         "assistants": assistants,
-                        "closed_note": closed_notes[0] if closed_notes and not assistants else "",
+                        "closed_note": closed_notes[0]
+                        if closed_notes and not assistants
+                        else "",
                     }
                 )
 
@@ -220,8 +227,11 @@ def get_schedule_snapshot(weekly_schedule):
         "current_slot_label": current_slot["time_range_label"] if current_slot else "",
         "current_assistants": current_slot["assistants"] if current_slot else [],
         "upcoming_slots": upcoming_slots[:3],
-        "schedule_refreshed_label": now.strftime("%A, %B %d at %I:%M %p").replace(" 0", " "),
+        "schedule_refreshed_label": now.strftime("%A, %B %d at %I:%M %p").replace(
+            " 0", " "
+        ),
     }
+
 
 def is_safe_url(target):
     """Ensures a URL is a safe local path to prevent open redirects."""
@@ -300,6 +310,7 @@ def index():
         schedule_error=schedule_error,
     )
 
+
 @views_bp.route("/schedule")
 def full_schedule():
     schedule_error = ""
@@ -327,6 +338,7 @@ def full_schedule():
         schedule_refreshed_label=snapshot["schedule_refreshed_label"],
         schedule_error=schedule_error,
     )
+
 
 @views_bp.route("/livequeue")
 def livequeue():

@@ -40,9 +40,7 @@ class Config:
 
     SOCKETIO_CORS_ALLOWED_ORIGINS = _env_list("SOCKETIO_CORS_ALLOWED_ORIGINS")
 
-    WORMHOLE_SCHEDULE_PUBHTML_URL = os.environ.get(
-        "WORMHOLE_SCHEDULE_PUBHTML_URL"
-    ) or (
+    WORMHOLE_SCHEDULE_PUBHTML_URL = os.environ.get("WORMHOLE_SCHEDULE_PUBHTML_URL") or (
         "https://docs.google.com/spreadsheets/d/e/"
         "2PACX-1vRcotW2LQyMMUHgBjvig-ZcHnybkT4_0XfiHDp-IVeqkX7VGh4vtrXBuHmDfTAVHdmHM2jcHInYuwOn/"
         "pubhtml?widget=true&headers=false"

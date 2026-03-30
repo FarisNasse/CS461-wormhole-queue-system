@@ -35,3 +35,5 @@ pytest-html==4.2.0
 locust==2.43.3
 beautifulsoup4
 tzdata
+djlint
+npx
