@@ -33,3 +33,5 @@ pytest-playwright==0.7.2
 pytest-base-url==2.1.0
 pytest-html==4.2.0
 locust==2.43.3
+beautifulsoup4
+tzdata

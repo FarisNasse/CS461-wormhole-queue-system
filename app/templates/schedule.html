@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="page schedule-page">
+        <section class="section generic wormhole-content info-panel">
+            <div class="content-header">
+                <p class="eyebrow">
+                    Weekly staffing view
+                </p>
+                <h1>
+                    {{ schedule_title }}
+                </h1>
+                <p class="card-copy">
+                    This page renders the Spring 2026 assistant schedule as normal site content instead of an embedded spreadsheet.
+                </p>
+
+                {% if schedule_refreshed_label %}
+                    <p class="support-note">
+                        Last refreshed: <strong>{{ schedule_refreshed_label }}</strong>
+                    </p>
+                {% endif %}
+            </div>
+
+            {% if schedule_error %}
+                <div class="subsection content-card">
+                    <p>{{ schedule_error }}</p>
+                </div>
+            {% else %}
+                <div class="action-grid">
+                    {% for day_name in day_names %}
+                        <article class="action-card section index-home-section">
+                            <p class="eyebrow">
+                                {{ day_name }}
+                            </p>
+                            <h2 class="index-section-title">
+                                {{ day_name }} Schedule
+                            </h2>
+
+                            {% for slot in weekly_schedule[day_name] %}
+                                <div class="subsection content-card">
+                                    <h4>
+                                        {{ slot.time_range_label }}
+                                        {% if day_name == today_name and current_slot_label == slot.time_range_label %}
+                                            <span>· Happening now</span>
+                                        {% endif %}
+                                    </h4>
+
+                                    {% if slot.closed_note %}
+                                        <p>
+                                            <strong>{{ slot.closed_note }}</strong>
+                                        </p>
+                                    {% elif slot.assistants %}
+                                        <ul class="browser-default">
+                                            {% for assistant in slot.assistants %}
+                                                <li>
+                                                    <strong>{{ assistant.name }}</strong>
+                                                    {% if assistant.course %} — {{ assistant.course }}{% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p>No assistants are listed for this block.</p>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

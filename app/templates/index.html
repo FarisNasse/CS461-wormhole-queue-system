@@ -27,10 +27,10 @@
                 </h2>
                 <ul class="list-compact">
                     <li>
-                        Open <strong>9 AM – 5 PM, Monday–Friday</strong>
+                        Open <strong>10 AM – 5 PM, Monday–Friday</strong>
                     </li>
                     <li>
-                        Mondays close at <strong>4 PM</strong> for departmental colloquia
+                        Monday and Wednesday close at <strong>4 PM</strong> for seminar
                     </li>
                     <li>
                         Remote help is available by <strong>Zoom</strong> and <strong>Microsoft Teams</strong>
@@ -41,6 +41,7 @@
                 </p>
             </aside>
         </section>
+
         <section class="action-grid">
             <article class="action-card section student-home index-home-section">
                 <p class="eyebrow">
@@ -57,6 +58,7 @@
                     <a class="text-link" href="{{ url_for("views.livequeue") }}">Open the Live Queue</a>
                 </div>
             </article>
+
             <article class="action-card section ta-home index-home-section">
                 <p class="eyebrow">
                     For Wormhole assistants
@@ -77,6 +79,7 @@
                     <a class="text-link" href="{{ url_for("views.hardware_list") }}">View Hardware List</a>
                 </div>
             </article>
+
             <article class="action-card section index-home-section remote-card">
                 <p class="eyebrow">
                     Remote help
@@ -96,6 +99,7 @@
                 </div>
             </article>
         </section>
+
         <section class="section generic wormhole-content info-panel">
             <div class="content-header">
                 <p class="eyebrow">
@@ -108,35 +112,103 @@
                     Reference material is still available, but it is visually subordinate to the core actions at the top of the page.
                 </p>
             </div>
+
             <div class="info-grid">
                 <div class="subsection wormhole-schedule content-card schedule-card">
                     <h3>
-                        Wormhole Schedule
+                        {{ schedule_title }}
                     </h3>
                     <p>
-                        <strong>The Wormhole is open for Winter 2026.</strong>
+                        <strong>The Wormhole is open for Spring 2026.</strong>
                     </p>
                     <p>
-                        Wormhole Assistants are available <strong>9 AM – 5 PM, Monday–Friday</strong>.
+                        Wormhole assistants are available <strong>10 AM – 5 PM, Monday–Friday</strong>.
                     </p>
                     <p>
-                        <em>The Wormhole closes at 4 PM on Mondays for departmental colloquia.</em>
+                        <em>Monday and Wednesday close at 4 PM for seminar.</em>
                     </p>
-                    <h4>
-                        Holiday Closures
-                    </h4>
-                    <ul class="browser-default">
-                        <li>
-                            <em>Martin Luther King Jr. Day</em> — Monday, January 19
-                        </li>
-                    </ul>
-                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRcotW2LQyMMUHgBjvig-ZcHnybkT4_0XfiHDp-IVeqkX7VGh4vtrXBuHmDfTAVHdmHM2jcHInYuwOn/pubhtml?widget=true&headers=false"
-                            width="100%"
-                            height="600"
-                            class="schedule-embed"
-                            title="Wormhole schedule">
-                    </iframe>
+
+                    {% if schedule_error %}
+                        <p class="support-note">
+                            {{ schedule_error }}
+                        </p>
+                    {% else %}
+                        <div class="subsection content-card">
+                            <h4>
+                                Who is here right now?
+                            </h4>
+
+                            {% if current_slot %}
+                                <p class="support-note">
+                                    <strong>{{ today_name }}</strong> · {{ current_slot_label }}
+                                </p>
+
+                                {% if current_slot.closed_note %}
+                                    <p>
+                                        <strong>{{ current_slot.closed_note }}</strong>
+                                    </p>
+                                {% elif current_assistants %}
+                                    <ul class="browser-default">
+                                        {% for assistant in current_assistants %}
+                                            <li>
+                                                <strong>{{ assistant.name }}</strong>
+                                                {% if assistant.course %} — {{ assistant.course }}{% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>No assistants are listed for this block.</p>
+                                {% endif %}
+                            {% else %}
+                                <p>No assistants are scheduled right now.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="subsection content-card">
+                            <h4>
+                                Later today
+                            </h4>
+
+                            {% if upcoming_slots %}
+                                {% for slot in upcoming_slots %}
+                                    <div class="subsection">
+                                        <p>
+                                            <strong>{{ slot.time_range_label }}</strong>
+                                        </p>
+
+                                        {% if slot.closed_note %}
+                                            <p>{{ slot.closed_note }}</p>
+                                        {% elif slot.assistants %}
+                                            <ul class="browser-default">
+                                                {% for assistant in slot.assistants %}
+                                                    <li>
+                                                        <strong>{{ assistant.name }}</strong>
+                                                        {% if assistant.course %} — {{ assistant.course }}{% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <p>No assistants are listed for this block.</p>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No more assistant blocks are listed for {{ today_name }}.</p>
+                            {% endif %}
+                        </div>
+
+                        {% if schedule_refreshed_label %}
+                            <p class="support-note">
+                                Last refreshed: <strong>{{ schedule_refreshed_label }}</strong>
+                            </p>
+                        {% endif %}
+
+                        <div class="stacked-links">
+                            <a class="text-link" href="{{ url_for('views.full_schedule') }}">View Full Weekly Schedule</a>
+                        </div>
+                    {% endif %}
                 </div>
+
                 <div class="content-stack">
                     <div class="subsection content-card">
                         <h4>
@@ -149,6 +221,7 @@
                             <a href="{{ url_for('static', filename='files/Wormhole student instructions.pdf') }}">Wormhole Instructions</a>.
                         </p>
                     </div>
+
                     <div class="subsection content-card">
                         <h4>
                             Requesting Assistance
@@ -162,6 +235,7 @@
                             <a href="{{ url_for("views.livequeue") }}">Live Queue</a>.
                         </p>
                     </div>
+
                     <div class="subsection content-card">
                         <h4>
                             Wormhole Assistants
@@ -170,6 +244,7 @@
                             Wormhole assistants are graduate students in physics, physics majors, or other undergraduates who took one of the introductory physics sequences. They can guide you through course work, but they may also refer you to another assistant or your instructor when needed.
                         </p>
                     </div>
+
                     <div class="subsection content-card">
                         <h4>
                             Virtual Wormhole
@@ -187,6 +262,7 @@
                             </li>
                         </ol>
                     </div>
+
                     <div class="subsection content-card">
                         <h4>
                             Code of Conduct
@@ -194,6 +270,7 @@
                         <p>
                             Welcome to The Wormhole! To ensure this space remains an effective and accessible learning environment for everyone, we ask all students to uphold the following community standards:
                         </p>
+
                         <h5>
                             1. Maintain a Respectful and Focused Environment
                         </h5>
@@ -208,6 +285,7 @@
                                 <strong>Support the room’s academic purpose:</strong> The Wormhole is a dedicated physics resource. During busy periods, please leave seating and table space available for students working on physics coursework.
                             </li>
                         </ul>
+
                         <h5>
                             2. Engage Constructively with Teaching Assistants
                         </h5>
@@ -219,6 +297,7 @@
                                 <strong>Be patient and courteous:</strong> Assistants strive to help as many students as possible. Please be patient while waiting your turn. Additionally, because staff support a range of courses, they may occasionally need a moment to review the details of an assignment before assisting.
                             </li>
                         </ul>
+
                         <h5>
                             3. Leave the Space Ready for the Next Student
                         </h5>

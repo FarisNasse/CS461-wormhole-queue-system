@@ -4,6 +4,16 @@ import io
 from datetime import datetime, time, timezone
 from types import SimpleNamespace
 from urllib.parse import urljoin, urlparse
+import re
+import time as time_module
+from urllib.request import Request, urlopen
+import os
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+from flask import current_app
+
+from bs4 import BeautifulSoup
+from flask import current_app
 
 from flask import (
     Blueprint,
@@ -43,6 +53,175 @@ views_bp = Blueprint("views", __name__)
 
 # --- Helper Functions ---
 
+DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+SCHEDULE_CSV_RELATIVE_PATH = os.path.join("static", "files", "wormhole_schedule_sp26.csv")
+
+try:
+    PACIFIC_TZ = ZoneInfo("America/Los_Angeles")
+except ZoneInfoNotFoundError:
+    PACIFIC_TZ = timezone.utc
+
+
+def _now_pacific():
+    return datetime.now(PACIFIC_TZ)
+
+
+def _clean_text(value: str) -> str:
+    return " ".join((value or "").split())
+
+
+def _normalize_course(value: str) -> str:
+    cleaned = _clean_text(value).upper().replace(" ", "")
+    if not cleaned:
+        return ""
+    if cleaned.startswith("PH"):
+        return cleaned
+    if cleaned[0].isdigit():
+        return f"PH{cleaned}"
+    return cleaned
+
+
+def _format_clock(clock_value):
+    label = clock_value.strftime("%I:%M %p").lstrip("0")
+    return label.replace(":00 ", " ")
+
+
+def _format_range(start_time, end_time):
+    return f"{_format_clock(start_time)} – {_format_clock(end_time)}"
+
+
+def _parse_time_range(label: str):
+    normalized = _clean_text(label).upper().replace("–", "-").replace("—", "-")
+    match = re.match(
+        r"^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?\s*-\s*(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$",
+        normalized,
+    )
+    if not match:
+        return None, None
+
+    start_hour, start_minute, start_ampm, end_hour, end_minute, end_ampm = match.groups()
+    start_hour = int(start_hour)
+    end_hour = int(end_hour)
+    start_minute = int(start_minute or 0)
+    end_minute = int(end_minute or 0)
+
+    if start_ampm is None and end_ampm is not None:
+        if end_ampm == "AM":
+            start_ampm = "AM"
+        else:
+            start_ampm = "AM" if start_hour != 12 and end_hour == 12 else "PM"
+
+    if end_ampm is None and start_ampm is not None:
+        end_ampm = start_ampm
+
+    if start_ampm is None or end_ampm is None:
+        return None, None
+
+    def to_24(hour_value, ampm_value):
+        if ampm_value == "AM":
+            return 0 if hour_value == 12 else hour_value
+        return 12 if hour_value == 12 else hour_value + 12
+
+    start_time = time(to_24(start_hour, start_ampm), start_minute)
+    end_time = time(to_24(end_hour, end_ampm), end_minute)
+    return start_time, end_time
+
+
+def _parse_assistant_text(text: str):
+    cleaned = _clean_text(text)
+    if not cleaned:
+        return None
+
+    if "closed for seminar" in cleaned.lower():
+        return None
+
+    paren_match = re.match(r"^(.*?)\s*\(([^)]+)\)$", cleaned)
+    if paren_match:
+        return {
+            "name": paren_match.group(1).strip(),
+            "course": _normalize_course(paren_match.group(2).strip()),
+        }
+
+    trailing_match = re.match(r"^(.*?)\s+((?:PH|Ph|ph)?\s*\d{3}[A-Za-z/]*)$", cleaned)
+    if trailing_match:
+        return {
+            "name": trailing_match.group(1).strip(),
+            "course": _normalize_course(trailing_match.group(2).strip()),
+        }
+
+    return {"name": cleaned, "course": ""}
+
+
+def get_weekly_schedule():
+    csv_path = os.path.join(current_app.root_path, SCHEDULE_CSV_RELATIVE_PATH)
+    weekly_schedule = {day: [] for day in DAY_NAMES}
+
+    with open(csv_path, newline="", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        for row in reader:
+            time_label = _clean_text(row.get("Time", ""))
+            if not time_label:
+                continue
+
+            start_time, end_time = _parse_time_range(time_label)
+            if start_time is None or end_time is None:
+                continue
+
+            for day_name in DAY_NAMES:
+                assistants = []
+                closed_notes = []
+
+                for position in ("1", "2"):
+                    raw_value = _clean_text(row.get(f"{day_name} {position}", ""))
+                    if not raw_value:
+                        continue
+
+                    if "closed for seminar" in raw_value.lower():
+                        closed_notes.append(raw_value)
+                        continue
+
+                    parsed_assistant = _parse_assistant_text(raw_value)
+                    if parsed_assistant:
+                        assistants.append(parsed_assistant)
+
+                weekly_schedule[day_name].append(
+                    {
+                        "time_label": time_label,
+                        "time_range_label": _format_range(start_time, end_time),
+                        "start_time": start_time,
+                        "end_time": end_time,
+                        "assistants": assistants,
+                        "closed_note": closed_notes[0] if closed_notes and not assistants else "",
+                    }
+                )
+
+    return "Wormhole Assistant Schedule · Spring 2026", weekly_schedule
+
+
+def get_schedule_snapshot(weekly_schedule):
+    now = _now_pacific()
+    today_name = now.strftime("%A")
+    current_time = now.time()
+
+    today_slots = weekly_schedule.get(today_name, [])
+    current_slot = None
+    upcoming_slots = []
+
+    for slot in today_slots:
+        if slot["start_time"] <= current_time < slot["end_time"]:
+            current_slot = slot
+        elif current_time < slot["start_time"]:
+            upcoming_slots.append(slot)
+
+    return {
+        "today_name": today_name,
+        "current_slot": current_slot,
+        "current_slot_label": current_slot["time_range_label"] if current_slot else "",
+        "current_assistants": current_slot["assistants"] if current_slot else [],
+        "upcoming_slots": upcoming_slots[:3],
+        "schedule_refreshed_label": now.strftime("%A, %B %d at %I:%M %p").replace(" 0", " "),
+    }
 
 def is_safe_url(target):
     """Ensures a URL is a safe local path to prevent open redirects."""
@@ -90,8 +269,64 @@ def _ticket_to_ns(ticket: Ticket):
 @views_bp.route("/")
 @views_bp.route("/index", endpoint="index")
 def index():
-    return render_template("index.html")
+    schedule_error = ""
+    weekly_schedule = {day: [] for day in DAY_NAMES}
+    schedule_title = "Wormhole Assistant Schedule · Spring 2026"
 
+    try:
+        schedule_title, weekly_schedule = get_weekly_schedule()
+        snapshot = get_schedule_snapshot(weekly_schedule)
+    except Exception:
+        snapshot = {
+            "today_name": _now_pacific().strftime("%A"),
+            "current_slot": None,
+            "current_slot_label": "",
+            "current_assistants": [],
+            "upcoming_slots": [],
+            "schedule_refreshed_label": "",
+        }
+        schedule_error = "The schedule could not be loaded right now."
+
+    return render_template(
+        "index.html",
+        schedule_title=schedule_title,
+        weekly_schedule=weekly_schedule,
+        today_name=snapshot["today_name"],
+        current_slot=snapshot["current_slot"],
+        current_slot_label=snapshot["current_slot_label"],
+        current_assistants=snapshot["current_assistants"],
+        upcoming_slots=snapshot["upcoming_slots"],
+        schedule_refreshed_label=snapshot["schedule_refreshed_label"],
+        schedule_error=schedule_error,
+    )
+
+@views_bp.route("/schedule")
+def full_schedule():
+    schedule_error = ""
+    schedule_title = "Wormhole Assistant Schedule · Spring 2026"
+    weekly_schedule = {day: [] for day in DAY_NAMES}
+
+    try:
+        schedule_title, weekly_schedule = get_weekly_schedule()
+        snapshot = get_schedule_snapshot(weekly_schedule)
+    except Exception:
+        snapshot = {
+            "today_name": _now_pacific().strftime("%A"),
+            "current_slot_label": "",
+            "schedule_refreshed_label": "",
+        }
+        schedule_error = "The schedule could not be loaded right now."
+
+    return render_template(
+        "schedule.html",
+        schedule_title=schedule_title,
+        weekly_schedule=weekly_schedule,
+        day_names=DAY_NAMES,
+        today_name=snapshot["today_name"],
+        current_slot_label=snapshot["current_slot_label"],
+        schedule_refreshed_label=snapshot["schedule_refreshed_label"],
+        schedule_error=schedule_error,
+    )
 
 @views_bp.route("/livequeue")
 def livequeue():
