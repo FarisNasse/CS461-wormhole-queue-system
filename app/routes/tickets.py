@@ -99,22 +99,9 @@ def resolve_ticket(ticket_id):
     user = User.query.get(session["user_id"])
     resolved_as = request.form.get("resolve")
 
-    if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue", "skip"]:
+    if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue"]:
         flash("Invalid resolution option selected.", "error")
         return redirect(url_for("views.currentticket", tktid=ticket_id))
-    elif resolved_as == "return_to_queue":
-        ticket = Ticket.query.get(ticket_id)
-        if ticket:
-            ticket.status = "live"
-            ticket.wa_id = None
-            ticket.wormhole_assistant = None
-            db.session.commit()
-            broadcast_ticket_update(ticket.id)
-            flash("Ticket returned to queue successfully", "success")
-            return redirect(url_for("views.userpage", username=user.username))
-        else:
-            flash("Ticket not found", "error")
-            return redirect(url_for("views.userpage", username=user.username))
     elif resolved_as == "duplicate":
         ticket = Ticket.query.get(ticket_id)
         if ticket:
@@ -151,7 +138,7 @@ def resolve_ticket(ticket_id):
         else:
             flash("Ticket not found", "error")
             return redirect(url_for("views.userpage", username=user.username))
-    elif resolved_as == "skip":
+    elif resolved_as == "return_to_queue":
         ticket = Ticket.query.get(ticket_id)
         if ticket:
             ticket.status = "live"
