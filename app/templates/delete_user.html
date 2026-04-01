@@ -7,10 +7,14 @@
     </div>
     <div class="page manage-user-grid">
         <div class="section profile manage-user-panel">
-            <h2>Edit User Information</h2>
-            <form action="{{ url_for('views.delete_user', username=user.username) }}" method="post" novalidate class="manage-user-form">
+            <h2>
+                Edit User Information
+            </h2>
+            <form action="{{ url_for('views.delete_user', username=user.username) }}"
+                  method="post"
+                  novalidate
+                  class="manage-user-form">
                 {{ edit_form.hidden_tag() }}
-
                 <div class="manage-user-row">
                     <div class="manage-user-input">
                         {{ edit_form.first_name.label }}
@@ -21,7 +25,6 @@
                 {% for er in edit_form.first_name.errors %}
                     <span class="form-error">[{{ er }}]</span>
                 {% endfor %}
-
                 <div class="manage-user-row">
                     <div class="manage-user-input">
                         {{ edit_form.last_name.label }}
@@ -32,7 +35,6 @@
                 {% for er in edit_form.last_name.errors %}
                     <span class="form-error">[{{ er }}]</span>
                 {% endfor %}
-
                 <div class="manage-user-row">
                     <div class="manage-user-input">
                         {{ edit_form.onid.label }}
@@ -43,7 +45,6 @@
                 {% for er in edit_form.onid.errors %}
                     <span class="form-error">[{{ er }}]</span>
                 {% endfor %}
-
                 <div class="manage-user-row manage-user-row-email">
                     <div class="manage-user-input">
                         {{ edit_form.email.label }}
@@ -54,38 +55,51 @@
                 {% for er in edit_form.email.errors %}
                     <span class="form-error">[{{ er }}]</span>
                 {% endfor %}
-
                 <div class="manage-user-row">
                     <div class="manage-user-input manage-user-checkbox">
                         {{ edit_form.is_admin.label }}
                         {{ edit_form.is_admin() }}
                     </div>
-                    <small class="manage-user-current">Current: {% if user_data.is_admin %}True{% else %}False{% endif %}</small>
+                    <small class="manage-user-current">Current:
+                        {% if user_data.is_admin %}
+                            True
+                        {% else %}
+                            False
+                        {% endif %}
+                    </small>
                 </div>
                 {% for er in edit_form.is_admin.errors %}
                     <span class="form-error">[{{ er }}]</span>
                 {% endfor %}
-
                 <div class="manage-user-row">
                     <div class="manage-user-input manage-user-checkbox">
                         {{ edit_form.is_active.label }}
                         {{ edit_form.is_active() }}
                     </div>
-                    <small class="manage-user-current">Current: {% if user_data.is_active %}True{% else %}False{% endif %}</small>
+                    <small class="manage-user-current">Current:
+                        {% if user_data.is_active %}
+                            True
+                        {% else %}
+                            False
+                        {% endif %}
+                    </small>
                 </div>
                 {% for er in edit_form.is_active.errors %}
                     <span class="form-error">[{{ er }}]</span>
                 {% endfor %}
-
                 <div class="manage-user-actions">
                     {{ edit_form.submit() }}
                 </div>
             </form>
         </div>
-
         <div class="section generic manage-user-panel">
-            <h2>Delete User</h2>
-            <form action="{{ url_for('views.delete_user', username=user.username) }}" method="post" novalidate class="manage-user-form">
+            <h2>
+                Delete User
+            </h2>
+            <form action="{{ url_for('views.delete_user', username=user.username) }}"
+                  method="post"
+                  novalidate
+                  class="manage-user-form">
                 {{ delete_form.hidden_tag() }}
                 <p class="delete-user-note">
                     Deleting {{ user.username }} will remove them permanently. Type "DELETE" to confirm user deletion.
@@ -105,5 +119,4 @@
             </form>
         </div>
     </div>
-
 {% endblock %}
