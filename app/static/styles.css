@@ -4,7 +4,6 @@
     box-sizing: border-box;
 }
 
-
 .section {
     width: 100%;
     height: 200px;
@@ -14,7 +13,6 @@
     border-width: 2px;
     border-radius: 15px 50px;
 }
-
 
 .header {
     width: 100%;
@@ -28,7 +26,6 @@
     height: auto;
 }
 
-
 .navbar {
     display: flex;
     align-items: center;
@@ -39,7 +36,6 @@
     background-color: #000;
 }
 
-
 .navbar a {
     float: left;
     padding: 5px;
@@ -49,7 +45,6 @@
     text-decoration: none;
     white-space: nowrap;
 }
-
 
 .message {
     max-width: 960px;
@@ -65,18 +60,15 @@
     list-style-type: none;
 }
 
-
 .message ul {
     list-style-type: none;
 }
-
 
 .dropdown {
     float: left;
     overflow: hidden;
     text-align: center;
 }
-
 
 .dropdown .dropbtn {
     font-size: 17px;
@@ -89,7 +81,6 @@
     text-align: center;
 }
 
-
 .dropdown-content {
     display: none;
     position: absolute;
@@ -97,7 +88,6 @@
     padding: 8px;
     white-space: nowrap;
 }
-
 
 .dropdown-content a {
     display: inline-block;
@@ -110,19 +100,16 @@
     vertical-align: middle;
 }
 
-
 .admin-links {
     display: flex;
     gap: 12px;
     align-items: center;
 }
 
-
 .page {
     display: flex;
     flex-wrap: wrap;
 }
-
 
 .index-page-title {
     width: 100%;
@@ -130,19 +117,16 @@
     margin-bottom: 18px;
 }
 
-
 .index-home-section {
     height: auto;
     min-height: 170px;
     padding: 16px;
 }
 
-
 .index-section-title {
     text-align: center;
     margin-bottom: 10px;
 }
-
 
 .index-section-link {
     text-align: center;
@@ -150,23 +134,19 @@
     line-height: 1.45;
 }
 
-
 .student-home {
     background: #FFF;
 }
 
-
 .ta-home {
     background-color: #a2ceff;
 }
-
 
 .create-ticket {
     background: #FFF;
     padding: 10px;
     height: 300px;
 }
-
 
 .create-ticket-panel {
     height: auto;
@@ -176,19 +156,16 @@
     padding: 22px 24px;
 }
 
-
 .create-ticket-title {
     text-align: center;
     margin-bottom: 16px;
 }
-
 
 .create-ticket-form {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
-
 
 .create-ticket-field {
     display: flex;
@@ -199,13 +176,11 @@
     line-height: 1.45;
 }
 
-
 .create-ticket-field label {
     font-weight: 600;
     min-width: 90px;
     text-align: right;
 }
-
 
 .create-ticket-field input[type="text"],
 .create-ticket-field select {
@@ -213,23 +188,19 @@
     padding: 1px 6px;
 }
 
-
 .create-ticket-actions {
     margin-top: 4px;
     text-align: center;
 }
-
 
 .create-ticket-actions input,
 .create-ticket-actions button {
     padding: 4px 10px;
 }
 
-
 .wiki-page {
     margin-top: 20px;
 }
-
 
 .wiki-shell {
     width: 100%;
@@ -239,12 +210,10 @@
     padding: 18px 22px;
 }
 
-
 .wiki-container {
     max-width: 1200px;
     margin: 0 auto;
 }
-
 
 .wiki-header {
     text-align: center;
@@ -253,23 +222,19 @@
     border-bottom: 2px dashed #002147;
 }
 
-
 .wiki-header h1 {
     color: #10233b;
     margin-bottom: 8px;
 }
 
-
 .wiki-header .subtitle {
     color: #1e2c3d;
 }
-
 
 .wiki-search-section {
     margin-bottom: 22px;
     text-align: center;
 }
-
 
 .wiki-search-input {
     width: 100%;
@@ -280,13 +245,11 @@
     border-radius: 8px;
 }
 
-
 .wiki-content {
     display: grid;
     grid-template-columns: 250px 1fr;
     gap: 24px;
 }
-
 
 .wiki-sidebar {
     background: #f5f8fc;
@@ -296,13 +259,11 @@
     align-self: start;
 }
 
-
 .wiki-nav h3 {
     margin-top: 0;
     margin-bottom: 10px;
     color: #10233b;
 }
-
 
 .wiki-nav-list {
     list-style: none;
@@ -310,11 +271,9 @@
     padding: 0;
 }
 
-
 .wiki-nav-list li {
     margin-bottom: 8px;
 }
-
 
 .wiki-nav-list .nav-link {
     display: block;
@@ -324,16 +283,13 @@
     border-radius: 6px;
 }
 
-
 .wiki-nav-list .nav-link:hover {
     background: #eaf1f8;
 }
 
-
 .wiki-main {
     min-width: 0;
 }
-
 
 .wiki-section {
     margin-bottom: 28px;
@@ -341,11 +297,9 @@
     border-bottom: 1px solid #d6e1ec;
 }
 
-
 .wiki-section:last-of-type {
     border-bottom: 0;
 }
-
 
 .wiki-section h2,
 .wiki-section h3,
@@ -354,18 +308,15 @@
     margin-bottom: 10px;
 }
 
-
 .wiki-section p,
 .wiki-section li {
     color: #1e2c3d;
     line-height: 1.55;
 }
 
-
 .wiki-section p {
     margin-bottom: 10px;
 }
-
 
 .wiki-section ul,
 .wiki-section ol {
@@ -373,14 +324,12 @@
     margin: 8px 0 10px;
 }
 
-
 .wiki-footer {
     text-align: center;
     margin-top: 26px;
     padding-top: 14px;
     border-top: 1px solid #d6e1ec;
 }
-
 
 .back-to-top {
     color: #002147;
@@ -390,11 +339,9 @@
     padding: 6px 10px;
 }
 
-
 .back-to-top:hover {
     background: #eaf1f8;
 }
-
 
 /* Mobile Styles */
 @media only screen and (width <= 400px) {
@@ -409,10 +356,9 @@
 
     .navbar a, .dropdown .dropbtn {
         font-size: 15px; /* Slightly reduce font size to fit better */
-        padding: 8px;
+        padding: 4px;
     }
 }
-
 
 .live-queue {
     background: #FFF;
@@ -426,7 +372,6 @@
     border-radius: 50px;
 }
 
-
 .tickets {
     background: #FFF;
     border-radius: 15px;
@@ -435,7 +380,6 @@
     text-indent: 10px;
     vertical-align: top;
 }
-
 
 .generic {
     background: #FFF;
@@ -446,24 +390,20 @@
     padding: 15px;
 }
 
-
-.wormhole-content { /* Renamed to kebab-case */
+.wormhole-content {
     padding: 25px;
     margin-top: 30px;
     border: dashed 2px #000;
     border-radius: 20px;
 }
 
-
 .subsection {
     margin-bottom: 25px;
 }
 
-
 .subsection:last-child {
     margin-bottom: 0;
 }
-
 
 .wormhole-content .subsection {
     margin-bottom: 28px;
@@ -471,12 +411,10 @@
     text-indent: 0;
 }
 
-
 .wormhole-content .subsection h4 {
     margin-bottom: 10px;
     color: #10233b;
 }
-
 
 .wormhole-content .subsection p,
 .wormhole-content .subsection li {
@@ -484,11 +422,9 @@
     line-height: 1.55;
 }
 
-
 .wormhole-content .subsection p {
     margin-bottom: 10px;
 }
-
 
 .wormhole-content .subsection ul,
 .wormhole-content .subsection ol {
@@ -496,18 +432,15 @@
     margin: 8px 0 12px;
 }
 
-
 .wormhole-content .wormhole-schedule {
     padding: 10px 0;
 }
-
 
 .wormhole-content .wormhole-schedule h3,
 .wormhole-content .wormhole-schedule h4 {
     color: #10233b;
     margin-bottom: 10px;
 }
-
 
 .wormhole-content .wormhole-schedule p,
 .wormhole-content .wormhole-schedule li {
@@ -516,7 +449,6 @@
     line-height: 1.55;
 }
 
-
 .wormhole-content .wormhole-schedule p {
     max-width: none;
     margin-left: 0;
@@ -524,12 +456,10 @@
     margin-bottom: 10px;
 }
 
-
 .wormhole-content .wormhole-schedule ul {
     padding-left: 24px;
     margin: 8px 0 14px;
 }
-
 
 .wormhole-content .wormhole-schedule iframe {
     margin-top: 14px;
@@ -538,11 +468,9 @@
     background: #fff;
 }
 
-
 .queue-dashboard-title {
     margin-bottom: 18px;
 }
-
 
 .queue-admin-actions {
     display: flex;
@@ -551,22 +479,18 @@
     margin-bottom: 28px;
 }
 
-
 .queue-admin-action-form {
     display: inline-flex;
 }
-
 
 .queue-admin-actions .btn-delete {
     padding: 5px 10px;
     min-height: 30px;
 }
 
-
 .queue-back-link {
     margin-top: 20px;
 }
-
 
 .profile {
     background: #BBA0CA;
@@ -574,7 +498,6 @@
     border-radius: 15px;
     height: auto;
 }
-
 
 .tick-info {
     background: #BBA0CA;
@@ -586,13 +509,11 @@
     margin: auto;
 }
 
-
 .section.tick-info p {
     padding-top: 1.5cm;
 }
 
-
-.tick-resol { /* Renamed to kebab-case */
+.tick-resol {
     background: #BBA0CA;
     min-height: 250px;
     border-radius: 0;
@@ -602,24 +523,13 @@
     margin: auto;
 }
 
-
 .dropdown-content a:hover {
-    background-color: #f1f1f1; /* Added '#' */
+    background-color: #f1f1f1;
 }
-
 
 .dropdown:hover .dropdown-content {
     display: block;
 }
-
-
-/* Mobile Styles */
-@media only screen and (width <= 400px) {
-    body {
-        background-color: #002147;
-    }
-}
-
 
 /* Tablet Styles */
 @media only screen and (width >= 401px) and (width <= 960px) {
@@ -628,40 +538,33 @@
     }
 }
 
-
 /* Desktop Styles */
 @media only screen and (width >= 961px) {
     body {
         background-color: #002147;
     }
 
-
     .page {
         width: 960px;
         margin: 0 auto;
     }
-
 
     .student-home,
     .ta-home {
         width: 50%;
     }
 
-
     .tick-info,
-    .tick-resol { /* Renamed to kebab-case */
+    .tick-resol {
         width: 50%;
     }
-
 
     .tickets,
     .profile {
         width: 50%;
     }
 
-
 }
-
 
 /* Flash Message Styles */
 .flash-success {
@@ -673,7 +576,6 @@
     border-radius: 4px;
 }
 
-
 .flash-error {
     color: #721c24;
     background-color: #f8d7da;
@@ -682,7 +584,6 @@
     margin-bottom: 5px;
     border-radius: 4px;
 }
-
 
 .flash-info {
     color: #0c5460;
@@ -710,16 +611,13 @@
     padding-bottom: 8px;
 }
 
-
 .manage-user-page {
     margin-bottom: 12px;
 }
 
-
 .manage-user-title {
     color: #fff;
 }
-
 
 .manage-user-grid {
     display: grid;
@@ -727,7 +625,6 @@
     gap: 22px;
     align-items: stretch;
 }
-
 
 .manage-user-panel {
     width: 100%;
@@ -738,12 +635,10 @@
     flex-direction: column;
 }
 
-
 .manage-user-form {
     margin-top: 10px;
     flex: 1;
 }
-
 
 .manage-user-row {
     display: flex;
@@ -754,7 +649,6 @@
     margin-bottom: 12px;
 }
 
-
 .manage-user-input {
     display: flex;
     align-items: center;
@@ -762,17 +656,14 @@
     flex-wrap: wrap;
 }
 
-
 .manage-user-input label {
     min-width: 95px;
     font-weight: 600;
 }
 
-
 .manage-user-checkbox label {
     min-width: auto;
 }
-
 
 .manage-user-current {
     color: #1f1f1f;
@@ -780,34 +671,28 @@
     overflow-wrap: anywhere;
 }
 
-
 .manage-user-row-email {
     flex-wrap: nowrap;
     align-items: center;
 }
-
 
 .manage-user-row-email .manage-user-input {
     flex: 1;
     min-width: 0;
 }
 
-
 .manage-user-row-email .manage-user-current {
     white-space: nowrap;
 }
-
 
 .manage-user-actions {
     margin-top: 16px;
 }
 
-
 .delete-user-note {
     margin-bottom: 14px;
     line-height: 1.45;
 }
-
 
 .form-error {
     display: block;
@@ -815,18 +700,15 @@
     margin-bottom: 8px;
 }
 
-
 @media only screen and (width <= 960px) {
     .manage-user-grid {
         grid-template-columns: 1fr;
     }
 
-
     .manage-user-panel {
         width: 100%;
         min-height: auto;
     }
-
 
     .manage-user-row {
         align-items: flex-start;
@@ -834,11 +716,9 @@
         gap: 6px;
     }
 
-
     .manage-user-current {
         white-space: normal;
     }
-
 
     .manage-user-row-email {
         flex-wrap: wrap;
