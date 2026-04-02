@@ -136,7 +136,10 @@ def resolve_ticket(ticket_id):
             ticket.number_of_students = number_students
             db.session.commit()
             broadcast_ticket_update(ticket.id)
-            flash("Ticket marked as helped and resolved successfully", "success")
+            flash(
+                f"Ticket marked as helped and resolved successfully ({number_students} students)",
+                "success",
+            )
             return redirect(url_for("views.userpage", username=user.username))
         else:
             flash("Ticket not found", "error")
