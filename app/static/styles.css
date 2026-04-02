@@ -34,8 +34,8 @@
     align-items: center;
     gap: 10px;
     justify-content: space-evenly;
-    flex-wrap: nowrap;
-    padding: 0 40px;
+    flex-wrap: wrap; /* Changed from nowrap to wrap */
+    padding: 10px 20px; /* Added top/bottom padding and reduced side padding so it looks better when wrapped */
     background-color: #000;
 }
 
@@ -396,14 +396,20 @@
 }
 
 
-@media only screen and (width <= 960px) {
-    .wiki-content {
-        grid-template-columns: 1fr;
+/* Mobile Styles */
+@media only screen and (max-width: 400px) {
+    body {
+        background-color: #002147;
+    }
+    
+    .navbar {
+        padding: 10px 5px;
+        gap: 8px;
     }
 
-
-    .wiki-sidebar {
-        margin-bottom: 8px;
+    .navbar a, .dropdown .dropbtn {
+        font-size: 15px; /* Slightly reduce font size to fit better */
+        padding: 8px;
     }
 }
 
