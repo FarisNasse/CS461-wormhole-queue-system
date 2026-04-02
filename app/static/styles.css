@@ -397,7 +397,7 @@
 
 
 /* Mobile Styles */
-@media only screen and (max-width: 400px) {
+@media only screen and (width <= 400px) {
     body {
         background-color: #002147;
     }
