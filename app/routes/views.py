@@ -355,6 +355,7 @@ def export_archive():
 
     # Prevent exporting archives for future dates
     now_utc = datetime.now(timezone.utc)
+    now_utc = now_utc.replace(hour=23, minute=59, second=59, microsecond=999999)
     if start_date > now_utc or end_date > now_utc:
         flash("Dates cannot be in the future.", "error")
         return redirect(url_for("views.archive"))
