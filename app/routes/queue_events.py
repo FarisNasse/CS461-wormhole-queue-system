@@ -6,6 +6,7 @@ Handles broadcasting ticket updates to connected clients.
 
 from app import socketio
 from app.models import Ticket
+from app.time_utils import format_pacific, serialize_datetime
 
 
 @socketio.on("connect", namespace="/queue")
@@ -33,7 +34,10 @@ def broadcast_ticket_update(ticket_id):
                 "student_name": t.student_name,
                 "table": t.table,
                 "physics_course": t.physics_course,
-                "created_at": t.created_at.isoformat() if t.created_at else None,
+                "created_at": serialize_datetime(t.created_at),
+                "created_at_local": format_pacific(
+                    t.created_at, "%Y-%m-%d %H:%M:%S %Z"
+                ),
                 "status": t.status,
             }
             socketio.emit("new_ticket", ticket_data, namespace="/queue")
