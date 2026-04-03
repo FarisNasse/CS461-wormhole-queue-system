@@ -440,8 +440,7 @@ def export_archive():
 
     safe_start = start_date.date().isoformat()
     safe_end = end_date.date().isoformat()
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    filename = f"wormhole_archive_{safe_start}_to_{safe_end}_{timestamp}.csv"
+    filename = f"wormhole_archive_{safe_start}_to_{safe_end}.csv"
 
     archive_path = _archive_dir() / filename
     try:
