@@ -2,6 +2,7 @@
 import csv
 import io
 from datetime import datetime, time, timezone
+from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urljoin, urlparse
 
@@ -13,8 +14,8 @@ from flask import (
     redirect,
     render_template,
     request,
+    send_from_directory,
     session,
-    stream_with_context,
     url_for,
 )
 
@@ -26,6 +27,7 @@ from app.auth_utils import admin_required, login_required
 from app.forms import (
     ChangePassForm,
     ClearQueueForm,
+    DeleteArchiveForm,
     DeleteUserForm,
     EditUserForm,
     ExportArchiveForm,
@@ -81,6 +83,20 @@ def _ticket_to_ns(ticket: Ticket):
         num_students=ticket.number_of_students,
         closed_reason=ticket.closed_reason,
         closed_by=closed_by_name,
+    )
+
+
+def _archive_dir() -> Path:
+    archive_dir = Path(__file__).resolve().parents[1] / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    return archive_dir
+
+
+def _list_archive_files() -> list[str]:
+    archive_dir = _archive_dir()
+    return sorted(
+        [path.name for path in archive_dir.glob("*.csv") if path.is_file()],
+        reverse=True,
     )
 
 
@@ -381,61 +397,62 @@ def export_archive():
         flash("No closed or resolved tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 
-    # Streaming CSV Generation
-    def generate():
-        output = io.StringIO()
-        writer = csv.writer(output)
+    output = io.StringIO()
+    writer = csv.writer(output)
 
-        # CSV Injection Sanitization Helper
-        def sanitize(value):
-            if value and isinstance(value, str):
-                normalized = value.lstrip()
-                if normalized.startswith(("=", "+", "-", "@")):
-                    # Prepend quote to the ORIGINAL value so leading whitespace is preserved
-                    return f"'{value}"
-            return value
+    # CSV Injection Sanitization Helper
+    def sanitize(value):
+        if value and isinstance(value, str):
+            normalized = value.lstrip()
+            if normalized.startswith(("=", "+", "-", "@")):
+                # Prepend quote to the ORIGINAL value so leading whitespace is preserved
+                return f"'{value}"
+        return value
 
-        # Write Header
+    writer.writerow(
+        [
+            "Ticket ID",
+            "Student Name",
+            "Course",
+            "Table",
+            "Created At",
+            "Closed At",
+            "Resolution",
+            "Assistant ID",
+        ]
+    )
+
+    for t in tickets_query.yield_per(1000):
         writer.writerow(
             [
-                "Ticket ID",
-                "Student Name",
-                "Course",
-                "Table",
-                "Created At",
-                "Closed At",
-                "Resolution",
-                "Assistant ID",
+                t.id,
+                sanitize(t.student_name),
+                sanitize(t.physics_course),
+                sanitize(t.table),
+                t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
+                sanitize(t.closed_reason) or "N/A",
+                t.wa_id or "Unassigned",
             ]
         )
-        yield output.getvalue()
-        output.truncate(0)
-        output.seek(0)
 
-        # Write Rows in batches to avoid memory overload
-        for t in tickets_query.yield_per(1000):
-            writer.writerow(
-                [
-                    t.id,
-                    sanitize(t.student_name),
-                    sanitize(t.physics_course),
-                    sanitize(t.table),
-                    t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                    t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
-                    sanitize(t.closed_reason) or "N/A",
-                    t.wa_id or "Unassigned",
-                ]
-            )
-            yield output.getvalue()
-            output.truncate(0)
-            output.seek(0)
+    csv_content = output.getvalue()
 
-    # Create the streaming response object
     safe_start = start_date.date().isoformat()
     safe_end = end_date.date().isoformat()
-    filename = f"wormhole_archive_{safe_start}_to_{safe_end}.csv"
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    filename = f"wormhole_archive_{safe_start}_to_{safe_end}_{timestamp}.csv"
+
+    archive_path = _archive_dir() / filename
+    try:
+        with archive_path.open("w", encoding="utf-8", newline="") as archive_file:
+            archive_file.write(csv_content)
+    except OSError:
+        flash("Failed to save archive file on server.", "error")
+        return redirect(url_for("views.archive"))
+
     return Response(
-        stream_with_context(generate()),
+        csv_content,
         mimetype="text/csv",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
@@ -449,11 +466,70 @@ def export_archive():
 def archive():
     # Instantiate form for the template to render CSRF token and fields
     form = ExportArchiveForm()
+    delete_form = DeleteArchiveForm()
+    archive_files = _list_archive_files()
     tkt_list = []
     assoc_list = []
     return render_template(
-        "archive.html", tkt_list=tkt_list, assoc_list=assoc_list, form=form
+        "archive.html",
+        tkt_list=tkt_list,
+        assoc_list=assoc_list,
+        archive_files=archive_files,
+        delete_form=delete_form,
+        form=form,
     )
+
+
+@views_bp.route("/archive/delete", methods=["POST"])
+@admin_required
+def delete_archives():
+    form = DeleteArchiveForm()
+    if not form.validate_on_submit():
+        flash("Invalid request or session expired.", "error")
+        return redirect(url_for("views.archive"))
+
+    selected_files = request.form.getlist("filenames")
+    if not selected_files:
+        flash("No archive files selected.", "info")
+        return redirect(url_for("views.archive"))
+
+    archive_dir = _archive_dir()
+    deleted_count = 0
+
+    for raw_name in selected_files:
+        safe_name = Path(raw_name).name
+        if safe_name != raw_name or not safe_name.lower().endswith(".csv"):
+            continue
+
+        archive_path = archive_dir / safe_name
+        try:
+            if archive_path.is_file():
+                archive_path.unlink()
+                deleted_count += 1
+        except OSError:
+            continue
+
+    if deleted_count > 0:
+        flash(f"Deleted {deleted_count} archive file(s).", "success")
+    else:
+        flash("No archive files were deleted.", "info")
+
+    return redirect(url_for("views.archive"))
+
+
+@views_bp.route("/archive/download/<path:filename>")
+@admin_required
+def download_archive(filename):
+    safe_filename = Path(filename).name
+    if safe_filename != filename or not safe_filename.lower().endswith(".csv"):
+        abort(404)
+
+    archive_dir = _archive_dir()
+    file_path = archive_dir / safe_filename
+    if not file_path.is_file():
+        abort(404)
+
+    return send_from_directory(str(archive_dir), safe_filename, as_attachment=True)
 
 
 @views_bp.route("/user/<username>")

@@ -130,6 +130,10 @@ class ExportArchiveForm(FlaskForm):
     submit = SubmitField("Download CSV")
 
 
+class DeleteArchiveForm(FlaskForm):
+    submit = SubmitField("Delete Selected")
+
+
 class FlushQueueForm(FlaskForm):
     """Simple form to handle CSRF protection for the Flush Queue action."""
 

@@ -1,5 +1,6 @@
 # tests/test_routes.py
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from app import db
 from app.models import Ticket, User
@@ -189,6 +190,108 @@ def test_export_archive(test_client):
     assert response.status_code == 200
     assert "text/csv" in response.headers["Content-Type"]
     assert b"ExportMe" in response.data
+
+
+def test_archive_page_lists_saved_files(test_client, test_app):
+    """Archive page should show links for saved CSV files."""
+    admin = User(username="admin_list", email="list@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    archive_dir = Path(test_app.root_path) / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    filename = "wormhole_archive_test_listing.csv"
+    file_path = archive_dir / filename
+    file_path.write_text("id,name\n1,Test\n", encoding="utf-8")
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = None
+    try:
+        response = test_client.get("/archive")
+        assert response.status_code == 200
+        assert filename.encode("utf-8") in response.data
+    finally:
+        if response is not None:
+            response.close()
+        if file_path.exists():
+            file_path.unlink()
+
+
+def test_download_archive_serves_csv_file(test_client, test_app):
+    """Archive download route should return saved CSV file contents."""
+    admin = User(username="admin_download", email="download@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    archive_dir = Path(test_app.root_path) / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    filename = "wormhole_archive_test_download.csv"
+    file_path = archive_dir / filename
+    file_path.write_text("Ticket ID,Student Name\n1,DownloadMe\n", encoding="utf-8")
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = None
+    try:
+        response = test_client.get(f"/archive/download/{filename}")
+        assert response.status_code == 200
+        assert b"DownloadMe" in response.data
+        assert "attachment;" in response.headers.get("Content-Disposition", "")
+    finally:
+        if response is not None:
+            response.close()
+        if file_path.exists():
+            file_path.unlink()
+
+
+def test_delete_archives_removes_selected_file(test_client, test_app):
+    """Archive delete route should remove selected CSV file(s)."""
+    admin = User(username="admin_delete", email="delete@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    archive_dir = Path(test_app.root_path) / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    filename = "wormhole_archive_test_delete.csv"
+    file_path = archive_dir / filename
+    file_path.write_text("Ticket ID,Student Name\n1,DeleteMe\n", encoding="utf-8")
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.post(
+        "/archive/delete",
+        data={"filenames": [filename]},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert b"Deleted 1 archive file(s)." in response.data
+    assert not file_path.exists()
+
+
+def test_delete_archives_with_no_selection(test_client, test_app):
+    """Archive delete route should inform admin when nothing is selected."""
+    admin = User(username="admin_delete_none", email="deletenone@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.post("/archive/delete", data={}, follow_redirects=True)
+    assert response.status_code == 200
+    assert b"No archive files selected." in response.data
 
 
 def test_pastticket_resolution(test_client):
