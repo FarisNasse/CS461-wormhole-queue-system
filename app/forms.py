@@ -1,5 +1,6 @@
 import calendar
 from datetime import date
+
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
