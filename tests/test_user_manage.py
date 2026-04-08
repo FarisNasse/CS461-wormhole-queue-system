@@ -1,3 +1,6 @@
+import io
+
+
 def test_user_add(test_client):
     response = test_client.post(
         "/api/users_add_json",
@@ -95,3 +98,35 @@ def test_user_remove_no_email_no_pass_admin(test_client):
     response = test_client.post("/api/users_remove", json={"username": "testusername"})
     data = response.get_json()
     assert data == {"success": "admin removed"}
+
+
+def test_users_add_batch_csv_creates_non_admin_users(test_client, test_app):
+    csv_content = (
+        "first name,last name,ONID\n"
+        "Jane,Doe,jdoe\n"
+        "John,Smith,jsmith\n"
+    )
+
+    response = test_client.post(
+        "/api/users_add_batch",
+        data={"user_csv": (io.BytesIO(csv_content.encode("utf-8")), "users.csv")},
+        content_type="multipart/form-data",
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+
+    with test_app.app_context():
+        from app.models import User
+
+        jane = User.query.filter_by(username="jdoe").first()
+        john = User.query.filter_by(username="jsmith").first()
+
+        assert jane is not None
+        assert john is not None
+        assert jane.name == "Jane Doe"
+        assert john.name == "John Smith"
+        assert jane.email == "jdoe@oregonstate.edu"
+        assert john.email == "jsmith@oregonstate.edu"
+        assert jane.is_admin is False
+        assert john.is_admin is False

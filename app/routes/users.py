@@ -1,7 +1,10 @@
+import csv
+from io import StringIO
+
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
 from app import db
-from app.forms import RegisterForm
+from app.forms import RegisterBatchForm, RegisterForm
 from app.models import User
 
 user_bp = Blueprint("users", __name__, url_prefix="/api")
@@ -89,6 +92,100 @@ def users_add():
         flash("Error creating user. Suggestion: try again and verify all fields.", "error")
 
     return render_template("register.html", form=form), 400
+
+
+@user_bp.route("/users_add_batch", methods=["POST"])
+def users_add_batch():
+    form = RegisterBatchForm()
+
+    if not form.validate_on_submit():
+        for field_name, errors in form.errors.items():
+            label = getattr(form, field_name).label.text
+            for err in errors:
+                flash(f"{label}: {err}", "error")
+        return render_template("register_batch.html", form=form), 400
+
+    uploaded_csv = form.user_csv.data
+    content = uploaded_csv.read().decode("utf-8-sig")
+    reader = csv.reader(StringIO(content))
+    rows = list(reader)
+
+    if not rows:
+        flash(
+            "The uploaded CSV is empty. Suggestion: add a header and at least one user row.",
+            "error",
+        )
+        return render_template("register_batch.html", form=form), 400
+
+    expected_header = ["first name", "last name", "onid"]
+    found_header = [col.strip().lower() for col in rows[0][:3]]
+    if found_header != expected_header:
+        flash(
+            "CSV header must be first name,last name,ONID. "
+            "Suggestion: update the first row to match this exact order.",
+            "error",
+        )
+        return render_template("register_batch.html", form=form), 400
+
+    created_count = 0
+    skipped_count = 0
+
+    for row_number, row in enumerate(rows[1:], start=2):
+        if not row or all(not col.strip() for col in row):
+            continue
+
+        if len(row) < 3:
+            skipped_count += 1
+            flash(
+                f"Row {row_number} skipped: expected 3 columns "
+                "(first name, last name, ONID).",
+                "error",
+            )
+            continue
+
+        first_name = row[0].strip()
+        last_name = row[1].strip()
+        onid = row[2].strip().lower()
+
+        if not first_name or not last_name or not onid:
+            skipped_count += 1
+            flash(
+                f"Row {row_number} skipped: first name, last name, and ONID are required.",
+                "error",
+            )
+            continue
+
+        username = onid
+        email = f"{onid}@oregonstate.edu"
+
+        if User.query.filter_by(username=username).first() or User.query.filter_by(
+            email=email
+        ).first():
+            skipped_count += 1
+            flash(
+                f"Row {row_number} skipped: user {onid} already exists.",
+                "error",
+            )
+            continue
+
+        new_user = User(
+            username=username,
+            email=email,
+            name=f"{first_name} {last_name}",
+            is_admin=False,
+            is_active=True,
+        )
+        new_user.set_password("wormhole")
+        db.session.add(new_user)
+        created_count += 1
+
+    db.session.commit()
+
+    flash(
+        f"Batch registration complete: created {created_count} users, skipped {skipped_count} rows.",
+        "success",
+    )
+    return redirect(url_for("views.user_list"))
 
 
 # New JSON API for testing

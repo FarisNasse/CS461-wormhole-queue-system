@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileField, FileRequired
 from wtforms import (
     BooleanField,
     DateField,
@@ -7,7 +8,6 @@ from wtforms import (
     SelectField,
     StringField,
     SubmitField,
-    TextAreaField,
 )
 from wtforms.validators import DataRequired, Email, EqualTo, NumberRange, Optional
 
@@ -50,7 +50,10 @@ class RegisterForm(FlaskForm):
 
 
 class RegisterBatchForm(FlaskForm):
-    emailcsv = TextAreaField("Emails", validators=[DataRequired()])
+    user_csv = FileField(
+        "User CSV",
+        validators=[FileRequired(), FileAllowed(["csv"], "Please upload a CSV file.")],
+    )
     submit = SubmitField("Register Batch")
 
 
