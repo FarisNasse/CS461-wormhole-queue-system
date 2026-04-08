@@ -8,7 +8,6 @@ from urllib.parse import urljoin, urlparse
 
 from flask import (
     Blueprint,
-    Response,
     abort,
     flash,
     redirect,
@@ -450,11 +449,8 @@ def export_archive():
         flash("Failed to save archive file on server.", "error")
         return redirect(url_for("views.archive"))
 
-    return Response(
-        csv_content,
-        mimetype="text/csv",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-    )
+    flash(f"Archive created: {filename}", "success")
+    return redirect(url_for("views.archive"))
 
 
 # -------------------------------

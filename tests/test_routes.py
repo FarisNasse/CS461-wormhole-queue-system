@@ -186,10 +186,11 @@ def test_export_archive(test_client):
         "end_date": yesterday.strftime("%Y-%m-%d"),
     }
 
-    response = test_client.post("/archive/export", data=data)
+    response = test_client.post("/archive/export", data=data, follow_redirects=True)
     assert response.status_code == 200
-    assert "text/csv" in response.headers["Content-Type"]
-    assert b"ExportMe" in response.data
+    assert "text/html" in response.headers["Content-Type"]
+    assert b"Archive created: wormhole_archive_" in response.data
+    assert b"Create Archive" in response.data
 
 
 def test_archive_page_lists_saved_files(test_client, test_app):
