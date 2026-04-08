@@ -281,7 +281,9 @@ def test_delete_archives_removes_selected_file(test_client, test_app):
 
 def test_delete_archives_with_no_selection(test_client, test_app):
     """Archive delete route should inform admin when nothing is selected."""
-    admin = User(username="admin_delete_none", email="deletenone@test.com", is_admin=True)
+    admin = User(
+        username="admin_delete_none", email="deletenone@test.com", is_admin=True
+    )
     admin.set_password("pass")
     db.session.add(admin)
     db.session.commit()
