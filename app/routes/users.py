@@ -84,12 +84,16 @@ def users_add():
     }
     for field_name, errors in form.errors.items():
         label = getattr(form, field_name).label.text
-        suggestion = suggestion_by_field.get(field_name, "Review this field and try again.")
+        suggestion = suggestion_by_field.get(
+            field_name, "Review this field and try again."
+        )
         for err in errors:
             flash(f"{label}: {err} Suggestion: {suggestion}", "error")
 
     if not form.errors:
-        flash("Error creating user. Suggestion: try again and verify all fields.", "error")
+        flash(
+            "Error creating user. Suggestion: try again and verify all fields.", "error"
+        )
 
     return render_template("register.html", form=form), 400
 
@@ -158,9 +162,10 @@ def users_add_batch():
         username = onid
         email = f"{onid}@oregonstate.edu"
 
-        if User.query.filter_by(username=username).first() or User.query.filter_by(
-            email=email
-        ).first():
+        if (
+            User.query.filter_by(username=username).first()
+            or User.query.filter_by(email=email).first()
+        ):
             skipped_count += 1
             flash(
                 f"Row {row_number} skipped: user {onid} already exists.",

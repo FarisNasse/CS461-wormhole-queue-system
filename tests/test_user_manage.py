@@ -101,11 +101,7 @@ def test_user_remove_no_email_no_pass_admin(test_client):
 
 
 def test_users_add_batch_csv_creates_non_admin_users(test_client, test_app):
-    csv_content = (
-        "first name,last name,ONID\n"
-        "Jane,Doe,jdoe\n"
-        "John,Smith,jsmith\n"
-    )
+    csv_content = "first name,last name,ONID\n" "Jane,Doe,jdoe\n" "John,Smith,jsmith\n"
 
     response = test_client.post(
         "/api/users_add_batch",
