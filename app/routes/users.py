@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, jsonify, redirect, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
 from app import db
 from app.forms import RegisterForm
@@ -35,7 +35,7 @@ def users_remove():
 def users_add():
     form = RegisterForm()
     if form.validate_on_submit():
-        onid = form.onid.data
+        onid = form.onid.data.strip().lower()
         first_name = form.first_name.data
         last_name = form.last_name.data
         full_name = f"{first_name} {last_name}"
@@ -44,11 +44,19 @@ def users_add():
 
         # Check if user already exists
         if User.query.filter_by(username=username).first():
-            flash("A user with this ONID already exists.", "error")
-            return redirect(url_for("views.register"))
+            flash(
+                "A user with this ONID already exists. Suggestion: "
+                "verify the ONID spelling or use a different ONID.",
+                "error",
+            )
+            return render_template("register.html", form=form), 400
         if User.query.filter_by(email=email).first():
-            flash("A user with this email already exists.", "error")
-            return redirect(url_for("views.register"))
+            flash(
+                "A user with this email already exists. Suggestion: "
+                "check whether this user was already registered.",
+                "error",
+            )
+            return render_template("register.html", form=form), 400
 
         u = User(
             username=username,
@@ -66,8 +74,21 @@ def users_add():
         flash("User created successfully!", "success")
         return redirect(url_for("views.user_list"))
 
-    flash("Error creating user. Please check the form and try again.", "error")
-    return redirect(url_for("views.register"))
+    suggestion_by_field = {
+        "first_name": "Enter the student's first name.",
+        "last_name": "Enter the student's last name.",
+        "onid": "Enter the ONID username only (for example: smithj).",
+    }
+    for field_name, errors in form.errors.items():
+        label = getattr(form, field_name).label.text
+        suggestion = suggestion_by_field.get(field_name, "Review this field and try again.")
+        for err in errors:
+            flash(f"{label}: {err} Suggestion: {suggestion}", "error")
+
+    if not form.errors:
+        flash("Error creating user. Suggestion: try again and verify all fields.", "error")
+
+    return render_template("register.html", form=form), 400
 
 
 # New JSON API for testing
