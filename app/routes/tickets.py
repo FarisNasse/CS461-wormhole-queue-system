@@ -98,6 +98,7 @@ def get_livequeue_tickets():
 def resolve_ticket(ticket_id):
     user = User.query.get(session["user_id"])
     resolved_as = request.form.get("resolve")
+    number_students = request.form.get("numstudents")
 
     if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue"]:
         flash("Invalid resolution option selected.", "error")
@@ -119,9 +120,13 @@ def resolve_ticket(ticket_id):
         if ticket:
             ticket.status = "resolved"
             ticket.resolve_reason = "helped"
+            ticket.number_of_students = number_students
             db.session.commit()
             broadcast_ticket_update(ticket.id)
-            flash("Ticket marked as helped and resolved successfully", "success")
+            flash(
+                f"Ticket marked as helped and resolved successfully ({number_students} students)",
+                "success",
+            )
             return redirect(url_for("views.userpage", username=user.username))
         else:
             flash("Ticket not found", "error")
