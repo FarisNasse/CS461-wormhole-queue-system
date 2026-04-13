@@ -41,7 +41,7 @@
                 </tr>
             </table>
             <p style="text-align:center; vertical-align:bottom;">
-                Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b>
+                Time Stamp: <b>{{ ticket.time_create|datetime_pacific }}</b>
             </p>
         </div>
         <div class="section tick-resol">
