@@ -68,7 +68,9 @@
                 <ul>
                     {% for tk in cll %}
                         <li>
-                            {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - Opened: {{ tk.time_create.strftime('%I:%M %p') if tk.time_create else 'N/A' }} - Closed: {{ tk.time_close.strftime('%I:%M %p') if tk.time_close else 'N/A' }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students or 1 }} - {{ tk.closed_by }}
+                            <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}">
+                                {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - Opened: {{ tk.time_create.strftime('%I:%M %p') if tk.time_create else 'N/A' }} - Closed: {{ tk.time_close.strftime('%I:%M %p') if tk.time_close else 'N/A' }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students }} - {{ tk.closed_by }}
+                            </a>
                         </li>
                     {% endfor %}
                 </ul>

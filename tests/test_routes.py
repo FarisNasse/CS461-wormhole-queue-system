@@ -110,10 +110,13 @@ def test_flush_route(test_client):
     db.session.refresh(t3)
     assert t1.status == "closed"
     assert t1.closed_reason == "Queue Flushed"
+    assert t1.number_of_students == 0
     assert t2.status == "closed"
     assert t2.closed_reason == "Queue Flushed"
+    assert t2.number_of_students == 0
     assert t3.status == "closed"
     assert t3.closed_reason == "Queue Flushed"
+    assert t3.number_of_students == 0
 
     # Verify that closed_at has been set recently for all flushed tickets
     now = datetime.now(timezone.utc)

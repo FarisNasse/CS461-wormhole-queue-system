@@ -182,6 +182,7 @@ def flush():
             Ticket.status: "closed",
             Ticket.closed_reason: "Queue Flushed",
             Ticket.closed_at: now,
+            Ticket.number_of_students: 0,
         },
         synchronize_session=False,
     )
