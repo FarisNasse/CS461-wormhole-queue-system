@@ -63,7 +63,7 @@ def is_safe_url(target):
 def _ticket_to_ns(ticket: Ticket):
     if ticket is None:
         return None
-    closed_by_name = (
+    assistant_display_name = (
         ticket.wormhole_assistant.name
         if ticket.wormhole_assistant and ticket.wormhole_assistant.name
         else (
@@ -80,7 +80,8 @@ def _ticket_to_ns(ticket: Ticket):
         time_create=ticket.created_at,
         num_students=ticket.number_of_students,
         closed_reason=ticket.closed_reason,
-        closed_by=closed_by_name,
+        closed_by=assistant_display_name,
+        assigned_to=assistant_display_name,
     )
 
 

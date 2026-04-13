@@ -55,7 +55,7 @@
                     {% for tk in cul %}
                         <li>
                             <a href="{{ url_for('views.currentticket', tktid=tk.id) }}">
-                                {{ tk.name }} (Table {{ tk.table }})
+                                {{ tk.name }} (Table {{ tk.table }}) - {{ tk.assigned_to }}
                             </a>
                         </li>
                     {% endfor %}
