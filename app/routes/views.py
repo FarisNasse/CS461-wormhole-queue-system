@@ -78,6 +78,7 @@ def _ticket_to_ns(ticket: Ticket):
         table=ticket.table,
         phClass=ticket.physics_course,
         time_create=ticket.created_at,
+        time_close=ticket.closed_at,
         num_students=ticket.number_of_students,
         closed_reason=ticket.closed_reason,
         closed_by=assistant_display_name,
