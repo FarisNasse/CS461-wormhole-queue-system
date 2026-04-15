@@ -4,6 +4,7 @@ from io import StringIO
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
 from app import db
+from app.auth_utils import admin_required
 from app.forms import RegisterBatchForm, RegisterForm
 from app.models import User
 
@@ -11,6 +12,7 @@ user_bp = Blueprint("users", __name__, url_prefix="/api")
 
 
 # route to remove user
+@admin_required
 @user_bp.route("/users_remove", methods=["POST"])
 def users_remove():
     data = request.get_json()
@@ -34,6 +36,7 @@ def users_remove():
 
 
 # route to add user
+@admin_required
 @user_bp.route("/users_add", methods=["POST"])
 def users_add():
     form = RegisterForm()
@@ -98,6 +101,7 @@ def users_add():
     return render_template("register.html", form=form), 400
 
 
+@admin_required
 @user_bp.route("/users_add_batch", methods=["POST"])
 def users_add_batch():
     form = RegisterBatchForm()
