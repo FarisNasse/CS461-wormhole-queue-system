@@ -412,12 +412,15 @@ def export_archive():
         [
             "Ticket ID",
             "Student Name",
-            "Course",
             "Table",
+            "Course",
+            "Status",
             "Created At",
             "Closed At",
-            "Resolution",
+            "Students Helped",
             "Assistant ID",
+            "Assistant Name",
+            "Ticket Type",
         ]
     )
 
@@ -426,12 +429,15 @@ def export_archive():
             [
                 t.id,
                 sanitize(t.student_name),
-                sanitize(t.physics_course),
                 sanitize(t.table),
+                sanitize(t.physics_course),
+                t.closed_reason,
                 t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                 t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
-                sanitize(t.closed_reason) or "N/A",
+                t.number_of_students,
                 t.wa_id or "Unassigned",
+                t.wormhole_assistant.name if t.wormhole_assistant and t.wormhole_assistant.name else ("N/A"),
+                "Zoom" if t.table == "Zoom" else "Teams" if t.table == "Teams" else "Box",
             ]
         )
 
