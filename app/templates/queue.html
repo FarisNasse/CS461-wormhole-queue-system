@@ -68,7 +68,7 @@
                 <ul>
                     {% for tk in cll %}
                         <li>
-                            {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students or 1 }} - {{ tk.closed_by }}
+                            {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students }} - {{ tk.closed_by }}
                         </li>
                     {% endfor %}
                 </ul>
