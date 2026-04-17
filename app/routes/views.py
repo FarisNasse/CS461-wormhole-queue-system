@@ -86,6 +86,8 @@ def _ticket_to_ns(ticket: Ticket):
         phClass=ticket.physics_course,
         time_create=ticket.created_at,
         time_close=ticket.closed_at,
+        time_create_pacific=format_pacific(ticket.created_at, "%I:%M %p"),
+        time_close_pacific=format_pacific(ticket.closed_at, "%I:%M %p"),
         num_students=ticket.number_of_students,
         closed_reason=ticket.closed_reason,
         closed_by=assistant_display_name,
