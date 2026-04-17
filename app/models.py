@@ -19,6 +19,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
+from app.time_utils import format_pacific, serialize_datetime
 
 
 class _ModelQueryProperty:
@@ -125,8 +126,12 @@ class Ticket(Base):
             "table": self.table,
             "physics_course": self.physics_course,
             "status": self.status,
-            "created_at": self.created_at,
-            "closed_at": self.closed_at,
+            "created_at": serialize_datetime(self.created_at),
+            "created_at_local": format_pacific(self.created_at, "%Y-%m-%d %H:%M:%S %Z"),
+            "closed_at": serialize_datetime(self.closed_at),
+            "closed_at_local": format_pacific(self.closed_at, "%Y-%m-%d %H:%M:%S %Z")
+            if self.closed_at
+            else None,
             "closed_reason": self.closed_reason,
             "number_of_students": self.number_of_students,
             "wa_id": self.wa_id,

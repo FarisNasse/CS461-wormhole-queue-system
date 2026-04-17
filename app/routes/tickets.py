@@ -1,4 +1,6 @@
 # /app/routes/tickets.py
+from datetime import datetime, timezone
+
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 
 from app import db
@@ -81,33 +83,35 @@ def get_open_tickets():
     return jsonify([t.to_dict() for t in tickets])
 
 
+@tickets_bp.route("/livequeuetickets", methods=["GET"])
+def get_livequeue_tickets():
+    """Return every active ticket shown on the public live queue."""
+    tickets = (
+        Ticket.query.filter(Ticket.status.in_(["live", "in_progress"]))
+        .order_by(Ticket.created_at)
+        .all()
+    )
+
+    return jsonify([t.to_dict() for t in tickets])
+
+
 # API route to handle ticket resolution form submission
 @tickets_bp.route("/resolveticket/<int:ticket_id>", methods=["POST"])
 def resolve_ticket(ticket_id):
     user = User.query.get(session["user_id"])
     resolved_as = request.form.get("resolve")
+    number_students = request.form.get("numstudents")
 
-    if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue", "skip"]:
+    if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue"]:
         flash("Invalid resolution option selected.", "error")
         return redirect(url_for("views.currentticket", tktid=ticket_id))
-    elif resolved_as == "return_to_queue":
-        ticket = Ticket.query.get(ticket_id)
-        if ticket:
-            ticket.status = "live"
-            ticket.wa_id = None
-            ticket.wormhole_assistant = None
-            db.session.commit()
-            broadcast_ticket_update(ticket.id)
-            flash("Ticket returned to queue successfully", "success")
-            return redirect(url_for("views.userpage", username=user.username))
-        else:
-            flash("Ticket not found", "error")
-            return redirect(url_for("views.userpage", username=user.username))
     elif resolved_as == "duplicate":
         ticket = Ticket.query.get(ticket_id)
         if ticket:
             ticket.status = "resolved"
             ticket.closed_reason = "duplicate"
+            ticket.closed_at = datetime.now(timezone.utc)
+            ticket.number_of_students = 0
             db.session.commit()
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as duplicate and resolved successfully", "success")
@@ -120,9 +124,14 @@ def resolve_ticket(ticket_id):
         if ticket:
             ticket.status = "resolved"
             ticket.closed_reason = "helped"
+            ticket.closed_at = datetime.now(timezone.utc)
+            ticket.number_of_students = number_students
             db.session.commit()
             broadcast_ticket_update(ticket.id)
-            flash("Ticket marked as helped and resolved successfully", "success")
+            flash(
+                f"Ticket marked as helped and resolved successfully ({number_students} students)",
+                "success",
+            )
             return redirect(url_for("views.userpage", username=user.username))
         else:
             flash("Ticket not found", "error")
@@ -132,6 +141,8 @@ def resolve_ticket(ticket_id):
         if ticket:
             ticket.status = "resolved"
             ticket.closed_reason = "no_show"
+            ticket.closed_at = datetime.now(timezone.utc)
+            ticket.number_of_students = 0
             db.session.commit()
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as no show and resolved successfully", "success")
@@ -139,7 +150,7 @@ def resolve_ticket(ticket_id):
         else:
             flash("Ticket not found", "error")
             return redirect(url_for("views.userpage", username=user.username))
-    elif resolved_as == "skip":
+    elif resolved_as == "return_to_queue":
         ticket = Ticket.query.get(ticket_id)
         if ticket:
             ticket.status = "live"

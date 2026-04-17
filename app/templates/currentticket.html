@@ -41,7 +41,7 @@
                 </tr>
             </table>
             <p style="text-align:center; vertical-align:bottom;">
-                Time Stamp: <b>{{ ticket.time_create.strftime("%b %d %H:%M:%S") }}</b>
+                Time Stamp: <b>{{ ticket.time_create|datetime_pacific }}</b>
             </p>
         </div>
         <div class="section tick-resol">
@@ -49,15 +49,24 @@
                 Resolve As:
             </h3>
             <form id="resolve-form"
-                action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
-                method="post"
-                novalidate
-                style="text-align:center;">
-                <button type="submit" name="resolve" value="duplicate">Duplicate</button>
-                <button type="submit" name="resolve" value="helped">Helped</button>
-                <button type="submit" name="resolve" value="no_show">No Show</button>
-                <button type="submit" name="resolve" value="return_to_queue">Return To Queue</button>
-                <button type="sumbit" name="resolve" value="skip">Skip This Ticket</button>
+                  action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
+                  method="post"
+                  novalidate
+                  style="text-align:center">
+                <button type="submit" name="resolve" value="duplicate">
+                    Duplicate
+                </button>
+                <button type="submit" name="resolve" value="helped">
+                    Helped
+                </button>
+                <button type="submit" name="resolve" value="no_show">
+                    No Show
+                </button>
+                <button type="submit" name="resolve" value="return_to_queue">
+                    Return To Queue
+                </button>
+                <label for="numstudents">Number of Students:</label>
+                <input type="number" id="numstudents" name="numstudents" min="0" max="100" step="1" value="1">
             </form>
         </div>
     </div>

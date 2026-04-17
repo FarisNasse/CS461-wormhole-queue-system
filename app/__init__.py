@@ -84,6 +84,10 @@ def create_app(testing=False):
     migrate.init_app(app, db)
     socketio.init_app(app, cors_allowed_origins="*")
 
+    from app.time_utils import format_pacific
+
+    app.add_template_filter(format_pacific, "datetime_pacific")
+
     # ---------------------------------------------------
     # Internal Imports & Registration
     # ---------------------------------------------------

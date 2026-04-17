@@ -1,8 +1,11 @@
 # tests/test_routes.py
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from app import db
 from app.models import Ticket, User
+from app.time_utils import pacific_day_bounds_to_utc
 
 
 def test_health_check_route(test_client):
@@ -110,10 +113,13 @@ def test_flush_route(test_client):
     db.session.refresh(t3)
     assert t1.status == "closed"
     assert t1.closed_reason == "Queue Flushed"
+    assert t1.number_of_students == 0
     assert t2.status == "closed"
     assert t2.closed_reason == "Queue Flushed"
+    assert t2.number_of_students == 0
     assert t3.status == "closed"
     assert t3.closed_reason == "Queue Flushed"
+    assert t3.number_of_students == 0
 
     # Verify that closed_at has been set recently for all flushed tickets
     now = datetime.now(timezone.utc)
@@ -167,12 +173,15 @@ def test_export_archive(test_client):
     admin.set_password("pass")
     db.session.add(admin)
 
-    # Use relative date (Yesterday) to avoid hardcoded dates becoming stale
-    yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+    # Build the test around a Pacific local day because the archive export
+    # route interprets submitted dates in America/Los_Angeles.
+    pacific = ZoneInfo("America/Los_Angeles")
+    yesterday_local = datetime.now(pacific) - timedelta(days=1)
+    closed_local = yesterday_local.replace(hour=12, minute=0, second=0, microsecond=0)
     t = Ticket(
         student_name="ExportMe", table="T1", physics_course="Ph 211", status="closed"
     )
-    t.closed_at = yesterday
+    t.closed_at = closed_local.astimezone(timezone.utc)
     db.session.add(t)
     db.session.commit()
 
@@ -181,14 +190,119 @@ def test_export_archive(test_client):
         sess["is_admin"] = True
 
     data = {
-        "start_date": yesterday.strftime("%Y-%m-%d"),
-        "end_date": yesterday.strftime("%Y-%m-%d"),
+        "start_date": closed_local.date().isoformat(),
+        "end_date": closed_local.date().isoformat(),
     }
 
-    response = test_client.post("/archive/export", data=data)
+    response = test_client.post("/archive/export", data=data, follow_redirects=True)
     assert response.status_code == 200
-    assert "text/csv" in response.headers["Content-Type"]
-    assert b"ExportMe" in response.data
+    assert "text/html" in response.headers["Content-Type"]
+    assert b"Archive created: wormhole_archive_" in response.data
+    assert b"Create Archive" in response.data
+
+
+def test_archive_page_lists_saved_files(test_client, test_app):
+    """Archive page should show links for saved CSV files."""
+    admin = User(username="admin_list", email="list@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    archive_dir = Path(test_app.root_path) / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    filename = "wormhole_archive_test_listing.csv"
+    file_path = archive_dir / filename
+    file_path.write_text("id,name\n1,Test\n", encoding="utf-8")
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = None
+    try:
+        response = test_client.get("/archive")
+        assert response.status_code == 200
+        assert filename.encode("utf-8") in response.data
+    finally:
+        if response is not None:
+            response.close()
+        if file_path.exists():
+            file_path.unlink()
+
+
+def test_download_archive_serves_csv_file(test_client, test_app):
+    """Archive download route should return saved CSV file contents."""
+    admin = User(username="admin_download", email="download@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    archive_dir = Path(test_app.root_path) / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    filename = "wormhole_archive_test_download.csv"
+    file_path = archive_dir / filename
+    file_path.write_text("Ticket ID,Student Name\n1,DownloadMe\n", encoding="utf-8")
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = None
+    try:
+        response = test_client.get(f"/archive/download/{filename}")
+        assert response.status_code == 200
+        assert b"DownloadMe" in response.data
+        assert "attachment;" in response.headers.get("Content-Disposition", "")
+    finally:
+        if response is not None:
+            response.close()
+        if file_path.exists():
+            file_path.unlink()
+
+
+def test_delete_archives_removes_selected_file(test_client, test_app):
+    """Archive delete route should remove selected CSV file(s)."""
+    admin = User(username="admin_delete", email="delete@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    archive_dir = Path(test_app.root_path) / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    filename = "wormhole_archive_test_delete.csv"
+    file_path = archive_dir / filename
+    file_path.write_text("Ticket ID,Student Name\n1,DeleteMe\n", encoding="utf-8")
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.post(
+        "/archive/delete",
+        data={"filenames": [filename]},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert b"Deleted 1 archive file(s)." in response.data
+    assert not file_path.exists()
+
+
+def test_delete_archives_with_no_selection(test_client, test_app):
+    """Archive delete route should inform admin when nothing is selected."""
+    admin = User(
+        username="admin_delete_none", email="deletenone@test.com", is_admin=True
+    )
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.post("/archive/delete", data={}, follow_redirects=True)
+    assert response.status_code == 200
+    assert b"No archive files selected." in response.data
 
 
 def test_pastticket_resolution(test_client):
@@ -302,3 +416,130 @@ def test_flash_message_category_rendering(test_client):
     assert response.status_code == 200
     assert b'class="flash-success"' in response.data
     assert b"User created successfully!" in response.data
+
+
+def test_register_error_keeps_form_values_and_shows_suggestion(test_client):
+    """Registration errors should keep entered values and provide guidance."""
+    response = test_client.post(
+        "/api/users_add",
+        data={"first_name": "Jane", "last_name": "Doe", "onid": ""},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 400
+    assert b'value="Jane"' in response.data
+    assert b'value="Doe"' in response.data
+    assert b"ONID: This field is required." in response.data
+    assert (
+        b"Suggestion: Enter the ONID username only (for example: smithj)."
+        in response.data
+    )
+
+
+def test_livequeuetickets_includes_in_progress_in_order(test_client):
+    """Public live queue API should include both live and in-progress tickets in queue order."""
+    t1 = Ticket(
+        student_name="First", table="T1", physics_course="Ph 211", status="live"
+    )
+    t2 = Ticket(
+        student_name="Second",
+        table="T2",
+        physics_course="Ph 212",
+        status="in_progress",
+    )
+    t3 = Ticket(
+        student_name="Third", table="T3", physics_course="Ph 213", status="live"
+    )
+    db.session.add_all([t1, t2, t3])
+    db.session.commit()
+
+    response = test_client.get("/api/livequeuetickets")
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert [ticket["student_name"] for ticket in payload] == [
+        "First",
+        "Second",
+        "Third",
+    ]
+    assert [ticket["status"] for ticket in payload] == ["live", "in_progress", "live"]
+
+
+def test_currentticket_displays_pacific_time(test_client):
+    """Current ticket page should render UTC-backed timestamps in Pacific Time."""
+    user = User(username="pacific_helper", email="pacific@test.com", is_admin=False)
+    user.set_password("pass")
+    db.session.add(user)
+
+    t = Ticket(
+        student_name="Time Test",
+        table="T7",
+        physics_course="Ph 211",
+        status="in_progress",
+        wa_id=user.id,
+    )
+    t.created_at = datetime(2026, 4, 2, 18, 58, 0, tzinfo=timezone.utc)
+    db.session.add(t)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    response = test_client.get(f"/currentticket/{t.id}")
+
+    assert response.status_code == 200
+    assert b"Apr 02 11:58:00 AM PDT" in response.data
+
+
+def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
+    """Archive export should treat submitted dates as Pacific local dates, not UTC dates."""
+    admin = User(username="admin_tz", email="admin_tz@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+
+    pacific = ZoneInfo("America/Los_Angeles")
+    closed_local = datetime(2026, 4, 2, 23, 30, 0, tzinfo=pacific)
+
+    t = Ticket(
+        student_name="LateLocalTicket",
+        table="T9",
+        physics_course="Ph 212",
+        status="closed",
+    )
+    t.created_at = datetime(2026, 4, 2, 18, 15, 0, tzinfo=timezone.utc)
+    t.closed_at = closed_local.astimezone(timezone.utc)
+    db.session.add(t)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    archive_dir = Path(test_app.root_path) / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+
+    request_day = datetime.fromisoformat("2026-04-02").date()
+    start_dt, _ = pacific_day_bounds_to_utc(request_day)
+    _, end_dt = pacific_day_bounds_to_utc(request_day)
+    expected_file = (
+        archive_dir
+        / f"wormhole_archive_{start_dt.date().isoformat()}_to_{end_dt.date().isoformat()}.csv"
+    )
+    existed_before = expected_file.exists()
+
+    response = test_client.post(
+        "/archive/export",
+        data={"start_date": "2026-04-02", "end_date": "2026-04-02"},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert b"Archive created: wormhole_archive_" in response.data
+
+    assert expected_file.exists()
+    csv_content = expected_file.read_text(encoding="utf-8")
+    assert "LateLocalTicket" in csv_content
+
+    if not existed_before:
+        expected_file.unlink()
