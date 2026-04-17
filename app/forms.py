@@ -1,3 +1,6 @@
+import calendar
+from datetime import date
+
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField, FileRequired
 from wtforms import (
@@ -10,6 +13,15 @@ from wtforms import (
     SubmitField,
 )
 from wtforms.validators import DataRequired, Email, EqualTo, NumberRange, Optional
+
+
+def _subtract_months(from_date: date, months: int) -> date:
+    """Return a date shifted back by whole months without external dependencies."""
+    total_months = from_date.year * 12 + from_date.month - 1 - months
+    target_year = total_months // 12
+    target_month = (total_months % 12) + 1
+    target_day = min(from_date.day, calendar.monthrange(target_year, target_month)[1])
+    return date(target_year, target_month, target_day)
 
 
 class LoginForm(FlaskForm):
@@ -128,9 +140,17 @@ class ResolveTicketForm(FlaskForm):
 
 
 class ExportArchiveForm(FlaskForm):
-    start_date = DateField("Start Date", validators=[DataRequired()])
-    end_date = DateField("End Date", validators=[DataRequired()])
+    start_date = DateField(
+        "Start Date",
+        validators=[DataRequired()],
+        default=lambda: _subtract_months(date.today(), 3),
+    )
+    end_date = DateField("End Date", validators=[DataRequired()], default=date.today)
     submit = SubmitField("Download CSV")
+
+
+class DeleteArchiveForm(FlaskForm):
+    submit = SubmitField("Delete Selected")
 
 
 class FlushQueueForm(FlaskForm):

@@ -29,8 +29,32 @@
                 </div>
                 <div style="margin-top: 1.5rem;">
                     <button type="submit" class="btn-success">
-                        Download CSV
+                        Create Archive
                     </button>
+                </div>
+            </form>
+        </div>
+        <div class="section generic">
+            <h2>Archive Files</h2>
+            <p>
+                Below is a list of previously exported archive files. Click on a file name to download it.
+            </p>
+            <form action="{{ url_for('views.delete_archives') }}" method="post">
+                {{ delete_form.hidden_tag() }}
+                <ul>
+                    {% for file in archive_files %}
+                        <li>
+                            <label>
+                                <input type="checkbox" name="filenames" value="{{ file }}">
+                                <a href="{{ url_for('views.download_archive', filename=file) }}">{{ file }}</a>
+                            </label>
+                        </li>
+                    {% else %}
+                        <li>No archive files found.</li>
+                    {% endfor %}
+                </ul>
+                <div style="margin-top: 1rem;">
+                    <button type="submit" class="btn-danger">Delete Selected</button>
                 </div>
             </form>
         </div>
