@@ -571,7 +571,7 @@ def register():
     return render_template("register.html", form=form)
 
 
-@views_bp.route("/register_batch", methods=["GET", "POST"])
+@views_bp.route("/register_batch", methods=["GET"])
 @admin_required
 def register_batch():
     form = RegisterBatchForm()

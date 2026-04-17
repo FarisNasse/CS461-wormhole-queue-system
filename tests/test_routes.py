@@ -311,6 +311,24 @@ def test_flash_message_category_rendering(test_client):
     assert b"User created successfully!" in response.data
 
 
+def test_register_error_keeps_form_values_and_shows_suggestion(test_client):
+    """Registration errors should keep entered values and provide guidance."""
+    response = test_client.post(
+        "/api/users_add",
+        data={"first_name": "Jane", "last_name": "Doe", "onid": ""},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 400
+    assert b'value="Jane"' in response.data
+    assert b'value="Doe"' in response.data
+    assert b"ONID: This field is required." in response.data
+    assert (
+        b"Suggestion: Enter the ONID username only (for example: smithj)."
+        in response.data
+    )
+
+
 def test_livequeuetickets_includes_in_progress_in_order(test_client):
     """Public live queue API should include both live and in-progress tickets in queue order."""
     t1 = Ticket(
