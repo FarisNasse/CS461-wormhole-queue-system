@@ -48,9 +48,10 @@ def create_app(testing=False):
         app.config["FORCE_HTTPS"] = False
         app.config["ENABLE_HSTS"] = False
         app.config["PREFERRED_URL_SCHEME"] = "http"
-    elif not os.environ.get("DATABASE_URL") and os.environ.get(
-        "ALLOW_SQLITE_FALLBACK"
-    ) != "1":
+    elif (
+        not os.environ.get("DATABASE_URL")
+        and os.environ.get("ALLOW_SQLITE_FALLBACK") != "1"
+    ):
         raise RuntimeError(
             "DATABASE_URL must be set for non-testing environments. "
             "Set ALLOW_SQLITE_FALLBACK=1 only for local development."
@@ -71,9 +72,9 @@ def create_app(testing=False):
     @app.after_request
     def add_security_headers(response):
         if app.config.get("ENABLE_HSTS", False) and request.is_secure:
-            response.headers["Strict-Transport-Security"] = (
-                "max-age=31536000; includeSubDomains"
-            )
+            response.headers[
+                "Strict-Transport-Security"
+            ] = "max-age=31536000; includeSubDomains"
         return response
 
     # ---------------------------------------------------
