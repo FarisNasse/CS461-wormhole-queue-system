@@ -11,7 +11,7 @@
             </h2>
             {% if user.is_admin %}
                 <div class="queue-admin-actions">
-                    <form action="{{ url_for('views.flush') }}"
+                    <form action="{{ url_for("views.flush") }}"
                           method="post"
                           class="queue-admin-action-form">
                         {{ flush_form.hidden_tag() }}
@@ -21,7 +21,7 @@
                             Flush Queue
                         </button>
                     </form>
-                    <form action="{{ url_for('views.clear_queue') }}"
+                    <form action="{{ url_for("views.clear_queue") }}"
                           method="post"
                           class="queue-admin-action-form">
                         {{ clear_form.hidden_tag() }}
@@ -76,7 +76,7 @@
                 </ul>
             </div>
             <div class="queue-back-link">
-                <a href="{{ url_for('views.hardware_list') }}">Back to Hardware List</a>
+                <a href="{{ url_for("views.hardware_list") }}">Back to Hardware List</a>
             </div>
         </div>
     </div>

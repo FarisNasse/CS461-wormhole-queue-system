@@ -111,6 +111,7 @@ def resolve_ticket(ticket_id):
             ticket.status = "resolved"
             ticket.closed_reason = "duplicate"
             ticket.closed_at = datetime.now(timezone.utc)
+            ticket.number_of_students = 0
             db.session.commit()
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as duplicate and resolved successfully", "success")
@@ -141,6 +142,7 @@ def resolve_ticket(ticket_id):
             ticket.status = "resolved"
             ticket.closed_reason = "no_show"
             ticket.closed_at = datetime.now(timezone.utc)
+            ticket.number_of_students = 0
             db.session.commit()
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as no show and resolved successfully", "success")

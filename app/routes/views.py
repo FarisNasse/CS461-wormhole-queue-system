@@ -1,7 +1,7 @@
 # app/routes/views.py
 import csv
 import io
-from datetime import datetime, time, timezone
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from urllib.parse import urljoin, urlparse
 
@@ -37,6 +37,12 @@ from app.forms import (
     TicketForm,
 )
 from app.models import Skipped, Ticket, User
+from app.time_utils import (
+    PACIFIC_TZ,
+    format_pacific,
+    pacific_day_bounds_to_utc,
+    serialize_datetime,
+)
 
 views_bp = Blueprint("views", __name__)
 
@@ -279,7 +285,10 @@ def debug_tickets():
                     "class": t.physics_course,
                     "table": t.table,
                     "status": t.status,
-                    "created_at": t.created_at.isoformat() if t.created_at else None,
+                    "created_at": serialize_datetime(t.created_at),
+                    "created_at_local": format_pacific(
+                        t.created_at, "%Y-%m-%d %H:%M:%S %Z"
+                    ),
                 }
                 for t in all_tickets
             ],
@@ -342,14 +351,9 @@ def export_archive():
         flash("Invalid date format or missing fields.", "error")
         return redirect(url_for("views.archive"))
 
-    # Parse dates (combine with time.min/max for full day coverage)
-    # Ensure they are timezone aware (UTC) to match database storage
-    start_date = datetime.combine(form.start_date.data, time.min).replace(
-        tzinfo=timezone.utc
-    )
-    end_date = datetime.combine(form.end_date.data, time.max).replace(
-        tzinfo=timezone.utc
-    )
+    # Interpret the selected dates in Pacific Time, then convert to UTC for querying.
+    start_date, _ = pacific_day_bounds_to_utc(form.start_date.data)
+    _, end_date = pacific_day_bounds_to_utc(form.end_date.data)
 
     # Logical Validation
     if start_date > end_date:
@@ -357,8 +361,11 @@ def export_archive():
         return redirect(url_for("views.archive"))
 
     # Prevent exporting archives for future dates
-    now_utc = datetime.now(timezone.utc)
-    if start_date > now_utc or end_date > now_utc:
+    now_pacific = datetime.now(PACIFIC_TZ)
+    if (
+        form.start_date.data > now_pacific.date()
+        or form.end_date.data > now_pacific.date()
+    ):
         flash("Dates cannot be in the future.", "error")
         return redirect(url_for("views.archive"))
 
@@ -422,8 +429,10 @@ def export_archive():
                     sanitize(t.student_name),
                     sanitize(t.physics_course),
                     sanitize(t.table),
-                    t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                    t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
+                    format_pacific(t.created_at, "%Y-%m-%d %H:%M:%S %Z"),
+                    format_pacific(t.closed_at, "%Y-%m-%d %H:%M:%S %Z")
+                    if t.closed_at
+                    else "N/A",
                     sanitize(t.closed_reason) or "N/A",
                     t.wa_id or "Unassigned",
                 ]
@@ -433,8 +442,8 @@ def export_archive():
             output.seek(0)
 
     # Create the streaming response object
-    safe_start = start_date.date().isoformat()
-    safe_end = end_date.date().isoformat()
+    safe_start = form.start_date.data.isoformat()
+    safe_end = form.end_date.data.isoformat()
     filename = f"wormhole_archive_{safe_start}_to_{safe_end}.csv"
     return Response(
         stream_with_context(generate()),

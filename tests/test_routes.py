@@ -1,5 +1,6 @@
 # tests/test_routes.py
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 from app import db
 from app.models import Ticket, User
@@ -170,12 +171,15 @@ def test_export_archive(test_client):
     admin.set_password("pass")
     db.session.add(admin)
 
-    # Use relative date (Yesterday) to avoid hardcoded dates becoming stale
-    yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+    # Build the test around a Pacific local day because the archive export
+    # route interprets submitted dates in America/Los_Angeles.
+    pacific = ZoneInfo("America/Los_Angeles")
+    yesterday_local = datetime.now(pacific) - timedelta(days=1)
+    closed_local = yesterday_local.replace(hour=12, minute=0, second=0, microsecond=0)
     t = Ticket(
         student_name="ExportMe", table="T1", physics_course="Ph 211", status="closed"
     )
-    t.closed_at = yesterday
+    t.closed_at = closed_local.astimezone(timezone.utc)
     db.session.add(t)
     db.session.commit()
 
@@ -184,8 +188,8 @@ def test_export_archive(test_client):
         sess["is_admin"] = True
 
     data = {
-        "start_date": yesterday.strftime("%Y-%m-%d"),
-        "end_date": yesterday.strftime("%Y-%m-%d"),
+        "start_date": closed_local.date().isoformat(),
+        "end_date": closed_local.date().isoformat(),
     }
 
     response = test_client.post("/archive/export", data=data)
@@ -334,3 +338,64 @@ def test_livequeuetickets_includes_in_progress_in_order(test_client):
         "Third",
     ]
     assert [ticket["status"] for ticket in payload] == ["live", "in_progress", "live"]
+
+
+def test_currentticket_displays_pacific_time(test_client):
+    """Current ticket page should render UTC-backed timestamps in Pacific Time."""
+    user = User(username="pacific_helper", email="pacific@test.com", is_admin=False)
+    user.set_password("pass")
+    db.session.add(user)
+
+    t = Ticket(
+        student_name="Time Test",
+        table="T7",
+        physics_course="Ph 211",
+        status="in_progress",
+        wa_id=user.id,
+    )
+    t.created_at = datetime(2026, 4, 2, 18, 58, 0, tzinfo=timezone.utc)
+    db.session.add(t)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    response = test_client.get(f"/currentticket/{t.id}")
+
+    assert response.status_code == 200
+    assert b"Apr 02 11:58:00 AM PDT" in response.data
+
+
+def test_export_archive_uses_pacific_date_boundaries(test_client):
+    """Archive export should treat submitted dates as Pacific local dates, not UTC dates."""
+    admin = User(username="admin_tz", email="admin_tz@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+
+    pacific = ZoneInfo("America/Los_Angeles")
+    closed_local = datetime(2026, 4, 2, 23, 30, 0, tzinfo=pacific)
+
+    t = Ticket(
+        student_name="LateLocalTicket",
+        table="T9",
+        physics_course="Ph 212",
+        status="closed",
+    )
+    t.created_at = datetime(2026, 4, 2, 18, 15, 0, tzinfo=timezone.utc)
+    t.closed_at = closed_local.astimezone(timezone.utc)
+    db.session.add(t)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.post(
+        "/archive/export",
+        data={"start_date": "2026-04-02", "end_date": "2026-04-02"},
+    )
+
+    assert response.status_code == 200
+    assert b"LateLocalTicket" in response.data
+    assert b"2026-04-02 23:30:00 PDT" in response.data
