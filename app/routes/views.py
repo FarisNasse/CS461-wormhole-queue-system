@@ -38,6 +38,12 @@ from app.forms import (
     TicketForm,
 )
 from app.models import Skipped, Ticket, User
+from app.time_utils import (
+    PACIFIC_TZ,
+    format_pacific,
+    pacific_day_bounds_to_utc,
+    serialize_datetime,
+)
 
 views_bp = Blueprint("views", __name__)
 
@@ -64,7 +70,7 @@ def is_safe_url(target):
 def _ticket_to_ns(ticket: Ticket):
     if ticket is None:
         return None
-    closed_by_name = (
+    assistant_display_name = (
         ticket.wormhole_assistant.name
         if ticket.wormhole_assistant and ticket.wormhole_assistant.name
         else (
@@ -79,9 +85,11 @@ def _ticket_to_ns(ticket: Ticket):
         table=ticket.table,
         phClass=ticket.physics_course,
         time_create=ticket.created_at,
+        time_close=ticket.closed_at,
         num_students=ticket.number_of_students,
         closed_reason=ticket.closed_reason,
-        closed_by=closed_by_name,
+        closed_by=assistant_display_name,
+        assigned_to=assistant_display_name,
     )
 
 
@@ -195,6 +203,7 @@ def flush():
             Ticket.status: "closed",
             Ticket.closed_reason: "Queue Flushed",
             Ticket.closed_at: now,
+            Ticket.number_of_students: 0,
         },
         synchronize_session=False,
     )
@@ -291,7 +300,10 @@ def debug_tickets():
                     "class": t.physics_course,
                     "table": t.table,
                     "status": t.status,
-                    "created_at": t.created_at.isoformat() if t.created_at else None,
+                    "created_at": serialize_datetime(t.created_at),
+                    "created_at_local": format_pacific(
+                        t.created_at, "%Y-%m-%d %H:%M:%S %Z"
+                    ),
                 }
                 for t in all_tickets
             ],
@@ -354,14 +366,9 @@ def export_archive():
         flash("Invalid date format or missing fields.", "error")
         return redirect(url_for("views.archive"))
 
-    # Parse dates (combine with time.min/max for full day coverage)
-    # Ensure they are timezone aware (UTC) to match database storage
-    start_date = datetime.combine(form.start_date.data, time.min).replace(
-        tzinfo=timezone.utc
-    )
-    end_date = datetime.combine(form.end_date.data, time.max).replace(
-        tzinfo=timezone.utc
-    )
+    # Interpret the selected dates in Pacific Time, then convert to UTC for querying.
+    start_date, _ = pacific_day_bounds_to_utc(form.start_date.data)
+    _, end_date = pacific_day_bounds_to_utc(form.end_date.data)
 
     # Logical Validation
     if start_date > end_date:
@@ -369,9 +376,12 @@ def export_archive():
         return redirect(url_for("views.archive"))
 
     # Prevent exporting archives for future dates
-    now_utc = datetime.now(timezone.utc)
-    now_utc = now_utc.replace(hour=23, minute=59, second=59, microsecond=999999)
-    if start_date > now_utc or end_date > now_utc:
+    now_pacific = datetime.now(PACIFIC_TZ)
+    now_pacific = datetime.replace(hour=23, minute=59, second=59, microsecond=999999)
+    if (
+        form.start_date.data > now_pacific.date()
+        or form.end_date.data > now_pacific.date()
+    ):
         flash("Dates cannot be in the future.", "error")
         return redirect(url_for("views.archive"))
 

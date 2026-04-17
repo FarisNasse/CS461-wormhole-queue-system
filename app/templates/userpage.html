@@ -53,7 +53,7 @@
                 <b>Administrator: </b>{{ user.is_admin }}
                 <br>
                 {% if current_user.username==user.username or current_user.is_admin %}
-                    <a href="{{ url_for('views.changepass') }}">Change Password</a>
+                    <a href="{{ url_for("views.changepass") }}">Change Password</a>
                 {% endif %}
             </p>
             {% if current_user.is_admin %}
@@ -61,20 +61,20 @@
                     Admin Utilities
                 </h3>
                 <p style="margin:10px">
-                    <a href="{{ url_for('views.register') }}">Register New User</a>
+                    <a href="{{ url_for("views.register") }}">Register New User</a>
                 </p>
                 <!--<p><a href="{{ url_for('views.changepass') }}">Change User Password</a></p>-->
                 <p style="margin:10px">
-                    <a href="{{ url_for('views.queue') }}">Queue</a>
+                    <a href="{{ url_for("views.queue") }}">Queue</a>
                 </p>
                 <p style="margin:10px">
-                    <a href="{{ url_for('views.archive') }}">Archive</a>
+                    <a href="{{ url_for("views.archive") }}">Archive</a>
                 </p>
                 <p style="margin:10px">
-                    <a href="{{ url_for('views.register_batch') }}">Register Users in Batch</a>
+                    <a href="{{ url_for("views.register_batch") }}">Register Users in Batch</a>
                 </p>
                 <p style="margin:10px">
-                    <a href="{{ url_for('views.user_list') }}">WA List</a>
+                    <a href="{{ url_for("views.user_list") }}">WA List</a>
                 </p>
             {% endif %}
         </div>

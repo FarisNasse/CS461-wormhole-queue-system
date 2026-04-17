@@ -11,7 +11,7 @@
             </h2>
             {% if user.is_admin %}
                 <div class="queue-admin-actions">
-                    <form action="{{ url_for('views.flush') }}"
+                    <form action="{{ url_for("views.flush") }}"
                           method="post"
                           class="queue-admin-action-form">
                         {{ flush_form.hidden_tag() }}
@@ -21,7 +21,7 @@
                             Flush Queue
                         </button>
                     </form>
-                    <form action="{{ url_for('views.clear_queue') }}"
+                    <form action="{{ url_for("views.clear_queue") }}"
                           method="post"
                           class="queue-admin-action-form">
                         {{ clear_form.hidden_tag() }}
@@ -55,7 +55,7 @@
                     {% for tk in cul %}
                         <li>
                             <a href="{{ url_for('views.currentticket', tktid=tk.id) }}">
-                                {{ tk.name }} (Table {{ tk.table }})
+                                {{ tk.name }} (Table {{ tk.table }}) - {{ tk.assigned_to }}
                             </a>
                         </li>
                     {% endfor %}
@@ -68,13 +68,15 @@
                 <ul>
                     {% for tk in cll %}
                         <li>
-                            {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students or 1 }} - {{ tk.closed_by }}
+                            <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}">
+                                {{ tk.id }} - {{ tk.name }} - {{ tk.table }} - {{ tk.phClass }} - Opened: {{ tk.time_create.strftime('%I:%M %p') if tk.time_create else 'N/A' }} - Closed: {{ tk.time_close.strftime('%I:%M %p') if tk.time_close else 'N/A' }} - {{ tk.closed_reason or 'N/A' }} - {{ tk.num_students }} - {{ tk.closed_by }}
+                            </a>
                         </li>
                     {% endfor %}
                 </ul>
             </div>
             <div class="queue-back-link">
-                <a href="{{ url_for('views.hardware_list') }}">Back to Hardware List</a>
+                <a href="{{ url_for("views.hardware_list") }}">Back to Hardware List</a>
             </div>
         </div>
     </div>

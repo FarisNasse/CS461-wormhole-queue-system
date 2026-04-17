@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateTicketCount() {
         console.log('fetching ticket count...');
-        fetch('/api/opentickets')
+        fetch('/api/unskippedtickets')
             .then(response => {
             return response.json();
         })

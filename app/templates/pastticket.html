@@ -15,7 +15,7 @@
                 <strong>Location:</strong> {{ ticket.table }}
             </p>
             <p>
-                <strong>Created At:</strong> {{ ticket.time_create }}
+                <strong>Created At:</strong> {{ ticket.time_create|datetime_pacific("%Y-%m-%d %H:%M:%S %Z") }}
             </p>
             <hr>
             <h3>
@@ -44,7 +44,7 @@
                 </button>
             </form>
             <div style="margin-top: 20px;">
-                <a href="{{ url_for('views.queue') }}">Back to Queue</a>
+                <a href="{{ url_for("views.queue") }}">Back to Queue</a>
             </div>
         </div>
     </div>
