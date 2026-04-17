@@ -492,6 +492,39 @@ def test_currentticket_displays_pacific_time(test_client):
     assert b"Apr 02 11:58:00 AM PDT" in response.data
 
 
+def test_queue_closed_history_displays_pacific_opened_and_closed_times(test_client):
+    """Queue history should render opened/closed times in Pacific Time."""
+    user = User(username="queue_tz_user", email="queue_tz@test.com", is_admin=False)
+    user.set_password("pass")
+    db.session.add(user)
+
+    t = Ticket(
+        student_name="Queue Time Test",
+        table="T11",
+        physics_course="Ph 211",
+        status="closed",
+        wa_id=user.id,
+    )
+    t.created_at = datetime(2026, 4, 2, 18, 58, 0, tzinfo=timezone.utc)
+    t.closed_at = datetime(2026, 4, 2, 20, 30, 0, tzinfo=timezone.utc)
+    db.session.add(t)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    response = test_client.get("/queue")
+
+    assert response.status_code == 200
+    # queue history currently renders Pacific-local clock times without TZ suffix
+    assert b"Opened: 11:58 AM" in response.data
+    assert b"Closed: 01:30 PM" in response.data
+    # guard against regressing to raw UTC display
+    assert b"Opened: 06:58 PM" not in response.data
+    assert b"Closed: 08:30 PM" not in response.data
+
+
 def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
     """Archive export should treat submitted dates as Pacific local dates, not UTC dates."""
     admin = User(username="admin_tz", email="admin_tz@test.com", is_admin=True)
