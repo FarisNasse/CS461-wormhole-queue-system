@@ -108,6 +108,7 @@ def resolve_ticket(ticket_id):
         if ticket:
             ticket.status = "resolved"
             ticket.resolve_reason = "duplicate"
+            ticket.number_of_students = 0
             db.session.commit()
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as duplicate and resolved successfully", "success")
@@ -136,6 +137,7 @@ def resolve_ticket(ticket_id):
         if ticket:
             ticket.status = "resolved"
             ticket.resolve_reason = "no_show"
+            ticket.number_of_students = 0
             db.session.commit()
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as no show and resolved successfully", "success")
