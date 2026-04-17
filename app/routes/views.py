@@ -436,8 +436,14 @@ def export_archive():
                 t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
                 t.number_of_students,
                 t.wa_id or "Unassigned",
-                t.wormhole_assistant.name if t.wormhole_assistant and t.wormhole_assistant.name else ("N/A"),
-                "Zoom" if t.table == "Zoom" else "Teams" if t.table == "Teams" else "Box",
+                t.wormhole_assistant.name
+                if t.wormhole_assistant and t.wormhole_assistant.name
+                else ("N/A"),
+                "Zoom"
+                if t.table == "Zoom"
+                else "Teams"
+                if t.table == "Teams"
+                else "Box",
             ]
         )
 
