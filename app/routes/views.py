@@ -377,7 +377,7 @@ def export_archive():
 
     # Prevent exporting archives for future dates
     now_pacific = datetime.now(PACIFIC_TZ)
-    now_pacific = datetime.replace(hour=23, minute=59, second=59, microsecond=999999)
+    now_pacific = now_pacific.replace(hour=23, minute=59, second=59, microsecond=999999)
     if (
         form.start_date.data > now_pacific.date()
         or form.end_date.data > now_pacific.date()

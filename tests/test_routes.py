@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 
 from app import db
 from app.models import Ticket, User
+from app.time_utils import pacific_day_bounds_to_utc
 
 
 def test_health_check_route(test_client):
@@ -473,7 +474,7 @@ def test_currentticket_displays_pacific_time(test_client):
     assert b"Apr 02 11:58:00 AM PDT" in response.data
 
 
-def test_export_archive_uses_pacific_date_boundaries(test_client):
+def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
     """Archive export should treat submitted dates as Pacific local dates, not UTC dates."""
     admin = User(username="admin_tz", email="admin_tz@test.com", is_admin=True)
     admin.set_password("pass")
@@ -497,11 +498,30 @@ def test_export_archive_uses_pacific_date_boundaries(test_client):
         sess["user_id"] = admin.id
         sess["is_admin"] = True
 
+    archive_dir = Path(test_app.root_path) / "data" / "archives"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+
+    request_day = datetime.fromisoformat("2026-04-02").date()
+    start_dt, _ = pacific_day_bounds_to_utc(request_day)
+    _, end_dt = pacific_day_bounds_to_utc(request_day)
+    expected_file = (
+        archive_dir
+        / f"wormhole_archive_{start_dt.date().isoformat()}_to_{end_dt.date().isoformat()}.csv"
+    )
+    existed_before = expected_file.exists()
+
     response = test_client.post(
         "/archive/export",
         data={"start_date": "2026-04-02", "end_date": "2026-04-02"},
+        follow_redirects=True,
     )
 
     assert response.status_code == 200
-    assert b"LateLocalTicket" in response.data
-    assert b"2026-04-02 23:30:00 PDT" in response.data
+    assert b"Archive created: wormhole_archive_" in response.data
+
+    assert expected_file.exists()
+    csv_content = expected_file.read_text(encoding="utf-8")
+    assert "LateLocalTicket" in csv_content
+
+    if not existed_before:
+        expected_file.unlink()
