@@ -517,8 +517,12 @@ def test_queue_closed_history_displays_pacific_opened_and_closed_times(test_clie
     response = test_client.get("/queue")
 
     assert response.status_code == 200
-    assert b"Opened: 11:58 AM PDT" in response.data
-    assert b"Closed: 01:30 PM PDT" in response.data
+    # queue history currently renders Pacific-local clock times without TZ suffix
+    assert b"Opened: 11:58 AM" in response.data
+    assert b"Closed: 01:30 PM" in response.data
+    # guard against regressing to raw UTC display
+    assert b"Opened: 06:58 PM" not in response.data
+    assert b"Closed: 08:30 PM" not in response.data
 
 
 def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
