@@ -1,6 +1,8 @@
 import csv
 from io import StringIO
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
 from app import db
@@ -101,8 +103,8 @@ def users_add():
     return render_template("register.html", form=form), 400
 
 
-@admin_required
 @user_bp.route("/users_add_batch", methods=["POST"])
+@admin_required
 def users_add_batch():
     form = RegisterBatchForm()
 
@@ -114,7 +116,16 @@ def users_add_batch():
         return render_template("register_batch.html", form=form), 400
 
     uploaded_csv = form.user_csv.data
-    content = uploaded_csv.read().decode("utf-8-sig")
+    try:
+        content = uploaded_csv.read().decode("utf-8-sig")
+    except UnicodeDecodeError:
+        flash(
+            "Could not read the uploaded file as UTF-8 CSV. "
+            "Suggestion: save the file as UTF-8 and try again.",
+            "error",
+        )
+        return render_template("register_batch.html", form=form), 400
+
     reader = csv.reader(StringIO(content))
     rows = list(reader)
 
@@ -188,7 +199,16 @@ def users_add_batch():
         db.session.add(new_user)
         created_count += 1
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash(
+            "Could not save batch users due to a database error. "
+            "Suggestion: try again, and contact an admin if the issue persists.",
+            "error",
+        )
+        return render_template("register_batch.html", form=form), 500
 
     flash(
         f"Batch registration complete: created {created_count} users, skipped {skipped_count} rows.",
