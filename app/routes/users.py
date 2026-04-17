@@ -1,9 +1,8 @@
 import csv
 from io import StringIO
 
-from sqlalchemy.exc import SQLAlchemyError
-
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import db
 from app.auth_utils import admin_required

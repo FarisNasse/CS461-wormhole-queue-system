@@ -106,7 +106,9 @@ def test_users_add_batch_csv_creates_non_admin_users(test_client, test_app):
     csv_content = "first name,last name,ONID\n" "Jane,Doe,jdoe\n" "John,Smith,jsmith\n"
 
     with test_app.app_context():
-        admin = User(username="admin_batch", email="admin_batch@test.com", is_admin=True)
+        admin = User(
+            username="admin_batch", email="admin_batch@test.com", is_admin=True
+        )
         admin.set_password("pass")
         db.session.add(admin)
         db.session.commit()
@@ -143,7 +145,9 @@ def test_users_add_batch_blocks_non_admin(test_client, test_app):
     csv_content = "first name,last name,ONID\n" "Sam,Lee,slee\n"
 
     with test_app.app_context():
-        user = User(username="regular_batch", email="regular_batch@test.com", is_admin=False)
+        user = User(
+            username="regular_batch", email="regular_batch@test.com", is_admin=False
+        )
         user.set_password("pass")
         db.session.add(user)
         db.session.commit()
