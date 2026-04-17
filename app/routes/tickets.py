@@ -1,4 +1,6 @@
 # /app/routes/tickets.py
+from datetime import datetime, timezone
+
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 
 from app import db
@@ -107,7 +109,8 @@ def resolve_ticket(ticket_id):
         ticket = Ticket.query.get(ticket_id)
         if ticket:
             ticket.status = "resolved"
-            ticket.resolve_reason = "duplicate"
+            ticket.closed_reason = "duplicate"
+            ticket.closed_at = datetime.now(timezone.utc)
             ticket.number_of_students = 0
             db.session.commit()
             broadcast_ticket_update(ticket.id)
@@ -120,7 +123,8 @@ def resolve_ticket(ticket_id):
         ticket = Ticket.query.get(ticket_id)
         if ticket:
             ticket.status = "resolved"
-            ticket.resolve_reason = "helped"
+            ticket.closed_reason = "helped"
+            ticket.closed_at = datetime.now(timezone.utc)
             ticket.number_of_students = number_students
             db.session.commit()
             broadcast_ticket_update(ticket.id)
@@ -136,7 +140,8 @@ def resolve_ticket(ticket_id):
         ticket = Ticket.query.get(ticket_id)
         if ticket:
             ticket.status = "resolved"
-            ticket.resolve_reason = "no_show"
+            ticket.closed_reason = "no_show"
+            ticket.closed_at = datetime.now(timezone.utc)
             ticket.number_of_students = 0
             db.session.commit()
             broadcast_ticket_update(ticket.id)
