@@ -191,6 +191,14 @@ def flush():
     )
 
     db.session.commit()
+    
+    # broadcast update to queue clients
+    try:
+        from app.routes.queue_events import broadcast_queue_refresh
+
+        broadcast_queue_refresh()
+    except Exception:
+        pass
 
     flash(f"Queue flushed. {count} tickets closed.", "info")
     return redirect(url_for("views.queue"))
