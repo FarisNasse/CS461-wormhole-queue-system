@@ -1,0 +1,17 @@
+[Unit]
+Description=Wormhole Queue System (Gunicorn + Eventlet)
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/CS461-wormhole-queue-system
+EnvironmentFile=/etc/wormhole/wormhole.env
+ExecStart=/home/ec2-user/CS461-wormhole-queue-system/venv/bin/gunicorn --worker-class eventlet -w 1 --bind 127.0.0.1:8000 application:application
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
