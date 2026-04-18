@@ -66,8 +66,8 @@
 
 .dropdown {
     float: left;
-    overflow: hidden;
     text-align: center;
+    position: relative;
 }
 
 .dropdown .dropbtn {
@@ -84,26 +84,35 @@
 .dropdown-content {
     display: none;
     position: absolute;
+    top: 100%;
+    left: 0;
     background-color: #000;
     padding: 8px;
     white-space: nowrap;
+    z-index: 10;
 }
 
 .dropdown-content a {
-    display: inline-block;
+    display: block;
+    float: none;
+    clear: both;
+    width: 100%;
     color: white;
     padding: 6px 12px;
     text-decoration: none;
     font-size: 17px;
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
-    vertical-align: middle;
 }
 
 .admin-links {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-content .admin-links a {
+    display: block;
 }
 
 .page {
