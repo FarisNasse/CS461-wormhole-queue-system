@@ -28,3 +28,4 @@ email-validator==2.3.0
 idna==3.11
 dnspython==2.8.0
 tzdata
+eventlet
