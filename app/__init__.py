@@ -15,7 +15,7 @@ migrate = Migrate()
 socketio = SocketIO()
 
 
-def create_app(testing=False):
+def create_app(testing=True):
     """
     Create and configure the Flask application instance.
 
