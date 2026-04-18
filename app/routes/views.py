@@ -191,7 +191,7 @@ def flush():
     )
 
     db.session.commit()
-    
+
     # broadcast update to queue clients
     try:
         from app.routes.queue_events import broadcast_queue_refresh
