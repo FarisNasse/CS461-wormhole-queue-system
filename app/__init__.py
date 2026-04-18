@@ -1,11 +1,8 @@
 # app/__init__.py
-import os
-
-from flask import Flask, jsonify, redirect, request
+from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config
 
@@ -37,45 +34,12 @@ def create_app(testing=False):
     # Configuration
     # ---------------------------------------------------
     app.config.from_object(Config)
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
     if testing:
         app.config["TESTING"] = True
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["SECRET_KEY"] = "test-secret"
-        app.config["SESSION_COOKIE_SECURE"] = False
-        app.config["FORCE_HTTPS"] = False
-        app.config["ENABLE_HSTS"] = False
-        app.config["PREFERRED_URL_SCHEME"] = "http"
-    elif (
-        not os.environ.get("DATABASE_URL")
-        and os.environ.get("ALLOW_SQLITE_FALLBACK") != "1"
-    ):
-        raise RuntimeError(
-            "DATABASE_URL must be set for non-testing environments. "
-            "Set ALLOW_SQLITE_FALLBACK=1 only for local development."
-        )
-
-    @app.before_request
-    def enforce_https():
-        if not app.config.get("FORCE_HTTPS", False):
-            return None
-        if request.path == "/health":
-            return None
-        if request.is_secure:
-            return None
-        if request.headers.get("X-Forwarded-Proto", "http").lower() == "https":
-            return None
-        return redirect(request.url.replace("http://", "https://", 1), code=308)
-
-    @app.after_request
-    def add_security_headers(response):
-        if app.config.get("ENABLE_HSTS", False) and request.is_secure:
-            response.headers[
-                "Strict-Transport-Security"
-            ] = "max-age=31536000; includeSubDomains"
-        return response
 
     # ---------------------------------------------------
     # Initialize Extensions

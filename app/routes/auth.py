@@ -10,6 +10,7 @@ from flask import (
     session,
     url_for,
 )
+from werkzeug.security import check_password_hash
 
 from app.forms import ResetPasswordForm, ResetPasswordRequestForm
 from app.models import User
@@ -31,7 +32,7 @@ def login():
 
     user = User.query.filter_by(username=username).first()
 
-    if user and user.check_password(password):
+    if user and check_password_hash(user.password_hash, password):
         if not user.is_active:
             return jsonify({"error": "This account has been deactivated"}), 401
         session["user_id"] = user.id
