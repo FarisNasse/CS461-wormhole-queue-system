@@ -170,12 +170,15 @@ class Skipped(Base):
     def __repr__(self) -> str:
         return f"<User {self.wa_id} skipped Ticket {self.tkt_id}>"
 
+
 class Box(Base):
     __tablename__ = "boxes"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     Box_Name: Mapped[str] = mapped_column(sa.String(100), unique=True, nullable=False)
-    Battery_Status: Mapped[str] = mapped_column(sa.String(20), nullable=False, default="Offline")
+    Battery_Status: Mapped[str] = mapped_column(
+        sa.String(20), nullable=False, default="Offline"
+    )
     update_time: Mapped[str] = mapped_column(sa.String(100), nullable=False)
 
     def __repr__(self) -> str:
