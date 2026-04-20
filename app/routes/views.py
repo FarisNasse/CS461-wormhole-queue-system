@@ -10,7 +10,6 @@ from flask import (
     Blueprint,
     abort,
     flash,
-    jsonify,
     redirect,
     render_template,
     request,
@@ -850,34 +849,3 @@ def pastticket(username, tktid):
 
     ticket_ns = _ticket_to_ns(t)
     return render_template("pastticket.html", ticket=ticket_ns, form=form)
-
-
-# -------------------------------
-# POST /hardwareapi (Hardware Status From WConnector)
-# -------------------------------
-@views_bp.route("/hardwareapi", methods=["POST"])
-def hardwareapi():
-    data = request.get_json()
-
-    if not data:
-        return jsonify({"error": "No JSON payload received"}), 400
-
-    name = data.get("name")
-    status = data.get("status")
-    time = data.get("time")
-
-    if not all([name, status, time]):
-        return jsonify({"error": "Missing required fields: name, status, time"}), 400
-
-    box = Box.query.filter_by(Box_Name=name).first()
-
-    if box:
-        box.Battery_Status = status
-        box.update_time = time
-    else:
-        box = Box(Box_Name=name, Battery_Status=status, update_time=time)
-        db.session.add(box)
-
-    db.session.commit()
-
-    return jsonify({"message": f"Hardware '{name}' updated successfully"}), 200
