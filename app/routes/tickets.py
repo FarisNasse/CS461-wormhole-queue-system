@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 
 from app import db
+from app.attendance_utils import record_attendance_activity
 from app.models import Skipped, Ticket, User
 from app.routes.queue_events import broadcast_ticket_update
 
@@ -113,6 +114,12 @@ def resolve_ticket(ticket_id):
             ticket.closed_at = datetime.now(timezone.utc)
             ticket.number_of_students = 0
             db.session.commit()
+            record_attendance_activity(
+                user.id,
+                "ticket_resolved",
+                f"Resolved ticket #{ticket.id} as duplicate.",
+                ticket_id=ticket.id,
+            )
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as duplicate and resolved successfully", "success")
             return redirect(url_for("views.userpage", username=user.username))
@@ -127,6 +134,12 @@ def resolve_ticket(ticket_id):
             ticket.closed_at = datetime.now(timezone.utc)
             ticket.number_of_students = number_students
             db.session.commit()
+            record_attendance_activity(
+                user.id,
+                "ticket_resolved",
+                f"Resolved ticket #{ticket.id} as helped.",
+                ticket_id=ticket.id,
+            )
             broadcast_ticket_update(ticket.id)
             flash(
                 f"Ticket marked as helped and resolved successfully ({number_students} students)",
@@ -144,6 +157,12 @@ def resolve_ticket(ticket_id):
             ticket.closed_at = datetime.now(timezone.utc)
             ticket.number_of_students = 0
             db.session.commit()
+            record_attendance_activity(
+                user.id,
+                "ticket_resolved",
+                f"Resolved ticket #{ticket.id} as no show.",
+                ticket_id=ticket.id,
+            )
             broadcast_ticket_update(ticket.id)
             flash("Ticket marked as no show and resolved successfully", "success")
             return redirect(url_for("views.userpage", username=user.username))
@@ -157,6 +176,12 @@ def resolve_ticket(ticket_id):
             ticket.wa_id = None
             ticket.wormhole_assistant = None
             db.session.commit()
+            record_attendance_activity(
+                user.id,
+                "ticket_returned",
+                f"Returned ticket #{ticket.id} to the queue.",
+                ticket_id=ticket.id,
+            )
             broadcast_ticket_update(ticket.id)
 
             skipped = Skipped(wa_id=user.id, tkt_id=ticket_id)

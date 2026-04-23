@@ -40,6 +40,56 @@
                 </h4>
             {% endif %}
         </div>
+        <div class="section attendance-card">
+            <h2 style="text-align:center">
+                Wormhole Attendance
+            </h2>
+            {% if current_user.username == user.username %}
+                {% if attendance_session %}
+                    <p class="attendance-card-text">
+                        You are checked in.
+                        <br>
+                        Status: <strong>{{ attendance_status }}</strong>
+                        <br>
+                        Checked in: {{ attendance_session.checked_in_at|datetime_pacific("%I:%M %p") }}
+                        <br>
+                        Last active: {{ attendance_session.last_seen_at|datetime_pacific("%I:%M %p") }}
+                    </p>
+                    <form action="{{ url_for('attendance.check_out') }}"
+                          method="post"
+                          class="attendance-action-form">
+                        {{ check_out_form.hidden_tag() }}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="btn-delete">Check Out</button>
+                    </form>
+                {% else %}
+                    <p class="attendance-card-text">
+                        Check in when you are physically present and ready to help students.
+                    </p>
+                    <form action="{{ url_for('attendance.check_in') }}"
+                          method="post"
+                          class="attendance-action-form">
+                        {{ check_in_form.hidden_tag() }}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="btn-primary">Check In</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                {% if attendance_session %}
+                    <p class="attendance-card-text">
+                        {{ user.name or user.username }} is checked in.
+                        <br>
+                        Status: <strong>{{ attendance_status }}</strong>
+                        <br>
+                        Last active: {{ attendance_session.last_seen_at|datetime_pacific("%I:%M %p") }}
+                    </p>
+                {% else %}
+                    <p class="attendance-card-text">
+                        {{ user.name or user.username }} is not currently checked in.
+                    </p>
+                {% endif %}
+            {% endif %}
+        </div>
         <div class="section profile">
             <h2 style="text-align:center">
                 Profile
@@ -66,6 +116,9 @@
                 <!--<p><a href="{{ url_for('views.changepass') }}">Change User Password</a></p>-->
                 <p style="margin:10px">
                     <a href="{{ url_for("views.queue") }}">Queue</a>
+                </p>
+                <p style="margin:10px">
+                    <a href="{{ url_for("attendance.dashboard") }}">Attendance</a>
                 </p>
                 <p style="margin:10px">
                     <a href="{{ url_for("views.archive") }}">Archive</a>

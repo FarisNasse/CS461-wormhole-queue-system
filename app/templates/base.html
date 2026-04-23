@@ -44,6 +44,7 @@
                                     <div class = "admin-links">
                                         <a href="{{ url_for("views.register") }}">Register New User</a>
                                         <a href="{{ url_for("views.queue") }}">Queue</a>
+                                        <a href="{{ url_for("attendance.dashboard") }}">Attendance</a>
                                         <a href="{{ url_for("views.archive") }}">Archive</a>
                                     </div>
                                 {% endif %}
@@ -73,6 +74,10 @@
         {% block content %}
         {% endblock %}
     </body>
+    {% if not current_user.is_anonymous %}
+        <script src="{{ url_for('static', filename='js/attendance.js') }}"
+                data-heartbeat-url="{{ url_for('attendance.heartbeat') }}"></script>
+    {% endif %}
     {% block body_scripts %}
     {% endblock %}
 </html>

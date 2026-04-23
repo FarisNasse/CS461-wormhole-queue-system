@@ -22,8 +22,17 @@ from flask import (
 from sqlalchemy import and_, func, or_, text
 
 from app import db
+from app.attendance_utils import (
+    active_attendance_session_for_user,
+    attendance_status_for_session,
+    build_attendance_dashboard,
+    record_attendance_activity,
+    touch_attendance,
+)
 from app.auth_utils import admin_required, login_required
 from app.forms import (
+    AttendanceCheckInForm,
+    AttendanceCheckOutForm,
     ChangePassForm,
     ClearQueueForm,
     DeleteArchiveForm,
@@ -37,7 +46,7 @@ from app.forms import (
     ResolveTicketForm,
     TicketForm,
 )
-from app.models import Skipped, Ticket, User
+from app.models import AttendanceActivity, Skipped, Ticket, User
 from app.time_utils import (
     PACIFIC_TZ,
     format_pacific,
@@ -168,6 +177,19 @@ def queue():
     cul = [_ticket_to_ns(t) for t in current_tickets]
     cll = [_ticket_to_ns(t) for t in closed_tickets]
 
+    touch_attendance(current_user_obj.id)
+
+    attendance_rows = []
+    attendance_summary = None
+    recent_attendance_activities = []
+    if current_user_obj.is_admin:
+        attendance_rows, attendance_summary = build_attendance_dashboard()
+        recent_attendance_activities = (
+            AttendanceActivity.query.order_by(AttendanceActivity.created_at.desc())
+            .limit(10)
+            .all()
+        )
+
     # Use dedicated CSRF-protected forms for admin queue actions
     flush_form = FlushQueueForm()
     clear_form = ClearQueueForm()
@@ -181,6 +203,9 @@ def queue():
         user=current_user_obj,
         flush_form=flush_form,
         clear_form=clear_form,
+        attendance_rows=attendance_rows,
+        attendance_summary=attendance_summary,
+        recent_attendance_activities=recent_attendance_activities,
     )
 
 
@@ -348,7 +373,27 @@ def dashboard():
 def hardware_list():
     # Placeholder for hardware list - will be populated with actual data
     boxes = []
-    return render_template("hardware_list.html", boxes=boxes)
+    sid = session.get("user_id")
+    current_user_obj = db.session.get(User, sid) if sid else None
+    active_session = (
+        active_attendance_session_for_user(current_user_obj.id)
+        if current_user_obj
+        else None
+    )
+    attendance_status = (
+        attendance_status_for_session(active_session) if active_session else None
+    )
+    check_in_form = AttendanceCheckInForm()
+    check_out_form = AttendanceCheckOutForm()
+    touch_attendance(current_user_obj.id) if current_user_obj else None
+    return render_template(
+        "hardware_list.html",
+        boxes=boxes,
+        attendance_session=active_session,
+        attendance_status=attendance_status,
+        check_in_form=check_in_form,
+        check_out_form=check_out_form,
+    )
 
 
 @views_bp.route("/logout")
@@ -552,6 +597,7 @@ def download_archive(filename):
 
 
 @views_bp.route("/user/<username>")
+@login_required
 def userpage(username):
     u = User.query.filter_by(username=username).first()
     if not u:
@@ -575,19 +621,37 @@ def userpage(username):
     )
     skipped_all = ticket_count == 0
     # create minimal surface for template
+    active_session = active_attendance_session_for_user(u.id)
+    attendance_status = (
+        attendance_status_for_session(active_session) if active_session else None
+    )
+    if session.get("user_id") == u.id:
+        touch_attendance(u.id)
+
     user_ns = SimpleNamespace(
+        id=u.id,
         username=u.username,
         email=u.email,
+        name=u.name,
         is_admin=u.is_admin,
         tkt=current_ticket,
         all_tkt_assoc_sorted=lambda: [],
     )
-    current_user = user_ns
+    logged_in_user = db.session.get(User, session.get("user_id"))
+    current_user = SimpleNamespace(
+        username=logged_in_user.username if logged_in_user else "",
+        is_admin=bool(logged_in_user.is_admin) if logged_in_user else False,
+        is_anonymous=logged_in_user is None,
+    )
     return render_template(
         "userpage.html",
         user=user_ns,
         current_user=current_user,
         skipped_all=skipped_all,
+        attendance_session=active_session,
+        attendance_status=attendance_status,
+        check_in_form=AttendanceCheckInForm(),
+        check_out_form=AttendanceCheckOutForm(),
     )
 
 
@@ -620,6 +684,12 @@ def getnewticket(username):
         return redirect(url_for("views.userpage", username=username))
 
     t.assign_to(u)
+    record_attendance_activity(
+        u.id,
+        "ticket_claimed",
+        f"Claimed ticket #{t.id} for {t.student_name}.",
+        ticket_id=t.id,
+    )
 
     try:
         from app.routes.queue_events import broadcast_ticket_update
@@ -829,6 +899,12 @@ def pastticket(username, tktid):
         t.wa_id = current_user_obj.id
 
         t.close_ticket(closed_reason=form.resolveReason.data, num_students=num_stds)
+        record_attendance_activity(
+            current_user_obj.id,
+            "ticket_resolved",
+            f"Resolved ticket #{t.id} as {form.resolveReason.data}.",
+            ticket_id=t.id,
+        )
 
         flash("Ticket resolved successfully.", "success")
 

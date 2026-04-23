@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="page">
+        <div class="section generic attendance-dashboard">
+            <h2 class="queue-dashboard-title">
+                Attendance Dashboard
+            </h2>
+            <p class="attendance-helper-text">
+                This view compares scheduled Wormhole shifts with assistant check-ins and recent queue activity.
+            </p>
+
+            <div class="attendance-summary-grid">
+                <div class="attendance-summary-card">
+                    <strong>{{ summary.present }}</strong>
+                    <span>Present</span>
+                </div>
+                <div class="attendance-summary-card">
+                    <strong>{{ summary.idle }}</strong>
+                    <span>Idle</span>
+                </div>
+                <div class="attendance-summary-card">
+                    <strong>{{ summary.stale }}</strong>
+                    <span>Stale</span>
+                </div>
+                <div class="attendance-summary-card">
+                    <strong>{{ summary.missing }}</strong>
+                    <span>Missing</span>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Current Shift Coverage</h3>
+                {% if rows %}
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Assistant</th>
+                                <th>Scheduled Shift</th>
+                                <th>Location</th>
+                                <th>Checked In</th>
+                                <th>Last Active</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                                <tr>
+                                    <td>{{ row.user.name or row.user.username }}</td>
+                                    <td>{{ row.schedule }}</td>
+                                    <td>{{ row.location }}</td>
+                                    <td>
+                                        {% if row.checked_in_at %}
+                                            {{ row.checked_in_at|datetime_pacific("%I:%M %p") }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if row.last_seen_at %}
+                                            {{ row.last_seen_at|datetime_pacific("%I:%M %p") }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="attendance-status attendance-status-{{ row.status_slug }}">
+                                            {{ row.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No active scheduled shifts or checked-in assistants right now.</p>
+                {% endif %}
+            </div>
+
+            <div class="subsection">
+                <h3>Add Recurring Shift</h3>
+                <form action="{{ url_for('attendance.add_shift') }}"
+                      method="post"
+                      class="attendance-shift-form">
+                    {{ shift_form.hidden_tag() }}
+                    <div>
+                        {{ shift_form.user_id.label }}
+                        {{ shift_form.user_id() }}
+                    </div>
+                    <div>
+                        {{ shift_form.day_of_week.label }}
+                        {{ shift_form.day_of_week() }}
+                    </div>
+                    <div>
+                        {{ shift_form.start_time.label }}
+                        {{ shift_form.start_time() }}
+                    </div>
+                    <div>
+                        {{ shift_form.end_time.label }}
+                        {{ shift_form.end_time() }}
+                    </div>
+                    <div>
+                        {{ shift_form.location.label }}
+                        {{ shift_form.location() }}
+                    </div>
+                    <div class="attendance-form-action">
+                        {{ shift_form.submit(class_="btn-primary") }}
+                    </div>
+                </form>
+            </div>
+
+            <div class="subsection">
+                <h3>Active Recurring Schedule</h3>
+                {% if shifts %}
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Assistant</th>
+                                <th>Shift</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for shift in shifts %}
+                                <tr>
+                                    <td>{{ shift.user.name or shift.user.username }}</td>
+                                    <td>{{ format_shift_time_range(shift) }}</td>
+                                    <td>{{ shift.location }}</td>
+                                    <td>
+                                        <form action="{{ url_for('attendance.delete_shift', shift_id=shift.id) }}"
+                                              method="post"
+                                              class="inline-form">
+                                            <button type="submit"
+                                                    class="btn-delete"
+                                                    onclick="return confirm('Remove this recurring shift?');">
+                                                Remove
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No recurring attendance shifts have been added yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="subsection">
+                <h3>Recent Queue Activity</h3>
+                {% if recent_activities %}
+                    <ul class="attendance-activity-list">
+                        {% for activity in recent_activities %}
+                            <li>
+                                <strong>{{ activity.user.name or activity.user.username }}</strong>
+                                — {{ activity.description }}
+                                <span class="attendance-muted">
+                                    {{ activity.created_at|datetime_pacific("%b %d, %I:%M %p") }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No attendance activity has been recorded yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="queue-back-link">
+                <a href="{{ url_for('views.queue') }}">Back to Queue</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
