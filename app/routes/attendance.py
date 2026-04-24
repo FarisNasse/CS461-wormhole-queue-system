@@ -69,7 +69,11 @@ def _validate_csrf_from_request() -> bool:
     if not current_app.config.get("WTF_CSRF_ENABLED", True):
         return True
 
-    token = request.headers.get("X-CSRFToken") or request.form.get("csrf_token")
+    token = (
+        request.headers.get("X-CSRFToken")
+        or request.headers.get("X-CSRF-Token")
+        or request.form.get("csrf_token")
+    )
     if not token:
         return False
 

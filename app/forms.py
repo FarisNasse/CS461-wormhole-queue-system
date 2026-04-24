@@ -168,6 +168,9 @@ class AttendanceShiftDeleteForm(FlaskForm):
 class AttendanceShiftForm(FlaskForm):
     """Admin form for creating recurring scheduled Wormhole shifts."""
 
+    # Choices are still limited to non-admin active assistants in the UI, but
+    # validate_choice=False lets the route perform the authoritative server-side
+    # lookup/rejection for crafted POSTs that submit an admin or unknown user ID.
     user_id = SelectField(
         "Assistant",
         coerce=int,
