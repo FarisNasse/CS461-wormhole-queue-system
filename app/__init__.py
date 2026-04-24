@@ -3,7 +3,7 @@ import os
 from types import SimpleNamespace
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, request, session
+from flask import Flask, current_app, jsonify, redirect, request, session
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
@@ -142,7 +142,10 @@ def create_app(testing=False):
                             is_admin=bool(user.is_admin),
                             is_anonymous=False,
                             username=user.username,
-                        )
+                        ),
+                        "password_reset_enabled": bool(
+                            current_app.config.get("PASSWORD_RESET_ENABLED", False)
+                        ),
                     }
         except Exception:
             pass
@@ -152,10 +155,14 @@ def create_app(testing=False):
                 is_admin=False,
                 is_anonymous=True,
                 username="",
-            )
+            ),
+            "password_reset_enabled": bool(
+                current_app.config.get("PASSWORD_RESET_ENABLED", False)
+            ),
         }
 
     with app.app_context():
-        db.create_all()
+        if testing or app.config.get("TESTING", False):
+            db.create_all()
 
     return app

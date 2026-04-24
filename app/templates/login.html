@@ -30,7 +30,7 @@
                 <p style="text-align:center">
                     {{ form.submit() }}
                 </p>
-                {% if config.get("PASSWORD_RESET_ENABLED") %}
+                {% if password_reset_enabled %}
                     <p style="text-align:center">
                         <a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a>
                     </p>

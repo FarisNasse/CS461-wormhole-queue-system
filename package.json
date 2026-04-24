@@ -2,7 +2,7 @@
   "name": "cs461-wormhole-queue-system",
   "version": "1.0.0",
   "description": "OSU Physics tutoring queue system",
-  "main": "stylelint.config.js",
+  "main": "stylelint.config.cjs",
   "scripts": {
     "lint:html": "htmlhint \"templates/**/*.html\"",
     "lint:css": "stylelint \"app/static/**/*.css\" --ignore-pattern \"**/*.min.css\""
