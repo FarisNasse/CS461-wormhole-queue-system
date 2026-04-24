@@ -74,7 +74,7 @@ def create_app(testing=False):
             and not app.debug
             and request.headers.get("X-Forwarded-Proto", "http").lower() != "https"
         ):
-            return redirect(request.url.replace("http://", "https://", 1), code=301)
+            return redirect(request.url.replace("http://", "https://", 1), code=308)
 
         return None
 
