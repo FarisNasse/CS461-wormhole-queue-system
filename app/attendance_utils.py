@@ -100,8 +100,6 @@ def attendance_status_for_session(session, moment: datetime | None = None) -> st
         return "Checked out"
 
     current_moment = ensure_aware_utc(moment or utc_now())
-    if current_moment is None:
-        return "Stale"
 
     last_seen = ensure_aware_utc(session.last_seen_at)
     if last_seen is None:

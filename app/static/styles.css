@@ -862,15 +862,30 @@
     line-height: 1.6;
 }
 
-.btn-primary {
-    background-color: #d73f09;
-    color: #fff;
+.btn-primary,
+.btn-delete {
     border: 0;
     border-radius: 6px;
     padding: 8px 12px;
     cursor: pointer;
 }
 
-.btn-primary:hover {
+.btn-primary {
+    background-color: #d73f09;
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
     background-color: #b33308;
+}
+
+.btn-delete {
+    background-color: #8c1d40;
+    color: #fff;
+}
+
+.btn-delete:hover,
+.btn-delete:focus {
+    background-color: #66142f;
 }

@@ -630,16 +630,9 @@ def userpage(username):
         tkt=current_ticket,
         all_tkt_assoc_sorted=lambda: [],
     )
-    logged_in_user = db.session.get(User, session.get("user_id"))
-    current_user = SimpleNamespace(
-        username=logged_in_user.username if logged_in_user else "",
-        is_admin=bool(logged_in_user.is_admin) if logged_in_user else False,
-        is_anonymous=logged_in_user is None,
-    )
     return render_template(
         "userpage.html",
         user=user_ns,
-        current_user=current_user,
         skipped_all=skipped_all,
         attendance_session=active_session,
         attendance_status=attendance_status,
