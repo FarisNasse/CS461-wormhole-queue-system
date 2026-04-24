@@ -97,11 +97,17 @@ def attendance_status_for_session(session, moment: datetime | None = None) -> st
     if session.checked_out_at is not None or session.status == "checked_out":
         return "Checked out"
 
-    moment = ensure_aware_utc(moment or utc_now())
-    last_seen = ensure_aware_utc(session.last_seen_at) or ensure_aware_utc(
-        session.checked_in_at
-    )
-    elapsed_minutes = (moment - last_seen).total_seconds() / 60
+    current_moment = ensure_aware_utc(moment or utc_now())
+    assert current_moment is not None
+
+    last_seen = ensure_aware_utc(session.last_seen_at)
+    if last_seen is None:
+        last_seen = ensure_aware_utc(session.checked_in_at)
+
+    if last_seen is None:
+        return "Stale"
+
+    elapsed_minutes = (current_moment - last_seen).total_seconds() / 60
 
     if elapsed_minutes <= ACTIVE_MINUTES:
         return "Present"
