@@ -11,7 +11,7 @@
             </h2>
             {% if user.is_admin %}
                 <div class="queue-admin-actions">
-                    <form action="{{ url_for("views.flush") }}"
+                    <form action="{{ url_for('views.flush') }}"
                           method="post"
                           class="queue-admin-action-form">
                         {{ flush_form.hidden_tag() }}
@@ -21,7 +21,7 @@
                             Flush Queue
                         </button>
                     </form>
-                    <form action="{{ url_for("views.clear_queue") }}"
+                    <form action="{{ url_for('views.clear_queue') }}"
                           method="post"
                           class="queue-admin-action-form">
                         {{ clear_form.hidden_tag() }}
@@ -53,17 +53,29 @@
                         <table class="attendance-table">
                             <thead>
                                 <tr>
-                                    <th>Assistant</th>
-                                    <th>Shift</th>
-                                    <th>Last Active</th>
-                                    <th>Status</th>
+                                    <th>
+                                        Assistant
+                                    </th>
+                                    <th>
+                                        Shift
+                                    </th>
+                                    <th>
+                                        Last Active
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for row in attendance_rows %}
                                     <tr>
-                                        <td>{{ row.user.name or row.user.username }}</td>
-                                        <td>{{ row.schedule }}</td>
+                                        <td>
+                                            {{ row.user.name or row.user.username }}
+                                        </td>
+                                        <td>
+                                            {{ row.schedule }}
+                                        </td>
                                         <td>
                                             {% if row.last_seen_at %}
                                                 {{ row.last_seen_at|datetime_pacific("%I:%M %p") }}
@@ -81,7 +93,9 @@
                             </tbody>
                         </table>
                     {% else %}
-                        <p>No scheduled assistants or checked-in assistants right now.</p>
+                        <p>
+                            No scheduled assistants or checked-in assistants right now.
+                        </p>
                     {% endif %}
                 </div>
             {% endif %}
@@ -128,7 +142,7 @@
                 </ul>
             </div>
             <div class="queue-back-link">
-                <a href="{{ url_for("views.hardware_list") }}">Back to Hardware List</a>
+                <a href="{{ url_for('views.hardware_list') }}">Back to Hardware List</a>
             </div>
         </div>
     </div>

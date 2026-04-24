@@ -2,7 +2,16 @@
 
 from datetime import datetime, timezone
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import (
+    Blueprint,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from app import db
 from app.attendance_utils import (
@@ -36,9 +45,7 @@ def _populate_shift_form_choices(form: AttendanceShiftForm) -> None:
         .all()
     )
     form.user_id.choices = [
-        (user.id, user.name or user.username)
-        for user in users
-        if not user.is_admin
+        (user.id, user.name or user.username) for user in users if not user.is_admin
     ]
 
 
@@ -113,7 +120,9 @@ def check_in():
     db.session.add(attendance_session)
     db.session.flush()
 
-    shift_text = format_shift_time_range(shift) if shift else "no matching scheduled shift"
+    shift_text = (
+        format_shift_time_range(shift) if shift else "no matching scheduled shift"
+    )
     record_attendance_activity(
         user.id,
         "check_in",

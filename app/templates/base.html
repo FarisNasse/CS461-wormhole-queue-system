@@ -27,29 +27,29 @@
                     Oregon State University Wormhole
                 </h1>
                 <div class="navbar">
-                    <a href="{{ url_for("views.index") }}">Home</a>
-                    <a href="{{ url_for("views.create_ticket_page") }}">Submit Request</a>
-                    <a href="{{ url_for("views.livequeue") }}">Live Queue</a>
-                    <a href="{{ url_for("views.wiki") }}">Wiki</a>
+                    <a href="{{ url_for('views.index') }}">Home</a>
+                    <a href="{{ url_for('views.create_ticket_page') }}">Submit Request</a>
+                    <a href="{{ url_for('views.livequeue') }}">Live Queue</a>
+                    <a href="{{ url_for('views.wiki') }}">Wiki</a>
                     <div class="dropdown">
                         <button class="dropbtn">
                             User
                         </button>
                         <div class="dropdown-content">
                             {% if current_user.is_anonymous %}
-                                <a href="{{ url_for("views.assistant_login") }}">Log In</a>
+                                <a href="{{ url_for('views.assistant_login') }}">Log In</a>
                             {% else %}
                                 <a href="{{ url_for('views.userpage', username=current_user.username) }}">Profile</a>
                                 {% if current_user.is_admin %}
                                     <div class = "admin-links">
-                                        <a href="{{ url_for("views.register") }}">Register New User</a>
-                                        <a href="{{ url_for("views.queue") }}">Queue</a>
-                                        <a href="{{ url_for("attendance.dashboard") }}">Attendance</a>
-                                        <a href="{{ url_for("views.archive") }}">Archive</a>
+                                        <a href="{{ url_for('views.register') }}">Register New User</a>
+                                        <a href="{{ url_for('views.queue') }}">Queue</a>
+                                        <a href="{{ url_for('attendance.dashboard') }}">Attendance</a>
+                                        <a href="{{ url_for('views.archive') }}">Archive</a>
                                     </div>
                                 {% endif %}
-                                <a href="{{ url_for("views.hardware_list") }}">Hardware List</a>
-                                <a href="{{ url_for("views.logout") }}">Log Out</a>
+                                <a href="{{ url_for('views.hardware_list') }}">Hardware List</a>
+                                <a href="{{ url_for('views.logout') }}">Log Out</a>
                             {% endif %}
                         </div>
                     </div>

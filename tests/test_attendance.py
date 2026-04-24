@@ -5,7 +5,13 @@ from app.attendance_utils import (
     PACIFIC_TZ,
     attendance_status_for_session,
 )
-from app.models import AttendanceActivity, AttendanceSession, AttendanceShift, Ticket, User
+from app.models import (
+    AttendanceActivity,
+    AttendanceSession,
+    AttendanceShift,
+    Ticket,
+    User,
+)
 
 
 def _login_as(test_client, user):
@@ -55,9 +61,12 @@ def test_attendance_check_in_heartbeat_and_check_out(test_client, test_app):
         attendance_session = AttendanceSession.query.filter_by(user_id=user.id).one()
         assert attendance_session.status == "active"
         assert attendance_session.checked_out_at is None
-        assert AttendanceActivity.query.filter_by(
-            user_id=user.id, activity_type="check_in"
-        ).count() == 1
+        assert (
+            AttendanceActivity.query.filter_by(
+                user_id=user.id, activity_type="check_in"
+            ).count()
+            == 1
+        )
 
         first_seen = attendance_session.last_seen_at
         heartbeat_response = test_client.post("/attendance/heartbeat")
@@ -74,9 +83,12 @@ def test_attendance_check_in_heartbeat_and_check_out(test_client, test_app):
         db.session.refresh(attendance_session)
         assert attendance_session.status == "checked_out"
         assert attendance_session.checked_out_at is not None
-        assert AttendanceActivity.query.filter_by(
-            user_id=user.id, activity_type="check_out"
-        ).count() == 1
+        assert (
+            AttendanceActivity.query.filter_by(
+                user_id=user.id, activity_type="check_out"
+            ).count()
+            == 1
+        )
 
 
 def test_duplicate_check_in_does_not_create_duplicate_active_sessions(
@@ -88,19 +100,27 @@ def test_duplicate_check_in_does_not_create_duplicate_active_sessions(
         _login_as(test_client, user)
 
         first_response = test_client.post("/attendance/check-in", follow_redirects=True)
-        second_response = test_client.post("/attendance/check-in", follow_redirects=True)
+        second_response = test_client.post(
+            "/attendance/check-in", follow_redirects=True
+        )
 
         assert first_response.status_code == 200
         assert second_response.status_code == 200
         assert b"You are already checked in to the Wormhole." in second_response.data
-        assert AttendanceSession.query.filter_by(
-            user_id=user.id,
-            status="active",
-        ).count() == 1
-        assert AttendanceActivity.query.filter_by(
-            user_id=user.id,
-            activity_type="check_in",
-        ).count() == 1
+        assert (
+            AttendanceSession.query.filter_by(
+                user_id=user.id,
+                status="active",
+            ).count()
+            == 1
+        )
+        assert (
+            AttendanceActivity.query.filter_by(
+                user_id=user.id,
+                activity_type="check_in",
+            ).count()
+            == 1
+        )
 
 
 def test_heartbeat_without_active_session_is_safe(test_client, test_app):
@@ -264,7 +284,9 @@ def test_unscheduled_check_in_is_allowed_and_visible_to_admin(test_client, test_
         assistant = _create_user("unscheduled_helper", name="Unscheduled Helper")
         _login_as(test_client, assistant)
 
-        check_in_response = test_client.post("/attendance/check-in", follow_redirects=True)
+        check_in_response = test_client.post(
+            "/attendance/check-in", follow_redirects=True
+        )
         assert check_in_response.status_code == 200
 
         attendance_session = AttendanceSession.query.filter_by(
@@ -340,7 +362,9 @@ def test_ticket_claim_creates_attendance_activity(test_client, test_app):
         _login_as(test_client, user)
 
         test_client.post("/attendance/check-in", follow_redirects=True)
-        response = test_client.get(f"/getnewticket/{user.username}", follow_redirects=False)
+        response = test_client.get(
+            f"/getnewticket/{user.username}", follow_redirects=False
+        )
         assert response.status_code == 302
 
         activity = AttendanceActivity.query.filter_by(

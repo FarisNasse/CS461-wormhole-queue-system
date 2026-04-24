@@ -8,7 +8,6 @@
             <p class="attendance-helper-text">
                 This view compares scheduled Wormhole shifts with assistant check-ins and recent queue activity.
             </p>
-
             <div class="attendance-summary-grid">
                 <div class="attendance-summary-card">
                     <strong>{{ summary.present }}</strong>
@@ -27,27 +26,46 @@
                     <span>Missing</span>
                 </div>
             </div>
-
             <div class="subsection">
-                <h3>Current Shift Coverage</h3>
+                <h3>
+                    Current Shift Coverage
+                </h3>
                 {% if rows %}
                     <table class="attendance-table">
                         <thead>
                             <tr>
-                                <th>Assistant</th>
-                                <th>Scheduled Shift</th>
-                                <th>Location</th>
-                                <th>Checked In</th>
-                                <th>Last Active</th>
-                                <th>Status</th>
+                                <th>
+                                    Assistant
+                                </th>
+                                <th>
+                                    Scheduled Shift
+                                </th>
+                                <th>
+                                    Location
+                                </th>
+                                <th>
+                                    Checked In
+                                </th>
+                                <th>
+                                    Last Active
+                                </th>
+                                <th>
+                                    Status
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for row in rows %}
                                 <tr>
-                                    <td>{{ row.user.name or row.user.username }}</td>
-                                    <td>{{ row.schedule }}</td>
-                                    <td>{{ row.location }}</td>
+                                    <td>
+                                        {{ row.user.name or row.user.username }}
+                                    </td>
+                                    <td>
+                                        {{ row.schedule }}
+                                    </td>
+                                    <td>
+                                        {{ row.location }}
+                                    </td>
                                     <td>
                                         {% if row.checked_in_at %}
                                             {{ row.checked_in_at|datetime_pacific("%I:%M %p") }}
@@ -72,12 +90,15 @@
                         </tbody>
                     </table>
                 {% else %}
-                    <p>No active scheduled shifts or checked-in assistants right now.</p>
+                    <p>
+                        No active scheduled shifts or checked-in assistants right now.
+                    </p>
                 {% endif %}
             </div>
-
             <div class="subsection">
-                <h3>Add Recurring Shift</h3>
+                <h3>
+                    Add Recurring Shift
+                </h3>
                 <form action="{{ url_for('attendance.add_shift') }}"
                       method="post"
                       class="attendance-shift-form">
@@ -107,25 +128,40 @@
                     </div>
                 </form>
             </div>
-
             <div class="subsection">
-                <h3>Active Recurring Schedule</h3>
+                <h3>
+                    Active Recurring Schedule
+                </h3>
                 {% if shifts %}
                     <table class="attendance-table">
                         <thead>
                             <tr>
-                                <th>Assistant</th>
-                                <th>Shift</th>
-                                <th>Location</th>
-                                <th>Action</th>
+                                <th>
+                                    Assistant
+                                </th>
+                                <th>
+                                    Shift
+                                </th>
+                                <th>
+                                    Location
+                                </th>
+                                <th>
+                                    Action
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for shift in shifts %}
                                 <tr>
-                                    <td>{{ shift.user.name or shift.user.username }}</td>
-                                    <td>{{ format_shift_time_range(shift) }}</td>
-                                    <td>{{ shift.location }}</td>
+                                    <td>
+                                        {{ shift.user.name or shift.user.username }}
+                                    </td>
+                                    <td>
+                                        {{ format_shift_time_range(shift) }}
+                                    </td>
+                                    <td>
+                                        {{ shift.location }}
+                                    </td>
                                     <td>
                                         <form action="{{ url_for('attendance.delete_shift', shift_id=shift.id) }}"
                                               method="post"
@@ -142,12 +178,15 @@
                         </tbody>
                     </table>
                 {% else %}
-                    <p>No recurring attendance shifts have been added yet.</p>
+                    <p>
+                        No recurring attendance shifts have been added yet.
+                    </p>
                 {% endif %}
             </div>
-
             <div class="subsection">
-                <h3>Recent Queue Activity</h3>
+                <h3>
+                    Recent Queue Activity
+                </h3>
                 {% if recent_activities %}
                     <ul class="attendance-activity-list">
                         {% for activity in recent_activities %}
@@ -161,10 +200,11 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p>No attendance activity has been recorded yet.</p>
+                    <p>
+                        No attendance activity has been recorded yet.
+                    </p>
                 {% endif %}
             </div>
-
             <div class="queue-back-link">
                 <a href="{{ url_for('views.queue') }}">Back to Queue</a>
             </div>

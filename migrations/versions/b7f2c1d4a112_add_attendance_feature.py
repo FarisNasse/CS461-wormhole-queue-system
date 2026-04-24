@@ -58,7 +58,9 @@ def upgrade():
         sa.Column("status", sa.String(length=20), nullable=False),
         sa.Column("check_in_source", sa.String(length=50), nullable=False),
         sa.Column("notes", sa.String(length=255), nullable=True),
-        sa.ForeignKeyConstraint(["shift_id"], ["attendance_shifts.id"], ondelete="SET NULL"),
+        sa.ForeignKeyConstraint(
+            ["shift_id"], ["attendance_shifts.id"], ondelete="SET NULL"
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -138,7 +140,9 @@ def downgrade():
         batch_op.drop_index(batch_op.f("ix_attendance_activities_user_id"))
         batch_op.drop_index(batch_op.f("ix_attendance_activities_ticket_id"))
         batch_op.drop_index(batch_op.f("ix_attendance_activities_created_at"))
-        batch_op.drop_index(batch_op.f("ix_attendance_activities_attendance_session_id"))
+        batch_op.drop_index(
+            batch_op.f("ix_attendance_activities_attendance_session_id")
+        )
         batch_op.drop_index(batch_op.f("ix_attendance_activities_activity_type"))
     op.drop_table("attendance_activities")
 

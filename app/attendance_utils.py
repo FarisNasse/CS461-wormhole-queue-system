@@ -201,7 +201,9 @@ def build_attendance_dashboard(moment: datetime | None = None):
     for shift in scheduled_now:
         scheduled_user_ids.add(shift.user_id)
         session = sessions_by_user_id.get(shift.user_id)
-        status = attendance_status_for_session(session, moment) if session else "Missing"
+        status = (
+            attendance_status_for_session(session, moment) if session else "Missing"
+        )
         rows.append(
             SimpleNamespace(
                 user=shift.user,

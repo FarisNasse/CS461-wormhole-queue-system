@@ -13,7 +13,14 @@ from wtforms import (
     SubmitField,
     TimeField,
 )
-from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, NumberRange, Optional
+from wtforms.validators import (
+    DataRequired,
+    Email,
+    EqualTo,
+    InputRequired,
+    NumberRange,
+    Optional,
+)
 
 
 def _subtract_months(from_date: date, months: int) -> date:
@@ -138,8 +145,6 @@ class ResolveTicketForm(FlaskForm):
         validators=[DataRequired(message="Please select a reason.")],
     )
     submit = SubmitField("Submit")
-
-
 
 
 class AttendanceCheckInForm(FlaskForm):

@@ -187,6 +187,7 @@ class Skipped(Base):
     def __repr__(self) -> str:
         return f"<User {self.wa_id} skipped Ticket {self.tkt_id}>"
 
+
 class AttendanceShift(Base):
     """Recurring scheduled Wormhole shift for a user.
 
@@ -296,4 +297,3 @@ class AttendanceActivity(Base):
             f"<AttendanceActivity(id={self.id}, user_id={self.user_id}, "
             f"type={self.activity_type})>"
         )
-
