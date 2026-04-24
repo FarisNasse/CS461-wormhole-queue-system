@@ -4,7 +4,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from app import db
-from app.models import Ticket, User
+from app.models import Skipped, Ticket, User
 from app.time_utils import pacific_day_bounds_to_utc
 
 
@@ -674,3 +674,71 @@ def test_resolveticket_forbidden_for_unassigned_user(test_client):
         data={"resolveReason": "helped", "numStds": 1},
     )
     assert response.status_code == 403
+
+def test_resolveticket_helped_closes_assigned_ticket(test_client):
+    user = User(username="resolve_success", email="resolve_success@test.com", is_admin=False)
+    user.set_password("pass")
+    db.session.add(user)
+    db.session.flush()
+
+    ticket = Ticket(
+        student_name="Helped Student",
+        table="T8",
+        physics_course="Ph 211",
+        status="in_progress",
+        wa_id=user.id,
+    )
+    db.session.add(ticket)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    response = test_client.post(
+        f"/api/resolveticket/{ticket.id}",
+        data={"resolveReason": "helped", "numStds": 3},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    db.session.refresh(ticket)
+    assert ticket.status == "closed"
+    assert ticket.closed_reason == "helped"
+    assert ticket.number_of_students == 3
+    assert ticket.closed_at is not None
+
+
+def test_resolveticket_return_to_queue_records_skip(test_client):
+    user = User(username="return_queue", email="return_queue@test.com", is_admin=False)
+    user.set_password("pass")
+    db.session.add(user)
+    db.session.flush()
+
+    ticket = Ticket(
+        student_name="Skipped Student",
+        table="T9",
+        physics_course="Ph 212",
+        status="in_progress",
+        wa_id=user.id,
+    )
+    db.session.add(ticket)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    response = test_client.post(
+        f"/api/resolveticket/{ticket.id}",
+        data={"resolveReason": "return_to_queue", "numStds": 1},
+    )
+
+    assert response.status_code == 302
+    db.session.refresh(ticket)
+    assert ticket.status == "live"
+    assert ticket.wa_id is None
+    assert ticket.wormhole_assistant is None
+
+    skipped = Skipped.query.filter_by(wa_id=user.id, tkt_id=ticket.id).first()
+    assert skipped is not None

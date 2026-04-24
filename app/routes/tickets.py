@@ -139,7 +139,7 @@ def resolve_ticket(ticket_id):
     if resolved_as in {"duplicate", "no_show"}:
         number_students = 0
 
-    ticket.status = "resolved"
+    ticket.status = "closed"
     ticket.closed_reason = resolved_as
     ticket.closed_at = datetime.now(timezone.utc)
     ticket.number_of_students = number_students
