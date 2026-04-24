@@ -175,6 +175,30 @@ def test_admin_can_create_attendance_shift(test_client, test_app):
         assert shift.is_active is True
 
 
+def test_admin_cannot_assign_attendance_shift_to_admin_user(test_client, test_app):
+    """The server should reject crafted requests that schedule admin users."""
+    with test_app.app_context():
+        admin = _create_user("server_shift_admin", is_admin=True)
+        other_admin = _create_user("other_shift_admin", is_admin=True)
+        _login_as(test_client, admin)
+
+        response = test_client.post(
+            "/attendance/shifts/add",
+            data={
+                "user_id": str(other_admin.id),
+                "day_of_week": "0",
+                "start_time": "09:00",
+                "end_time": "17:00",
+                "location": "Wormhole Desk",
+            },
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+        assert b"Admin users cannot be assigned attendance shifts." in response.data
+        assert AttendanceShift.query.filter_by(user_id=other_admin.id).count() == 0
+
+
 def test_non_admin_cannot_create_attendance_shift(test_client, test_app):
     """Regular assistants cannot manage the recurring attendance schedule."""
     with test_app.app_context():

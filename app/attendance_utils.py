@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime, time, timezone
 from types import SimpleNamespace
 
+from sqlalchemy.orm import joinedload
+
 from app import db
 from app.time_utils import PACIFIC_TZ, format_pacific
 
@@ -98,12 +100,12 @@ def attendance_status_for_session(session, moment: datetime | None = None) -> st
         return "Checked out"
 
     current_moment = ensure_aware_utc(moment or utc_now())
-    assert current_moment is not None
+    if current_moment is None:
+        return "Stale"
 
     last_seen = ensure_aware_utc(session.last_seen_at)
     if last_seen is None:
         last_seen = ensure_aware_utc(session.checked_in_at)
-
     if last_seen is None:
         return "Stale"
 
@@ -180,7 +182,11 @@ def build_attendance_dashboard(moment: datetime | None = None):
     local_now = moment.astimezone(PACIFIC_TZ)
 
     active_sessions = (
-        AttendanceSession.query.filter(
+        AttendanceSession.query.options(
+            joinedload(AttendanceSession.user),
+            joinedload(AttendanceSession.shift),
+        )
+        .filter(
             AttendanceSession.status == "active",
             AttendanceSession.checked_out_at.is_(None),
         )
@@ -190,7 +196,8 @@ def build_attendance_dashboard(moment: datetime | None = None):
     sessions_by_user_id = {session.user_id: session for session in active_sessions}
 
     todays_shifts = (
-        AttendanceShift.query.filter_by(
+        AttendanceShift.query.options(joinedload(AttendanceShift.user))
+        .filter_by(
             day_of_week=local_now.weekday(),
             is_active=True,
         )

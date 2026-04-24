@@ -159,10 +159,21 @@ class AttendanceCheckOutForm(FlaskForm):
     submit = SubmitField("Check Out")
 
 
+class AttendanceShiftDeleteForm(FlaskForm):
+    """CSRF-protected form for removing recurring attendance shifts."""
+
+    submit = SubmitField("Remove")
+
+
 class AttendanceShiftForm(FlaskForm):
     """Admin form for creating recurring scheduled Wormhole shifts."""
 
-    user_id = SelectField("Assistant", coerce=int, validators=[InputRequired()])
+    user_id = SelectField(
+    "Assistant",
+    coerce=int,
+    validators=[DataRequired()],
+    validate_choice=False,
+)
     day_of_week = SelectField(
         "Day",
         coerce=int,

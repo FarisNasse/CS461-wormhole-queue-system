@@ -4,6 +4,7 @@
 (function() {
     const script = document.currentScript;
     const heartbeatUrl = script ? script.dataset.heartbeatUrl : null;
+    const csrfToken = script ? script.dataset.csrfToken : null;
 
     if (!heartbeatUrl || !window.fetch) {
         return;
@@ -14,13 +15,19 @@
             return;
         }
 
+        const headers = {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+
+        if (csrfToken) {
+            headers['X-CSRFToken'] = csrfToken;
+        }
+
         fetch(heartbeatUrl, {
             method: 'POST',
             credentials: 'same-origin',
-            headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: headers
         }).catch(function() {
             // Heartbeat failures should not interrupt normal page use.
         });

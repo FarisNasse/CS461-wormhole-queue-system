@@ -1,9 +1,8 @@
 """Routes for Wormhole assistant attendance tracking."""
 
-from datetime import datetime, timezone
-
 from flask import (
     Blueprint,
+    current_app,
     flash,
     jsonify,
     redirect,
@@ -12,6 +11,8 @@ from flask import (
     session,
     url_for,
 )
+from flask_wtf.csrf import validate_csrf
+from sqlalchemy.orm import joinedload
 
 from app import db
 from app.attendance_utils import (
@@ -27,7 +28,12 @@ from app.attendance_utils import (
     utc_now,
 )
 from app.auth_utils import admin_required, login_required
-from app.forms import AttendanceCheckInForm, AttendanceCheckOutForm, AttendanceShiftForm
+from app.forms import (
+    AttendanceCheckInForm,
+    AttendanceCheckOutForm,
+    AttendanceShiftDeleteForm,
+    AttendanceShiftForm,
+)
 from app.models import AttendanceActivity, AttendanceSession, AttendanceShift, User
 
 attendance_bp = Blueprint("attendance", __name__, url_prefix="/attendance")
@@ -58,21 +64,40 @@ def _redirect_back(default_endpoint: str = "views.hardware_list"):
     return redirect(url_for(default_endpoint))
 
 
+def _validate_csrf_from_request() -> bool:
+    """Validate CSRF for AJAX endpoints that cannot use hidden FlaskForm fields."""
+    if not current_app.config.get("WTF_CSRF_ENABLED", True):
+        return True
+
+    token = request.headers.get("X-CSRFToken") or request.form.get("csrf_token")
+    if not token:
+        return False
+
+    try:
+        validate_csrf(token)
+    except Exception:
+        return False
+    return True
+
+
 @attendance_bp.route("/", methods=["GET"])
 @admin_required
 def dashboard():
     shift_form = AttendanceShiftForm()
+    delete_shift_form = AttendanceShiftDeleteForm()
     _populate_shift_form_choices(shift_form)
 
     rows, summary = build_attendance_dashboard()
     shifts = (
         AttendanceShift.query.filter_by(is_active=True)
+        .options(joinedload(AttendanceShift.user))
         .join(User)
         .order_by(AttendanceShift.day_of_week, AttendanceShift.start_time, User.name)
         .all()
     )
     recent_activities = (
-        AttendanceActivity.query.order_by(AttendanceActivity.created_at.desc())
+        AttendanceActivity.query.options(joinedload(AttendanceActivity.user))
+        .order_by(AttendanceActivity.created_at.desc())
         .limit(30)
         .all()
     )
@@ -84,6 +109,7 @@ def dashboard():
         shifts=shifts,
         recent_activities=recent_activities,
         shift_form=shift_form,
+        delete_shift_form=delete_shift_form,
         day_names=DAY_NAMES,
         format_shift_time_range=format_shift_time_range,
     )
@@ -159,7 +185,7 @@ def check_out():
         commit=False,
     )
 
-    now = datetime.now(timezone.utc)
+    now = utc_now()
     attendance_session.checked_out_at = now
     attendance_session.last_seen_at = now
     attendance_session.status = "checked_out"
@@ -172,6 +198,9 @@ def check_out():
 @attendance_bp.route("/heartbeat", methods=["POST"])
 @login_required
 def heartbeat():
+    if not _validate_csrf_from_request():
+        return jsonify({"error": "Invalid or missing CSRF token"}), 400
+
     user = _current_user()
     if not user:
         return jsonify({"error": "Authentication required"}), 401
@@ -214,6 +243,9 @@ def add_shift():
     if not user or not user.is_active:
         flash("Selected assistant could not be found.", "error")
         return redirect(url_for("attendance.dashboard"))
+    if user.is_admin:
+        flash("Admin users cannot be assigned attendance shifts.", "error")
+        return redirect(url_for("attendance.dashboard"))
 
     shift = AttendanceShift(
         user_id=user.id,
@@ -233,6 +265,11 @@ def add_shift():
 @attendance_bp.route("/shifts/<int:shift_id>/delete", methods=["POST"])
 @admin_required
 def delete_shift(shift_id):
+    form = AttendanceShiftDeleteForm()
+    if not form.validate_on_submit():
+        flash("Invalid attendance request or session expired.", "error")
+        return redirect(url_for("attendance.dashboard"))
+
     shift = db.session.get(AttendanceShift, shift_id)
     if not shift:
         flash("Shift not found.", "error")

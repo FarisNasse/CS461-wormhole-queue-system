@@ -73,11 +73,12 @@
         {% endwith %}
         {% block content %}
         {% endblock %}
+        {% if not current_user.is_anonymous %}
+            <script src="{{ url_for('static', filename='js/attendance.js') }}"
+                    data-heartbeat-url="{{ url_for('attendance.heartbeat') }}"
+                    data-csrf-token="{{ csrf_token() }}"></script>
+        {% endif %}
+        {% block body_scripts %}
+        {% endblock %}
     </body>
-    {% if not current_user.is_anonymous %}
-        <script src="{{ url_for('static', filename='js/attendance.js') }}"
-                data-heartbeat-url="{{ url_for('attendance.heartbeat') }}"></script>
-    {% endif %}
-    {% block body_scripts %}
-    {% endblock %}
 </html>

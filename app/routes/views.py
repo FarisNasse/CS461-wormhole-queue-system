@@ -46,7 +46,7 @@ from app.forms import (
     ResolveTicketForm,
     TicketForm,
 )
-from app.models import AttendanceActivity, Skipped, Ticket, User
+from app.models import Skipped, Ticket, User
 from app.time_utils import (
     PACIFIC_TZ,
     format_pacific,
@@ -181,14 +181,8 @@ def queue():
 
     attendance_rows = []
     attendance_summary = None
-    recent_attendance_activities = []
     if current_user_obj.is_admin:
         attendance_rows, attendance_summary = build_attendance_dashboard()
-        recent_attendance_activities = (
-            AttendanceActivity.query.order_by(AttendanceActivity.created_at.desc())
-            .limit(10)
-            .all()
-        )
 
     # Use dedicated CSRF-protected forms for admin queue actions
     flush_form = FlushQueueForm()
@@ -205,7 +199,6 @@ def queue():
         clear_form=clear_form,
         attendance_rows=attendance_rows,
         attendance_summary=attendance_summary,
-        recent_attendance_activities=recent_attendance_activities,
     )
 
 

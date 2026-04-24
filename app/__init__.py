@@ -147,6 +147,12 @@ def create_app(testing=True):
             )
         }
 
+    @app.context_processor
+    def inject_csrf_token():
+        from flask_wtf.csrf import generate_csrf
+
+        return {"csrf_token": generate_csrf}
+
     from app.routes.users import user_bp
 
     app.register_blueprint(user_bp)
