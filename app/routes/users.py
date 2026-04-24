@@ -1,7 +1,16 @@
 import csv
 from io import StringIO
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from sqlalchemy.exc import SQLAlchemyError
 
 from app import db
@@ -13,8 +22,8 @@ user_bp = Blueprint("users", __name__, url_prefix="/api")
 
 
 # route to remove user
-@admin_required
 @user_bp.route("/users_remove", methods=["POST"])
+@admin_required
 def users_remove():
     data = request.get_json()
 
@@ -37,8 +46,8 @@ def users_remove():
 
 
 # route to add user
-@admin_required
 @user_bp.route("/users_add", methods=["POST"])
+@admin_required
 def users_add():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -216,9 +225,12 @@ def users_add_batch():
     return redirect(url_for("views.user_list"))
 
 
-# New JSON API for testing
+# JSON helper for tests only. Production user creation must go through admin-only forms.
 @user_bp.route("/users_add_json", methods=["POST"])
 def api_users_add():
+    if not current_app.config.get("TESTING"):
+        return jsonify({"error": "This endpoint is only available during tests"}), 404
+
     data = request.get_json()
 
     if not data or not all(k in data for k in ["username", "email", "password"]):

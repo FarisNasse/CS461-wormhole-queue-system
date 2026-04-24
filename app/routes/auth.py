@@ -73,12 +73,18 @@ def check_session():
 # -------------------------------
 @auth_bp.route("/reset_password_request", methods=["GET", "POST"])
 def reset_password_request():
+    if not current_app.config.get("PASSWORD_RESET_ENABLED", False):
+        flash(
+            "Password reset is not configured yet. Please contact an administrator.",
+            "info",
+        )
+        return redirect(url_for("views.assistant_login"))
+
     form = ResetPasswordRequestForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            # Variable assignment removed to satisfy Ruff F841 (unused variable)
-            # Actual email sending logic would be implemented here
-            current_app.logger.info(f"Password reset requested for: {form.email.data}")
+            # Email-token delivery should be implemented before enabling this route.
+            current_app.logger.info("Password reset requested for configured account")
         flash(
             "If an account with that email exists, check your inbox for reset instructions.",
             "info",
@@ -92,8 +98,14 @@ def reset_password_request():
 # -------------------------------
 @auth_bp.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
-    # Log the token to satisfy the "unused variable" check
-    current_app.logger.info(f"Password reset page accessed with token: {token}")
+    if not current_app.config.get("PASSWORD_RESET_ENABLED", False):
+        flash(
+            "Password reset is not configured yet. Please contact an administrator.",
+            "info",
+        )
+        return redirect(url_for("views.assistant_login"))
+
+    current_app.logger.info("Password reset page accessed")
     form = ResetPasswordForm()
     if request.method == "POST":
         if not form.validate_on_submit():

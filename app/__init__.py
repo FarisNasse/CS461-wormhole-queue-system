@@ -15,7 +15,7 @@ migrate = Migrate()
 socketio = SocketIO()
 
 
-def create_app(testing=True):
+def create_app(testing=False):
     """
     Create and configure the Flask application instance.
 
@@ -55,6 +55,16 @@ def create_app(testing=True):
         raise RuntimeError(
             "DATABASE_URL must be set for non-testing environments. "
             "Set ALLOW_SQLITE_FALLBACK=1 only for local development."
+        )
+
+    if (
+        not testing
+        and not os.environ.get("SECRET_KEY")
+        and os.environ.get("ALLOW_SQLITE_FALLBACK") != "1"
+    ):
+        raise RuntimeError(
+            "SECRET_KEY must be set for non-testing environments. "
+            "Generate a strong random value and store it as an environment variable."
         )
 
     @app.before_request

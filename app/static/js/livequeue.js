@@ -46,12 +46,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         ? 'IN PROGRESS'
                         : index + 1;
 
-                    row.innerHTML = `
-                        <td>${positionOrStatus}</td>
-                        <td>${ticket.student_name}</td>
-                        <td>${ticket.table}</td>
-                        <td>${ticket.physics_course}</td>
-                    `;
+                    [
+                        positionOrStatus,
+                        ticket.student_name,
+                        ticket.table,
+                        ticket.physics_course
+                    ].forEach(value => {
+                        const cell = document.createElement('td');
+                        cell.textContent = value ?? '';
+                        row.appendChild(cell);
+                    });
 
                     ticketTableBody.appendChild(row);
                 });

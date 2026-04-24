@@ -4,6 +4,17 @@ from app import db
 from app.models import User
 
 
+def login_as_admin(test_client, username="admin_manage"):
+    admin = User(username=username, email=f"{username}@test.com", is_admin=True)
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+    return admin
+
+
 def test_user_add(test_client):
     response = test_client.post(
         "/api/users_add_json",
@@ -34,8 +45,6 @@ def test_user_created_active_by_default(test_client, test_app):
     assert resp.status_code == 201
 
     with test_app.app_context():
-        from app.models import User
-
         u = User.query.filter_by(username=username).first()
         assert u is not None
         assert u.is_active is True
@@ -43,7 +52,7 @@ def test_user_created_active_by_default(test_client, test_app):
 
 def test_user_remove(test_client):
     # create test user first
-    response = test_client.post(
+    test_client.post(
         "/api/users_add_json",
         json={
             "username": "testusername",
@@ -53,6 +62,7 @@ def test_user_remove(test_client):
         },
     )
 
+    login_as_admin(test_client, "admin_remove")
     response = test_client.post("/api/users_remove", json={"username": "testusername"})
     data = response.get_json()
     assert data == {"success": "user removed"}
@@ -87,7 +97,7 @@ def test_user_add_no_email_no_pass_admin(test_client):
 
 
 def test_user_remove_no_email_no_pass_admin(test_client):
-    response = test_client.post(
+    test_client.post(
         "/api/users_add_json",
         json={
             "username": "testusername",
@@ -97,9 +107,16 @@ def test_user_remove_no_email_no_pass_admin(test_client):
         },
     )
 
+    login_as_admin(test_client, "admin_remove_default")
     response = test_client.post("/api/users_remove", json={"username": "testusername"})
     data = response.get_json()
     assert data == {"success": "admin removed"}
+
+
+def test_users_remove_blocks_non_admin(test_client):
+    response = test_client.post("/api/users_remove", json={"username": "missing"})
+    assert response.status_code == 401
+    assert response.get_json() == {"error": "Authentication required"}
 
 
 def test_users_add_batch_csv_creates_non_admin_users(test_client, test_app):

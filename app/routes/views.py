@@ -287,6 +287,7 @@ def create_ticket_page():
 
 
 @views_bp.route("/debug/tickets")
+@admin_required
 def debug_tickets():
     """List all tickets for debugging."""
     from flask import jsonify
@@ -552,17 +553,25 @@ def download_archive(filename):
 
 
 @views_bp.route("/user/<username>")
+@login_required
 def userpage(username):
+    sid = session.get("user_id")
+    current_user_obj = db.session.get(User, sid) if sid else None
+    if not current_user_obj:
+        abort(401)
+
     u = User.query.filter_by(username=username).first()
     if not u:
         abort(404)
+    if current_user_obj.username != username and not current_user_obj.is_admin:
+        abort(403)
     # Get user's current ticket (if any)
     current_ticket = Ticket.query.filter_by(wa_id=u.id, status="in_progress").first()
     # All Skipped?
     # Get IDs of tickets already skipped by the current user
     skipped_subquery = (
         db.session.query(Skipped.tkt_id)
-        .filter(Skipped.wa_id == session["user_id"])
+        .filter(Skipped.wa_id == current_user_obj.id)
         .subquery()
         .select()
     )
@@ -582,11 +591,15 @@ def userpage(username):
         tkt=current_ticket,
         all_tkt_assoc_sorted=lambda: [],
     )
-    current_user = user_ns
+    current_user_ns = SimpleNamespace(
+        username=current_user_obj.username,
+        email=current_user_obj.email,
+        is_admin=current_user_obj.is_admin,
+    )
     return render_template(
         "userpage.html",
         user=user_ns,
-        current_user=current_user,
+        current_user=current_user_ns,
         skipped_all=skipped_all,
     )
 
@@ -594,15 +607,24 @@ def userpage(username):
 @views_bp.route("/getnewticket/<username>")
 @login_required
 def getnewticket(username):
-    # Assign the next available live ticket to the given user and redirect
+    # Assign the next available live ticket to the requested user and redirect.
+    # Regular assistants may only claim tickets for themselves; admins may claim
+    # tickets on behalf of another assistant.
+    sid = session.get("user_id")
+    current_user_obj = db.session.get(User, sid) if sid else None
+    if not current_user_obj:
+        abort(401)
+
     u = User.query.filter_by(username=username).first()
     if not u:
         abort(404)
+    if current_user_obj.username != username and not current_user_obj.is_admin:
+        abort(403)
 
-    # Get IDs of tickets already skipped by the current user
+    # Get IDs of tickets already skipped by the target user
     skipped_subquery = (
         db.session.query(Skipped.tkt_id)
-        .filter(Skipped.wa_id == session["user_id"])
+        .filter(Skipped.wa_id == u.id)
         .subquery()
         .select()
     )
@@ -791,9 +813,17 @@ def changepass():
 @login_required
 def currentticket(tktid):
     # Use session.get for SQLAlchemy 2.0 compliance
+    sid = session.get("user_id")
+    current_user_obj = db.session.get(User, sid) if sid else None
+    if not current_user_obj:
+        abort(401)
+
     t = db.session.get(Ticket, tktid)
     if not t:
         abort(404)
+    if t.wa_id != current_user_obj.id and not current_user_obj.is_admin:
+        abort(403)
+
     form = ResolveTicketForm()
     ticket_ns = _ticket_to_ns(t)
     return render_template("currentticket.html", ticket=ticket_ns, form=form)
@@ -824,6 +854,16 @@ def pastticket(username, tktid):
         # Delegate closing logic to the model method
         # Standardize num_stds retrieval logic
         num_stds = form.numStds.data if form.numStds.data is not None else 1
+
+        if form.resolveReason.data == "return_to_queue":
+            flash(
+                "Return to queue is only available for current in-progress tickets.",
+                "error",
+            )
+            return (
+                render_template("pastticket.html", ticket=_ticket_to_ns(t), form=form),
+                400,
+            )
 
         # Persist the user performing the close so history can show who resolved it.
         t.wa_id = current_user_obj.id

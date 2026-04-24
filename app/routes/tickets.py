@@ -1,9 +1,11 @@
 # /app/routes/tickets.py
 from datetime import datetime, timezone
 
-from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
+from flask import Blueprint, abort, flash, jsonify, redirect, request, session, url_for
 
 from app import db
+from app.auth_utils import admin_required, login_required
+from app.forms import ResolveTicketForm
 from app.models import Skipped, Ticket, User
 from app.routes.queue_events import broadcast_ticket_update
 
@@ -12,6 +14,7 @@ tickets_bp = Blueprint("tickets", __name__, url_prefix="/api")
 
 # GET: API route to get all tickets
 @tickets_bp.route("/tickets", methods=["GET"])
+@admin_required
 def get_tickets():
     tickets = Ticket.query.all()
     return jsonify([t.to_dict() for t in tickets])
@@ -49,6 +52,7 @@ def create_ticket():
 
 # GET: API route to get all open tickets that the current user has not skipped
 @tickets_bp.route("/unskippedtickets", methods=["GET"])
+@login_required
 def get_unskipped_tickets():
     # skipped_subquery = get all tickets skipped by current user
     # get all live tickets not
@@ -76,6 +80,7 @@ def get_unskipped_tickets():
 
 # GET: API route to get all open tickets
 @tickets_bp.route("/opentickets", methods=["GET"])
+@login_required
 def get_open_tickets():
     # Get all live tickets
     tickets = Ticket.query.filter_by(status="live").all()
@@ -97,74 +102,59 @@ def get_livequeue_tickets():
 
 # API route to handle ticket resolution form submission
 @tickets_bp.route("/resolveticket/<int:ticket_id>", methods=["POST"])
+@login_required
 def resolve_ticket(ticket_id):
-    user = User.query.get(session["user_id"])
-    resolved_as = request.form.get("resolve")
-    number_students = request.form.get("numstudents")
+    user = db.session.get(User, session["user_id"])
+    ticket = db.session.get(Ticket, ticket_id)
 
-    if resolved_as not in ["duplicate", "helped", "no_show", "return_to_queue"]:
-        flash("Invalid resolution option selected.", "error")
+    if not user:
+        abort(401)
+    if not ticket:
+        abort(404)
+    if ticket.wa_id != user.id and not user.is_admin:
+        abort(403)
+
+    form = ResolveTicketForm()
+    form.resolveReason.choices = [
+        *form.resolveReason.choices,
+        ("return_to_queue", "Return To Queue"),
+    ]
+    if not form.validate_on_submit():
+        flash("Invalid request or session expired.", "error")
         return redirect(url_for("views.currentticket", tktid=ticket_id))
-    elif resolved_as == "duplicate":
-        ticket = Ticket.query.get(ticket_id)
-        if ticket:
-            ticket.status = "resolved"
-            ticket.closed_reason = "duplicate"
-            ticket.closed_at = datetime.now(timezone.utc)
-            ticket.number_of_students = 0
-            db.session.commit()
-            broadcast_ticket_update(ticket.id)
-            flash("Ticket marked as duplicate and resolved successfully", "success")
-            return redirect(url_for("views.userpage", username=user.username))
-        else:
-            flash("Ticket not found", "error")
-            return redirect(url_for("views.userpage", username=user.username))
-    elif resolved_as == "helped":
-        ticket = Ticket.query.get(ticket_id)
-        if ticket:
-            ticket.status = "resolved"
-            ticket.closed_reason = "helped"
-            ticket.closed_at = datetime.now(timezone.utc)
-            ticket.number_of_students = number_students
-            db.session.commit()
-            broadcast_ticket_update(ticket.id)
-            flash(
-                f"Ticket marked as helped and resolved successfully ({number_students} students)",
-                "success",
-            )
-            return redirect(url_for("views.userpage", username=user.username))
-        else:
-            flash("Ticket not found", "error")
-            return redirect(url_for("views.userpage", username=user.username))
-    elif resolved_as == "no_show":
-        ticket = Ticket.query.get(ticket_id)
-        if ticket:
-            ticket.status = "resolved"
-            ticket.closed_reason = "no_show"
-            ticket.closed_at = datetime.now(timezone.utc)
-            ticket.number_of_students = 0
-            db.session.commit()
-            broadcast_ticket_update(ticket.id)
-            flash("Ticket marked as no show and resolved successfully", "success")
-            return redirect(url_for("views.userpage", username=user.username))
-        else:
-            flash("Ticket not found", "error")
-            return redirect(url_for("views.userpage", username=user.username))
-    elif resolved_as == "return_to_queue":
-        ticket = Ticket.query.get(ticket_id)
-        if ticket:
-            ticket.status = "live"
-            ticket.wa_id = None
-            ticket.wormhole_assistant = None
-            db.session.commit()
-            broadcast_ticket_update(ticket.id)
 
-            skipped = Skipped(wa_id=user.id, tkt_id=ticket_id)
-            db.session.add(skipped)
-            db.session.commit()
+    resolved_as = form.resolveReason.data
+    number_students = form.numStds.data if form.numStds.data is not None else 1
 
-            flash("Ticket skipped and will be handled by another wormhole assistant")
-            return redirect(url_for("views.userpage", username=user.username))
-        else:
-            flash("Ticket not found", "error")
-            return redirect(url_for("views.userpage", username=user.username))
+    if resolved_as == "return_to_queue":
+        ticket.status = "live"
+        ticket.wa_id = None
+        ticket.wormhole_assistant = None
+        db.session.add(Skipped(wa_id=user.id, tkt_id=ticket_id))
+        db.session.commit()
+        broadcast_ticket_update(ticket.id)
+        flash("Ticket returned to the queue for another assistant.", "info")
+        return redirect(url_for("views.userpage", username=user.username))
+
+    if resolved_as in {"duplicate", "no_show"}:
+        number_students = 0
+
+    ticket.status = "resolved"
+    ticket.closed_reason = resolved_as
+    ticket.closed_at = datetime.now(timezone.utc)
+    ticket.number_of_students = number_students
+    db.session.commit()
+    broadcast_ticket_update(ticket.id)
+
+    if resolved_as == "helped":
+        flash(
+            f"Ticket marked as helped and resolved successfully ({number_students} students)",
+            "success",
+        )
+    else:
+        flash(
+            f"Ticket marked as {resolved_as.replace('_', ' ')} and resolved successfully",
+            "success",
+        )
+
+    return redirect(url_for("views.userpage", username=user.username))
