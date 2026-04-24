@@ -644,8 +644,12 @@ def test_getnewticket_forbidden_for_other_user(test_client):
 
 
 def test_resolveticket_forbidden_for_unassigned_user(test_client):
-    owner = User(username="resolve_owner", email="resolve_owner@test.com", is_admin=False)
-    other = User(username="resolve_other", email="resolve_other@test.com", is_admin=False)
+    owner = User(
+        username="resolve_owner", email="resolve_owner@test.com", is_admin=False
+    )
+    other = User(
+        username="resolve_other", email="resolve_other@test.com", is_admin=False
+    )
     owner.set_password("pass")
     other.set_password("pass")
     db.session.add_all([owner, other])

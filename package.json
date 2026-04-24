@@ -5,7 +5,7 @@
   "main": "stylelint.config.js",
   "scripts": {
     "lint:html": "htmlhint \"templates/**/*.html\"",
-    "lint:css": "stylelint \"static/**/*.css\""
+    "lint:css": "stylelint \"app/static/**/*.css\" --ignore-pattern \"**/*.min.css\""
   },
   "keywords": [],
   "author": "",
