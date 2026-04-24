@@ -1,7 +1,9 @@
+# app/__init__.py
 import os
+from types import SimpleNamespace
 
 from dotenv import load_dotenv
-from flask import Flask, redirect, request
+from flask import Flask, jsonify, redirect, request, session
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
@@ -31,6 +33,7 @@ def create_app(testing=False):
             SESSION_COOKIE_SECURE=False,
             FORCE_HTTPS=False,
             ENABLE_HSTS=False,
+            PREFERRED_URL_SCHEME="http",
         )
 
     database_url = app.config.get("SQLALCHEMY_DATABASE_URI")
@@ -62,11 +65,14 @@ def create_app(testing=False):
 
     @app.before_request
     def enforce_https():
+        if request.path == "/health":
+            return None
+
         if (
             app.config.get("FORCE_HTTPS", False)
             and not request.is_secure
             and not app.debug
-            and request.headers.get("X-Forwarded-Proto", "http") != "https"
+            and request.headers.get("X-Forwarded-Proto", "http").lower() != "https"
         ):
             return redirect(request.url.replace("http://", "https://", 1), code=301)
 
@@ -100,6 +106,13 @@ def create_app(testing=False):
     migrate.init_app(app, db)
     socketio.init_app(app)
 
+    from app.time_utils import format_pacific, serialize_datetime
+
+    app.jinja_env.filters["datetime_pacific"] = format_pacific
+    app.jinja_env.filters["iso_datetime_pacific"] = serialize_datetime
+
+    from app import models  # noqa: F401
+    from app.routes import queue_events  # noqa: F401
     from app.routes.auth import auth_bp
     from app.routes.error import error_bp
     from app.routes.tickets import tickets_bp
@@ -112,10 +125,35 @@ def create_app(testing=False):
     app.register_blueprint(user_bp)
     app.register_blueprint(views_bp)
 
-    from app.time_utils import datetime_pacific, iso_datetime_pacific
+    @app.route("/health")
+    def health_check():
+        return jsonify({"message": "Wormhole Queue System API is running"}), 200
 
-    app.jinja_env.filters["datetime_pacific"] = datetime_pacific
-    app.jinja_env.filters["iso_datetime_pacific"] = iso_datetime_pacific
+    @app.context_processor
+    def inject_current_user():
+        try:
+            if "user_id" in session:
+                from app.models import User
+
+                user = db.session.get(User, session["user_id"])
+                if user:
+                    return {
+                        "current_user": SimpleNamespace(
+                            is_admin=bool(user.is_admin),
+                            is_anonymous=False,
+                            username=user.username,
+                        )
+                    }
+        except Exception:
+            pass
+
+        return {
+            "current_user": SimpleNamespace(
+                is_admin=False,
+                is_anonymous=True,
+                username="",
+            )
+        }
 
     with app.app_context():
         db.create_all()
