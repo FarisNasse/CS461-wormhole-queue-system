@@ -75,7 +75,8 @@ def admin_required(f):
             session.clear()
             return _auth_error("Authentication required", 401)
 
-        if not session.get("is_admin", False):
+        session["is_admin"] = user.is_admin
+        if not user.is_admin:
             return _auth_error("Admin access required", 403)
 
         return f(*args, **kwargs)
