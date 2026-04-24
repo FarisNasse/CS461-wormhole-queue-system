@@ -675,8 +675,11 @@ def test_resolveticket_forbidden_for_unassigned_user(test_client):
     )
     assert response.status_code == 403
 
+
 def test_resolveticket_helped_closes_assigned_ticket(test_client):
-    user = User(username="resolve_success", email="resolve_success@test.com", is_admin=False)
+    user = User(
+        username="resolve_success", email="resolve_success@test.com", is_admin=False
+    )
     user.set_password("pass")
     db.session.add(user)
     db.session.flush()
