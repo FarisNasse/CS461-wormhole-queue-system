@@ -495,6 +495,20 @@
     display: inline-flex;
 }
 
+.btn-delete {
+    background-color: #8c1d40;
+    color: #fff;
+    border: 0;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.btn-delete:hover,
+.btn-delete:focus {
+    background-color: #66142f;
+}
+
 .queue-admin-actions .btn-delete {
     padding: 5px 10px;
     min-height: 30px;
@@ -862,14 +876,6 @@
     line-height: 1.6;
 }
 
-.btn-primary,
-.btn-delete {
-    border: 0;
-    border-radius: 6px;
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
 .btn-primary {
     background-color: #d73f09;
     color: #fff;
@@ -880,12 +886,3 @@
     background-color: #b33308;
 }
 
-.btn-delete {
-    background-color: #8c1d40;
-    color: #fff;
-}
-
-.btn-delete:hover,
-.btn-delete:focus {
-    background-color: #66142f;
-}
