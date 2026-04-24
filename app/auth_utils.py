@@ -25,9 +25,10 @@ def _prefers_json_error() -> bool:
         return True
 
     accept = request.accept_mimetypes
-    if not accept or not accept.best:
-        # Flask's test client and some non-browser clients send no Accept header.
-        # Preserve the previous JSON behavior for those callers.
+    if not accept or not accept.best or accept.best == "*/*":
+        # Flask's test client and some non-browser clients often send no
+        # specific Accept preference (including */*). Preserve the previous
+        # JSON behavior for those callers.
         return True
 
     return (
