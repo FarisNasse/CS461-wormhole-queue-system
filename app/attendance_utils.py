@@ -99,7 +99,12 @@ def attendance_status_for_session(session, moment: datetime | None = None) -> st
     if session.checked_out_at is not None or session.status == "checked_out":
         return "Checked out"
 
-    current_moment = ensure_aware_utc(moment or utc_now())
+    current_moment = moment if moment is not None else utc_now()
+    current_moment = (
+        current_moment.astimezone(timezone.utc)
+        if current_moment.tzinfo
+        else current_moment.replace(tzinfo=timezone.utc)
+    )
 
     last_seen = ensure_aware_utc(session.last_seen_at)
     if last_seen is None:
