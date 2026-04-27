@@ -1,9 +1,14 @@
-# CS461-wormhole-queue-system
-OSU Physics tutoring queue system
-
+# The Wormhole Tutoring Center Web Center
 A queue managment system used by the OSU physics tutoring center ("The Wormhole") to manage student help reuests both in-person and online.
 
-Link to Trello Board https://trello.com/b/AgTzsBAH/cs461-wormhole-queue-system
+## How it works
+* Tickets get submitted by students
+* Wormhole assistants log in to their accounts and manage the queue
+* Admins monitor activity and analyze archives of tickets
+
+## Go There!
+<https://wormhole.physics.oregonstate.edu/>
+Accessible on any device with a web browser
 
 ## Team Members
 - Faris Nasse
