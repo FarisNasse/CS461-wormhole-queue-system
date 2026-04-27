@@ -11,9 +11,12 @@ A queue managment system used by the OSU physics tutoring center ("The Wormhole"
 Accessible on any device with a web browser
 
 ## Team Members
-- Faris Nasse
-- Graham Glazner
-- Jonathan Hotchkiss
+- Faris Nasse can be found at 
+<https://github.com/FarisNasse>
+- Graham Glazner can be found at 
+<https://github.com/GrahamAtOSU>
+- Jonathan Hotchkiss can be found at 
+<https://github.com/hotchkjo>
 - Alexey Leeper
 
 
