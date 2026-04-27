@@ -4,7 +4,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from app import db
-from app.models import Ticket, User
+from app.models import Skipped, Ticket, User
 from app.time_utils import pacific_day_bounds_to_utc
 
 
@@ -420,6 +420,18 @@ def test_flash_message_category_rendering(test_client):
 
 def test_register_error_keeps_form_values_and_shows_suggestion(test_client):
     """Registration errors should keep entered values and provide guidance."""
+    admin = User(
+        username="admin_register_error",
+        email="admin_error@test.com",
+        is_admin=True,
+    )
+    admin.set_password("pass")
+    db.session.add(admin)
+    db.session.commit()
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
     response = test_client.post(
         "/api/users_add",
         data={"first_name": "Jane", "last_name": "Doe", "onid": ""},
@@ -470,6 +482,7 @@ def test_currentticket_displays_pacific_time(test_client):
     user = User(username="pacific_helper", email="pacific@test.com", is_admin=False)
     user.set_password("pass")
     db.session.add(user)
+    db.session.flush()
 
     t = Ticket(
         student_name="Time Test",
@@ -576,3 +589,159 @@ def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
 
     if not existed_before:
         expected_file.unlink()
+
+
+def test_debug_tickets_requires_admin(test_client):
+    response = test_client.get("/debug/tickets")
+    assert response.status_code == 401
+
+
+def test_get_tickets_requires_admin(test_client):
+    response = test_client.get("/api/tickets")
+    assert response.status_code == 401
+
+
+def test_currentticket_forbidden_for_unassigned_user(test_client):
+    owner = User(username="ticket_owner", email="owner_ticket@test.com", is_admin=False)
+    other = User(username="ticket_other", email="other_ticket@test.com", is_admin=False)
+    owner.set_password("pass")
+    other.set_password("pass")
+    db.session.add_all([owner, other])
+    db.session.flush()
+
+    t = Ticket(
+        student_name="Protected",
+        table="T4",
+        physics_course="Ph 211",
+        status="in_progress",
+        wa_id=owner.id,
+    )
+    db.session.add(t)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = other.id
+        sess["is_admin"] = False
+
+    response = test_client.get(f"/currentticket/{t.id}")
+    assert response.status_code == 403
+
+
+def test_getnewticket_forbidden_for_other_user(test_client):
+    owner = User(username="claim_owner", email="claim_owner@test.com", is_admin=False)
+    other = User(username="claim_other", email="claim_other@test.com", is_admin=False)
+    owner.set_password("pass")
+    other.set_password("pass")
+    db.session.add_all([owner, other])
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = owner.id
+        sess["is_admin"] = False
+
+    response = test_client.get("/getnewticket/claim_other")
+    assert response.status_code == 403
+
+
+def test_resolveticket_forbidden_for_unassigned_user(test_client):
+    owner = User(
+        username="resolve_owner", email="resolve_owner@test.com", is_admin=False
+    )
+    other = User(
+        username="resolve_other", email="resolve_other@test.com", is_admin=False
+    )
+    owner.set_password("pass")
+    other.set_password("pass")
+    db.session.add_all([owner, other])
+    db.session.flush()
+
+    t = Ticket(
+        student_name="Resolve Protected",
+        table="T5",
+        physics_course="Ph 211",
+        status="in_progress",
+        wa_id=owner.id,
+    )
+    db.session.add(t)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = other.id
+        sess["is_admin"] = False
+
+    response = test_client.post(
+        f"/api/resolveticket/{t.id}",
+        data={"resolveReason": "helped", "numStds": 1},
+    )
+    assert response.status_code == 403
+
+
+def test_resolveticket_helped_closes_assigned_ticket(test_client):
+    user = User(
+        username="resolve_success", email="resolve_success@test.com", is_admin=False
+    )
+    user.set_password("pass")
+    db.session.add(user)
+    db.session.flush()
+
+    ticket = Ticket(
+        student_name="Helped Student",
+        table="T8",
+        physics_course="Ph 211",
+        status="in_progress",
+        wa_id=user.id,
+    )
+    db.session.add(ticket)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    response = test_client.post(
+        f"/api/resolveticket/{ticket.id}",
+        data={"resolveReason": "helped", "numStds": 3},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    db.session.refresh(ticket)
+    assert ticket.status == "closed"
+    assert ticket.closed_reason == "helped"
+    assert ticket.number_of_students == 3
+    assert ticket.closed_at is not None
+
+
+def test_resolveticket_return_to_queue_records_skip(test_client):
+    user = User(username="return_queue", email="return_queue@test.com", is_admin=False)
+    user.set_password("pass")
+    db.session.add(user)
+    db.session.flush()
+
+    ticket = Ticket(
+        student_name="Skipped Student",
+        table="T9",
+        physics_course="Ph 212",
+        status="in_progress",
+        wa_id=user.id,
+    )
+    db.session.add(ticket)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = user.id
+        sess["is_admin"] = False
+
+    response = test_client.post(
+        f"/api/resolveticket/{ticket.id}",
+        data={"resolveReason": "return_to_queue", "numStds": 1},
+    )
+
+    assert response.status_code == 302
+    db.session.refresh(ticket)
+    assert ticket.status == "live"
+    assert ticket.wa_id is None
+    assert ticket.wormhole_assistant is None
+
+    skipped = Skipped.query.filter_by(wa_id=user.id, tkt_id=ticket.id).first()
+    assert skipped is not None

@@ -1,7 +1,9 @@
 # app/__init__.py
 import os
+from types import SimpleNamespace
 
-from flask import Flask, jsonify, redirect, request
+from dotenv import load_dotenv
+from flask import Flask, current_app, jsonify, redirect, request, session
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
@@ -9,47 +11,42 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config
 
-# Extensions are initialized at the top level
+load_dotenv()
+
 db = SQLAlchemy()
 migrate = Migrate()
 socketio = SocketIO()
 
 
-def create_app(testing=True):
-    """
-    Create and configure the Flask application instance.
-
-    Parameters
-    ----------
-    testing : bool, optional
-        If True, configure the application for testing. This enables
-        Flask's testing mode, uses an in-memory SQLite database, disables
-        CSRF protection, and sets a deterministic secret key.
-
-    Returns
-    -------
-    Flask
-        The configured Flask application instance.
-    """
+def create_app(testing=False):
     app = Flask(__name__)
-
-    # ---------------------------------------------------
-    # Configuration
-    # ---------------------------------------------------
-    app.config.from_object(Config)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
+    app.config.from_object(Config)
+
     if testing:
-        app.config["TESTING"] = True
-        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-        app.config["WTF_CSRF_ENABLED"] = False
-        app.config["SECRET_KEY"] = "test-secret"
-        app.config["SESSION_COOKIE_SECURE"] = False
-        app.config["FORCE_HTTPS"] = False
-        app.config["ENABLE_HSTS"] = False
-        app.config["PREFERRED_URL_SCHEME"] = "http"
-    elif (
-        not os.environ.get("DATABASE_URL")
+        app.config.update(
+            TESTING=True,
+            SECRET_KEY="test-secret",
+            WTF_CSRF_ENABLED=False,
+            SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",
+            SESSION_COOKIE_SECURE=False,
+            FORCE_HTTPS=False,
+            ENABLE_HSTS=False,
+            PREFERRED_URL_SCHEME="http",
+        )
+
+    database_url = app.config.get("SQLALCHEMY_DATABASE_URI")
+
+    if not testing and database_url == "sqlite:///:memory:":
+        raise RuntimeError(
+            "Refusing to start non-testing app with in-memory SQLite. "
+            "Set DATABASE_URL, or explicitly set ALLOW_SQLITE_FALLBACK=1 for local development."
+        )
+
+    if (
+        not testing
+        and not os.environ.get("DATABASE_URL")
         and os.environ.get("ALLOW_SQLITE_FALLBACK") != "1"
     ):
         raise RuntimeError(
@@ -57,96 +54,115 @@ def create_app(testing=True):
             "Set ALLOW_SQLITE_FALLBACK=1 only for local development."
         )
 
+    if not testing:
+        secret_key = app.config.get("SECRET_KEY")
+        if not secret_key or secret_key == "dev-secret-key":
+            raise RuntimeError(
+                "SECRET_KEY must be set to a strong non-default value for non-testing "
+                "environments. Generate a strong random value and store it as an "
+                "environment variable."
+            )
+
     @app.before_request
     def enforce_https():
-        if not app.config.get("FORCE_HTTPS", False):
-            return None
         if request.path == "/health":
             return None
-        if request.is_secure:
-            return None
-        if request.headers.get("X-Forwarded-Proto", "http").lower() == "https":
-            return None
-        return redirect(request.url.replace("http://", "https://", 1), code=308)
+
+        if (
+            app.config.get("FORCE_HTTPS", False)
+            and not request.is_secure
+            and not app.debug
+            and request.headers.get("X-Forwarded-Proto", "http").lower() != "https"
+        ):
+            return redirect(request.url.replace("http://", "https://", 1), code=308)
+
+        return None
 
     @app.after_request
-    def add_security_headers(response):
+    def set_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        response.headers.setdefault(
+            "Referrer-Policy", "strict-origin-when-cross-origin"
+        )
+        response.headers.setdefault(
+            "Permissions-Policy",
+            "geolocation=(), microphone=(), camera=()",
+        )
+
+        csp = app.config.get("CONTENT_SECURITY_POLICY")
+        if csp:
+            response.headers.setdefault("Content-Security-Policy", csp)
+
         if app.config.get("ENABLE_HSTS", False) and request.is_secure:
-            response.headers[
-                "Strict-Transport-Security"
-            ] = "max-age=31536000; includeSubDomains"
+            response.headers.setdefault(
+                "Strict-Transport-Security",
+                "max-age=31536000; includeSubDomains",
+            )
+
         return response
 
-    # ---------------------------------------------------
-    # Initialize Extensions
-    # ---------------------------------------------------
     db.init_app(app)
     migrate.init_app(app, db)
-    socketio.init_app(app, cors_allowed_origins="*")
+    socketio.init_app(app)
 
-    from app.time_utils import format_pacific
+    from app.time_utils import format_pacific, serialize_datetime
 
-    app.add_template_filter(format_pacific, "datetime_pacific")
+    app.jinja_env.filters["datetime_pacific"] = format_pacific
+    app.jinja_env.filters["iso_datetime_pacific"] = serialize_datetime
 
-    # ---------------------------------------------------
-    # Internal Imports & Registration
-    # ---------------------------------------------------
-    # Moving these inside create_app prevents circular imports and E402 errors.
-    # The '# noqa: F401' tells Ruff that although the import isn't used directly
-    # in this file, it is intentional (for registering models and events).
     from app import models  # noqa: F401
     from app.routes import queue_events  # noqa: F401
     from app.routes.auth import auth_bp
     from app.routes.error import error_bp
     from app.routes.tickets import tickets_bp
+    from app.routes.users import user_bp
     from app.routes.views import views_bp
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(views_bp)
-    app.register_blueprint(tickets_bp)
     app.register_blueprint(error_bp)
+    app.register_blueprint(tickets_bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(views_bp)
 
-    # ---------------------------------------------------
-    # Health Check Route
-    # ---------------------------------------------------
     @app.route("/health")
     def health_check():
         return jsonify({"message": "Wormhole Queue System API is running"}), 200
 
-    # ---------------------------------------------------
-    # Template context processors
-    # ---------------------------------------------------
-    from types import SimpleNamespace
-
     @app.context_processor
     def inject_current_user():
-        from flask import session
-
         try:
             if "user_id" in session:
                 from app.models import User
 
-                u = db.session.get(User, session["user_id"])
-                if u:
+                user = db.session.get(User, session["user_id"])
+                if user:
                     return {
                         "current_user": SimpleNamespace(
-                            is_admin=bool(u.is_admin),
+                            is_admin=bool(user.is_admin),
                             is_anonymous=False,
-                            username=u.username,
-                        )
+                            username=user.username,
+                        ),
+                        "password_reset_enabled": bool(
+                            current_app.config.get("PASSWORD_RESET_ENABLED", False)
+                        ),
                     }
         except Exception:
-            # keep silent on DB errors; fall back to anonymous
             pass
 
         return {
             "current_user": SimpleNamespace(
-                is_admin=False, is_anonymous=True, username=""
-            )
+                is_admin=False,
+                is_anonymous=True,
+                username="",
+            ),
+            "password_reset_enabled": bool(
+                current_app.config.get("PASSWORD_RESET_ENABLED", False)
+            ),
         }
 
-    from app.routes.users import user_bp
-
-    app.register_blueprint(user_bp)
+    with app.app_context():
+        if testing or app.config.get("TESTING", False):
+            db.create_all()
 
     return app

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="page">
+        <div class="section tickets">
+            <br />
+            <h2>
+                Sign In Required
+            </h2>
+            <p>
+                {{ message }}
+            </p>
+            <p>
+                <a href="{{ login_url }}">Go to assistant login</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

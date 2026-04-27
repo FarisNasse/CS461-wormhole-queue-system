@@ -30,9 +30,11 @@
                 <p style="text-align:center">
                     {{ form.submit() }}
                 </p>
-                <p style="text-align:center">
-                    <a href="{{ url_for("auth.reset_password_request") }}">Reset Password</a>
-                </p>
+                {% if password_reset_enabled %}
+                    <p style="text-align:center">
+                        <a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a>
+                    </p>
+                {% endif %}
             </form>
         </div>
     </div>

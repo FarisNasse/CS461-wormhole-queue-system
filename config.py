@@ -17,6 +17,7 @@ class Config:
     PREFERRED_URL_SCHEME = os.environ.get("PREFERRED_URL_SCHEME", "https")
     FORCE_HTTPS = _env_bool("FORCE_HTTPS", "1")
     ENABLE_HSTS = _env_bool("ENABLE_HSTS", "1")
+    PASSWORD_RESET_ENABLED = _env_bool("PASSWORD_RESET_ENABLED", "0")
 
     # In production (Elastic Beanstalk), DATABASE_URL must be set as an
     # environment variable pointing to an RDS instance.
