@@ -3,6 +3,8 @@ A queue managment system used by the OSU physics tutoring center ("The Wormhole"
 
 ## How it works
 * Tickets get submitted by students
+![box_demo](assets/button_box.gif)
+Here we highlight one of the common use cases for students. Getting help at the push of a button.
 * Wormhole assistants log in to their accounts and manage the queue
 * Admins monitor activity and analyze archives of tickets
 
