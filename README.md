@@ -1,39 +1,57 @@
 # Wormhole Queue System
 
-**Wormhole Queue System is a web-based tutoring queue for Oregon State University's Physics Help Center that lets students request help and lets Wormhole Assistants manage those requests in a clear, fair order.**
+**A real-time help queue for Oregon State University's Physics Wormhole that helps students request tutoring support and helps Wormhole Assistants respond in a clear, fair order.**
 
-The project modernizes the Wormhole's help-request workflow by connecting student-facing request forms, a public live queue, assistant ticket tools, and administrative records in one maintainable Flask application.
+Wormhole Queue System replaces an outdated tutoring queue workflow with a web-based system for student help requests, live queue visibility, assistant ticket handling, and administrative record keeping. It is designed for the OSU Physics Wormhole, where students need a simple way to ask for help and staff need a reliable way to manage requests during busy tutoring hours.
 
-[Try the live site](https://wormhole.physics.oregonstate.edu/) · [Submit a help request](https://wormhole.physics.oregonstate.edu/createticket) · [View the live queue](https://wormhole.physics.oregonstate.edu/livequeue) · [View the source code](https://github.com/FarisNasse/CS461-wormhole-queue-system)
+## Use Wormhole
+
+- [Submit a help request](https://wormhole.physics.oregonstate.edu/createticket)
+- [View the live queue](https://wormhole.physics.oregonstate.edu/livequeue)
+- [Visit the live site](https://wormhole.physics.oregonstate.edu/)
+- [View the source code](https://github.com/FarisNasse/CS461-wormhole-queue-system)
 
 ![Blue digital wormhole graphic used as the project header image.](app/static/Updated-Wormhole-Image.png)
 
+## At a Glance
+
+| Audience | What Wormhole Queue System helps them do |
+|---|---|
+| Students | Request tutoring help and see queue activity without needing to guess whether their request was received. |
+| Wormhole Assistants | Claim, manage, and resolve help requests through a shared ticket workflow. |
+| Administrators | Manage assistant accounts, review queue activity, export records, and keep the system maintainable for future terms. |
+
 ## Why This Project Matters
 
-The Wormhole is a physics collaboration and help center where students may need support from Wormhole Assistants during busy tutoring hours. Without a clear queue, students can be unsure whether their request was seen, assistants can lose track of who should be helped next, and administrators have less visibility into how the center is being used.
+The Physics Wormhole is a tutoring and collaboration space where students can get support with physics coursework. During busy periods, a help center needs more than an informal line or a hand-raised system. Students need to know that their request was received, Wormhole Assistants need to know who should be helped next, and administrators need records that make the system easier to review and maintain.
 
-Wormhole Queue System gives students a simple way to ask for help, gives assistants a shared workflow for claiming and resolving tickets, and gives administrators tools for account management, queue maintenance, and historical review.
+Wormhole Queue System solves that problem by giving the help center a single public-facing queue workflow. Students can submit a request, assistants can manage the queue in order, and administrators can keep the system organized without relying on scattered manual processes.
+
+The result is a help queue that is easier for students to trust, easier for assistants to operate, and easier for future maintainers to improve.
 
 ## Key Features
 
-- **Student-friendly help requests:** Students can submit a help request from the web by entering their name, physics course, and location. The system also supports requests from physical Wormhole button boxes.
-- **Public live queue:** Students can check the live queue to see which requests are waiting and which are currently being handled.
-- **Assistant ticket workflow:** Wormhole Assistants can claim tickets, return tickets to the queue, and resolve tickets as helped, duplicate, or no-show.
-- **Administrative controls:** Admin users can create individual or batch assistant accounts, manage active users, monitor hardware status, clear or flush queue data, and export archived ticket records.
-- **Maintainable project foundation:** The system uses Flask, SQLAlchemy, Flask-Migrate, SocketIO queue updates, CSRF-protected forms, automated tests, linting tools, and deployment documentation so future maintainers can continue improving it.
+- **Request help without confusion:** Students can submit a help request with their name, physics course, and location through the web form or supported Wormhole button boxes.
+- **View queue activity in real time:** Students can open the live queue to see current help requests and better understand what is happening during busy tutoring hours.
+- **Give assistants a shared workflow:** Wormhole Assistants can claim tickets, return tickets to the queue, and resolve tickets as helped, duplicate, or no-show.
+- **Support administrative oversight:** Admin users can manage assistant accounts, review active users, monitor hardware status, clear queue data, and export archived ticket records.
+- **Make future maintenance easier:** The project is built as a documented Flask application with database migrations, automated tests, linting tools, and deployment documentation so future Wormhole teams can continue improving it.
 
 ## Project Demo
 
-The demo below shows one of the student request paths: a physical Wormhole button box submitting a help request into the queue.
+The demo below shows one way a student help request can enter the queue: a physical Wormhole button box submits a request that becomes visible to the system.
 
-![Animated demo of a Wormhole table button box submitting a student help request.](assets/button_box.gif)
+![Demo of a Wormhole table button box submitting a student help request.](assets/button_box.gif)
 
-A typical queue interaction works like this:
+**Demo description:** A Wormhole button box is used to submit a student help request. The request is sent into the queue so Wormhole Assistants can see it, claim it, and resolve it.
+
+A typical request moves through the system like this:
 
 1. A student submits a help request from the website or a Wormhole button box.
-2. The request appears in the live queue.
-3. A Wormhole Assistant claims the ticket and helps the student.
-4. The assistant resolves the ticket, and the system keeps the record for review or export.
+2. The request appears in the queue.
+3. A Wormhole Assistant claims the ticket.
+4. The assistant helps the student.
+5. The assistant resolves the ticket, and the system keeps the record for review or export.
 
 ## How to Access or Try It
 
@@ -41,9 +59,15 @@ A typical queue interaction works like this:
 
 The public site is available at: <https://wormhole.physics.oregonstate.edu/>
 
-- Students can use **Submit a Help Request** to enter the queue.
-- Students can use **Live Queue** to see current queue activity.
-- Wormhole Assistants and administrators need approved accounts to access staff-only tools.
+Students can use the live site to submit a help request or view queue activity. Wormhole Assistants and administrators need approved accounts to access staff-only tools.
+
+### Main Entry Points
+
+| Page | Purpose |
+|---|---|
+| [Submit a help request](https://wormhole.physics.oregonstate.edu/createticket) | Students can enter the queue by submitting their name, course, and location. |
+| [Live queue](https://wormhole.physics.oregonstate.edu/livequeue) | Students and staff can view current queue activity. |
+| [Project repository](https://github.com/FarisNasse/CS461-wormhole-queue-system) | Developers and reviewers can inspect the source code. |
 
 ### Local Development
 
@@ -71,23 +95,28 @@ For production deployment, configure environment variables such as `SECRET_KEY`,
 - Flask and project dependencies from `requirements.txt`
 - A configured database for non-testing deployment
 - A modern web browser for student, assistant, and admin users
+- Approved Wormhole Assistant or administrator credentials for staff-only tools
 
 ## Built With
 
-- Python
-- Flask
-- SQLAlchemy
-- Flask-Migrate
-- Flask-SocketIO
-- Jinja2 templates
-- HTML, CSS, and JavaScript
-- Pytest
-- Ruff
-- MyPy
-- djLint
-- Stylelint
-- Playwright
-- Locust
+| Area | Tools |
+|---|---|
+| Backend | Python, Flask, SQLAlchemy, Flask-Migrate |
+| Real-time queue behavior | Flask-SocketIO |
+| Frontend | Jinja2 templates, HTML, CSS, JavaScript |
+| Testing and quality checks | Pytest, Ruff, MyPy, djLint, Stylelint, Playwright, Locust |
+| Deployment support | Gunicorn, Nginx/systemd documentation, environment-based configuration |
+
+## Project Impact
+
+Wormhole Queue System is valuable because it focuses on the actual experience of a tutoring center:
+
+- Students get a clearer path to asking for help.
+- Assistants get a shared queue instead of relying on memory or informal ordering.
+- Administrators get better visibility into queue activity and user management.
+- Future maintainers get a Python-based codebase with documentation and automated quality checks.
+
+This makes the project more than a class assignment. It is a practical tool for keeping an academic help center organized, transparent, and easier to maintain.
 
 ## Team Credits
 
@@ -95,11 +124,19 @@ For production deployment, configure environment variables such as `SECRET_KEY`,
 |---|---|
 | [Faris Nasse](https://github.com/FarisNasse) | Hardware coordination; software development and code review |
 | [Graham Glazner](https://github.com/GrahamAtOSU) | Documentation coordination; software development and code review |
-| [Jonathan Hotchkiss](https://github.com/hotchkissjo) | Team lead and communication; software development and code review |
+| [Jonathan Hotchkiss](https://github.com/hotchkjo) | Team lead and communication; software development and code review |
 | [Alexey Leeper](https://github.com/alexeyjleeper) | Testing coordination; software development and code review |
 
-We also acknowledge Oregon State University's Department of Physics, the Wormhole Physics Collaboration and Help Center, and prior maintainers of the Wormhole queue workflow.
+This project was developed for Oregon State University's Physics Wormhole, a physics collaboration and help center that supports students during tutoring hours.
 
 ## Feedback and Contact
 
-For bugs, feature ideas, or maintenance notes, open an issue in the project repository or contact the current Wormhole project team through the OSU Physics Help Center.
+For bugs, feature ideas, or maintenance notes, open an issue in the project repository:
+
+[Open a GitHub issue](https://github.com/FarisNasse/CS461-wormhole-queue-system/issues)
+
+For project-specific questions, contact the current Wormhole project team through the OSU Physics Help Center.
+
+## Accessibility Notes
+
+This README uses descriptive links, alt text for images, and a written description of the animated demo. The live site is designed to be usable from a modern web browser on desktop or mobile devices.
