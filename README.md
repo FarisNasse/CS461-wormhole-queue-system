@@ -14,12 +14,9 @@ Here we highlight one of the common use cases for students. Getting help at the 
 Accessible on any device with a web browser
 
 ## Team Members
-- Faris Nasse can be found at 
-<https://github.com/FarisNasse>
-- Graham Glazner can be found at 
-<https://github.com/GrahamAtOSU>
-- Jonathan Hotchkiss can be found at 
-<https://github.com/hotchkjo>
-- Alexey Leeper
+- Faris Nasse can be found at <https://github.com/FarisNasse>
+- Graham Glazner can be found at <https://github.com/GrahamAtOSU>
+- Jonathan Hotchkiss can be found at <https://github.com/hotchkjo>
+- Alexey Leeper can be found at <https://github.com/alexeyjleeper>
 
 
