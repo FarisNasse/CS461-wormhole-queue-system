@@ -11,8 +11,16 @@ from wtforms import (
     SelectField,
     StringField,
     SubmitField,
+    TimeField,
 )
-from wtforms.validators import DataRequired, Email, EqualTo, NumberRange, Optional
+from wtforms.validators import (
+    DataRequired,
+    Email,
+    EqualTo,
+    InputRequired,
+    NumberRange,
+    Optional,
+)
 
 
 def _subtract_months(from_date: date, months: int) -> date:
@@ -137,6 +145,56 @@ class ResolveTicketForm(FlaskForm):
         validators=[DataRequired(message="Please select a reason.")],
     )
     submit = SubmitField("Submit")
+
+
+class AttendanceCheckInForm(FlaskForm):
+    """CSRF-protected form for assistant attendance check-in."""
+
+    submit = SubmitField("Check In")
+
+
+class AttendanceCheckOutForm(FlaskForm):
+    """CSRF-protected form for assistant attendance check-out."""
+
+    submit = SubmitField("Check Out")
+
+
+class AttendanceShiftDeleteForm(FlaskForm):
+    """CSRF-protected form for removing recurring attendance shifts."""
+
+    submit = SubmitField("Remove")
+
+
+class AttendanceShiftForm(FlaskForm):
+    """Admin form for creating recurring scheduled Wormhole shifts."""
+
+    # Choices are still limited to non-admin active assistants in the UI, but
+    # validate_choice=False lets the route perform the authoritative server-side
+    # lookup/rejection for crafted POSTs that submit an admin or unknown user ID.
+    user_id = SelectField(
+        "Assistant",
+        coerce=int,
+        validators=[DataRequired()],
+        validate_choice=False,
+    )
+    day_of_week = SelectField(
+        "Day",
+        coerce=int,
+        choices=[
+            (0, "Monday"),
+            (1, "Tuesday"),
+            (2, "Wednesday"),
+            (3, "Thursday"),
+            (4, "Friday"),
+            (5, "Saturday"),
+            (6, "Sunday"),
+        ],
+        validators=[InputRequired()],
+    )
+    start_time = TimeField("Start Time", validators=[DataRequired()])
+    end_time = TimeField("End Time", validators=[DataRequired()])
+    location = StringField("Location", default="Wormhole", validators=[Optional()])
+    submit = SubmitField("Add Shift")
 
 
 class ExportArchiveForm(FlaskForm):

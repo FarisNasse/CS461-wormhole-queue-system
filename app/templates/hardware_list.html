@@ -2,6 +2,39 @@
 {% block content %}
     <div class="page">
         <div class="section live-queue">
+            <div class="attendance-card-inline">
+                <h3>
+                    Wormhole Attendance
+                </h3>
+                {% if attendance_session %}
+                    <p>
+                        Checked in since {{ attendance_session.checked_in_at|datetime_pacific("%I:%M %p") }}.
+                        Status: <strong>{{ attendance_status }}</strong>.
+                    </p>
+                    <form action="{{ url_for('attendance.check_out') }}"
+                          method="post"
+                          class="attendance-action-form">
+                        {{ check_out_form.hidden_tag() }}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="btn-delete">
+                            Check Out
+                        </button>
+                    </form>
+                {% else %}
+                    <p>
+                        Check in when you are present and available to help students.
+                    </p>
+                    <form action="{{ url_for('attendance.check_in') }}"
+                          method="post"
+                          class="attendance-action-form">
+                        {{ check_in_form.hidden_tag() }}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="btn-primary">
+                            Check In
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
             <br>
             <h2 style="text-align:center;">
                 Hardware List

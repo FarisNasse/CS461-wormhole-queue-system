@@ -10,7 +10,7 @@ Typical usage example:
     from app import models
 """
 
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
 from typing import Optional
 
 import sqlalchemy as sa
@@ -68,6 +68,19 @@ class User(Base):
 
     skipped: orm.Mapped["Skipped"] = orm.relationship(back_populates="user")
 
+    attendance_shifts: orm.Mapped[list["AttendanceShift"]] = orm.relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    attendance_sessions: orm.Mapped[list["AttendanceSession"]] = orm.relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    attendance_activities: orm.Mapped[list["AttendanceActivity"]] = orm.relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
     # Functions
     def __repr__(self) -> str:
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
@@ -114,6 +127,10 @@ class Ticket(Base):
     )
 
     skipped: Mapped[Optional["Skipped"]] = orm.relationship(back_populates="ticket")
+
+    attendance_activities: orm.Mapped[list["AttendanceActivity"]] = orm.relationship(
+        back_populates="ticket"
+    )
 
     # Functions
     def __repr__(self) -> str:
@@ -169,3 +186,114 @@ class Skipped(Base):
 
     def __repr__(self) -> str:
         return f"<User {self.wa_id} skipped Ticket {self.tkt_id}>"
+
+
+class AttendanceShift(Base):
+    """Recurring scheduled Wormhole shift for a user.
+
+    day_of_week follows Python's convention: Monday=0, Sunday=6.
+    """
+
+    __tablename__ = "attendance_shifts"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        sa.ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    day_of_week: Mapped[int] = mapped_column(sa.Integer, index=True, nullable=False)
+    start_time: Mapped[time] = mapped_column(sa.Time, nullable=False)
+    end_time: Mapped[time] = mapped_column(sa.Time, nullable=False)
+    location: Mapped[str] = mapped_column(sa.String(100), default="Wormhole")
+    is_active: Mapped[bool] = mapped_column(sa.Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc)
+    )
+
+    user: Mapped["User"] = orm.relationship(back_populates="attendance_shifts")
+    attendance_sessions: orm.Mapped[list["AttendanceSession"]] = orm.relationship(
+        back_populates="shift"
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<AttendanceShift(id={self.id}, user_id={self.user_id}, "
+            f"day={self.day_of_week}, start={self.start_time}, end={self.end_time})>"
+        )
+
+
+class AttendanceSession(Base):
+    """A check-in/check-out attendance session for a Wormhole assistant."""
+
+    __tablename__ = "attendance_sessions"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        sa.ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    shift_id: Mapped[Optional[int]] = mapped_column(
+        sa.ForeignKey("attendance_shifts.id", ondelete="SET NULL"),
+        index=True,
+        nullable=True,
+    )
+    checked_in_at: Mapped[datetime] = mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc)
+    )
+    last_seen_at: Mapped[datetime] = mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc)
+    )
+    checked_out_at: Mapped[Optional[datetime]] = mapped_column(default=None)
+    status: Mapped[str] = mapped_column(sa.String(20), default="active", index=True)
+    check_in_source: Mapped[str] = mapped_column(sa.String(50), default="manual")
+    notes: Mapped[Optional[str]] = mapped_column(sa.String(255), default=None)
+
+    user: Mapped["User"] = orm.relationship(back_populates="attendance_sessions")
+    shift: Mapped[Optional["AttendanceShift"]] = orm.relationship(
+        back_populates="attendance_sessions"
+    )
+    activities: orm.Mapped[list["AttendanceActivity"]] = orm.relationship(
+        back_populates="attendance_session"
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<AttendanceSession(id={self.id}, user_id={self.user_id}, "
+            f"status={self.status})>"
+        )
+
+
+class AttendanceActivity(Base):
+    """Audit-style activity event associated with assistant attendance."""
+
+    __tablename__ = "attendance_activities"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        sa.ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    attendance_session_id: Mapped[Optional[int]] = mapped_column(
+        sa.ForeignKey("attendance_sessions.id", ondelete="SET NULL"),
+        index=True,
+        nullable=True,
+    )
+    ticket_id: Mapped[Optional[int]] = mapped_column(
+        sa.ForeignKey("tickets.id", ondelete="SET NULL"), index=True, nullable=True
+    )
+    activity_type: Mapped[str] = mapped_column(sa.String(50), index=True)
+    description: Mapped[str] = mapped_column(sa.String(255))
+    created_at: Mapped[datetime] = mapped_column(
+        index=True, default=lambda: datetime.now(timezone.utc)
+    )
+
+    user: Mapped["User"] = orm.relationship(back_populates="attendance_activities")
+    attendance_session: Mapped[Optional["AttendanceSession"]] = orm.relationship(
+        back_populates="activities"
+    )
+    ticket: Mapped[Optional["Ticket"]] = orm.relationship(
+        back_populates="attendance_activities"
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<AttendanceActivity(id={self.id}, user_id={self.user_id}, "
+            f"type={self.activity_type})>"
+        )

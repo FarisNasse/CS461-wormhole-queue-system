@@ -11,7 +11,7 @@
             </h2>
             {% if user.is_admin %}
                 <div class="queue-admin-actions">
-                    <form action="{{ url_for("views.flush") }}"
+                    <form action="{{ url_for('views.flush') }}"
                           method="post"
                           class="queue-admin-action-form">
                         {{ flush_form.hidden_tag() }}
@@ -21,7 +21,7 @@
                             Flush Queue
                         </button>
                     </form>
-                    <form action="{{ url_for("views.clear_queue") }}"
+                    <form action="{{ url_for('views.clear_queue') }}"
                           method="post"
                           class="queue-admin-action-form">
                         {{ clear_form.hidden_tag() }}
@@ -31,6 +31,72 @@
                             Clear Queue
                         </button>
                     </form>
+                </div>
+            {% endif %}
+            {% if user.is_admin %}
+                <div class="subsection attendance-queue-panel">
+                    <h3>
+                        Attendance Snapshot
+                    </h3>
+                    <p>
+                        <a href="{{ url_for('attendance.dashboard') }}">Open full attendance dashboard</a>
+                    </p>
+                    {% if attendance_summary %}
+                        <div class="attendance-summary-inline">
+                            <span>Present: {{ attendance_summary.present }}</span>
+                            <span>Idle: {{ attendance_summary.idle }}</span>
+                            <span>Stale: {{ attendance_summary.stale }}</span>
+                            <span>Missing: {{ attendance_summary.missing }}</span>
+                        </div>
+                    {% endif %}
+                    {% if attendance_rows %}
+                        <table class="attendance-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Assistant
+                                    </th>
+                                    <th>
+                                        Shift
+                                    </th>
+                                    <th>
+                                        Last Active
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in attendance_rows %}
+                                    <tr>
+                                        <td>
+                                            {{ row.user.name or row.user.username }}
+                                        </td>
+                                        <td>
+                                            {{ row.schedule }}
+                                        </td>
+                                        <td>
+                                            {% if row.last_seen_at %}
+                                                {{ row.last_seen_at|datetime_pacific("%I:%M %p") }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="attendance-status attendance-status-{{ row.status_slug }}">
+                                                {{ row.status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>
+                            No scheduled assistants or checked-in assistants right now.
+                        </p>
+                    {% endif %}
                 </div>
             {% endif %}
             <div class="subsection">
@@ -76,7 +142,7 @@
                 </ul>
             </div>
             <div class="queue-back-link">
-                <a href="{{ url_for("views.hardware_list") }}">Back to Hardware List</a>
+                <a href="{{ url_for('views.hardware_list') }}">Back to Hardware List</a>
             </div>
         </div>
     </div>

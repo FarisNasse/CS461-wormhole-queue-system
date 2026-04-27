@@ -96,11 +96,13 @@ def create_app(testing=True):
     # in this file, it is intentional (for registering models and events).
     from app import models  # noqa: F401
     from app.routes import queue_events  # noqa: F401
+    from app.routes.attendance import attendance_bp
     from app.routes.auth import auth_bp
     from app.routes.error import error_bp
     from app.routes.tickets import tickets_bp
     from app.routes.views import views_bp
 
+    app.register_blueprint(attendance_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(views_bp)
     app.register_blueprint(tickets_bp)
@@ -144,6 +146,12 @@ def create_app(testing=True):
                 is_admin=False, is_anonymous=True, username=""
             )
         }
+
+    @app.context_processor
+    def inject_csrf_token():
+        from flask_wtf.csrf import generate_csrf
+
+        return {"csrf_token": generate_csrf}
 
     from app.routes.users import user_bp
 
