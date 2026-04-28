@@ -283,10 +283,15 @@ def append_weekly_archive(
     existing_keys = _existing_archive_keys(archive_path)
     rows_written = 0
     skipped = 0
-    archive_file = None
-    writer = None
 
-    try:
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+    needs_header = not archive_path.exists() or archive_path.stat().st_size == 0
+
+    with archive_path.open("a", encoding="utf-8", newline="") as archive_file:
+        writer = csv.writer(archive_file)
+        if needs_header:
+            writer.writerow(ARCHIVE_HEADERS)
+
         for ticket in tickets:
             row = ticket_archive_row(ticket)
             key = _row_dedupe_key(row)
@@ -295,22 +300,8 @@ def append_weekly_archive(
                 continue
 
             existing_keys.add(key)
-
-            if writer is None:
-                archive_path.parent.mkdir(parents=True, exist_ok=True)
-                needs_header = (
-                    not archive_path.exists() or archive_path.stat().st_size == 0
-                )
-                archive_file = archive_path.open("a", encoding="utf-8", newline="")
-                writer = csv.writer(archive_file)
-                if needs_header:
-                    writer.writerow(ARCHIVE_HEADERS)
-
             writer.writerow(row)
             rows_written += 1
-    finally:
-        if archive_file is not None:
-            archive_file.close()
 
     return ArchiveWriteResult(
         path=archive_path,

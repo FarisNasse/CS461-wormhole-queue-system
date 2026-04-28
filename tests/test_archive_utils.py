@@ -137,7 +137,7 @@ def test_archive_weekly_cli_confines_filename_to_archive_directory(test_app):
 
     archive_dir = Path(test_app.root_path) / "data" / "archives"
     archive_path = archive_dir / "unsafe_name.csv"
-    escaped_path = archive_dir.parent / "unsafe_name"
+    escaped_path = archive_dir.parent / "unsafe_name.csv"
 
     runner = test_app.test_cli_runner()
     try:
