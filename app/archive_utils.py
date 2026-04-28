@@ -35,6 +35,16 @@ ARCHIVE_HEADERS = [
 CUMULATIVE_ARCHIVE_FILENAME = "wormhole_archive_all.csv"
 
 
+def safe_archive_filename(filename: str) -> str:
+    """Return a safe CSV filename for files stored in the archive directory."""
+    safe_name = Path(filename).name.strip()
+    if not safe_name:
+        safe_name = CUMULATIVE_ARCHIVE_FILENAME
+    if Path(safe_name).suffix.lower() != ".csv":
+        safe_name = f"{safe_name}.csv"
+    return safe_name
+
+
 @dataclass(frozen=True)
 class ArchiveWriteResult:
     """Summary of one archive write operation."""
@@ -131,9 +141,11 @@ def ticket_archive_row(ticket: Ticket) -> list[object]:
         ticket.closed_at.strftime("%Y-%m-%d %H:%M:%S") if ticket.closed_at else "N/A",
         ticket.number_of_students,
         ticket.wa_id or "Unassigned",
-        ticket.wormhole_assistant.name
-        if ticket.wormhole_assistant and ticket.wormhole_assistant.name
-        else "N/A",
+        sanitize_csv_value(
+            ticket.wormhole_assistant.name
+            if ticket.wormhole_assistant and ticket.wormhole_assistant.name
+            else "N/A"
+        ),
         "Zoom"
         if ticket.table == "Zoom"
         else "Teams"
@@ -186,7 +198,7 @@ def create_archive_file(
 ) -> ArchiveWriteResult:
     """Create or replace a manual archive file for an explicit date range."""
     tickets = archive_ticket_query(start_utc, end_utc, include_end=True).yield_per(1000)
-    path = archive_dir(root_path) / filename
+    path = archive_dir(root_path) / safe_archive_filename(filename)
     write_result = write_archive_file(path, tickets)
     return ArchiveWriteResult(
         path=path,
@@ -263,7 +275,7 @@ def append_weekly_archive(
 ) -> ArchiveWriteResult:
     """Append the latest completed week of tickets to the cumulative archive CSV."""
     start_utc, end_utc = previous_saturday_week_bounds(now)
-    archive_path = archive_dir(root_path) / filename
+    archive_path = archive_dir(root_path) / safe_archive_filename(filename)
     tickets = archive_ticket_query(start_utc, end_utc, include_end=False).yield_per(
         1000
     )
