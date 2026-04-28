@@ -69,3 +69,27 @@ Do not expose 8000 publicly.
 - http://queue.example.com redirects to HTTPS
 - Login/session works
 - Live queue updates function (Socket.IO over WSS)
+
+## 7) Enable automatic weekly archives
+
+The app includes a Flask CLI command that appends the most recently completed Saturday-to-Saturday week to `app/data/archives/wormhole_archive_all.csv`:
+
+```bash
+source venv/bin/activate
+export FLASK_APP=application:application
+flask archive-weekly
+```
+
+To run this automatically every Saturday at midnight Pacific using systemd:
+
+1. Copy the timer and service files:
+   - `sudo cp deploy/systemd/wormhole-weekly-archive.service /etc/systemd/system/wormhole-weekly-archive.service`
+   - `sudo cp deploy/systemd/wormhole-weekly-archive.timer /etc/systemd/system/wormhole-weekly-archive.timer`
+2. Reload systemd and enable the timer:
+   - `sudo systemctl daemon-reload`
+   - `sudo systemctl enable --now wormhole-weekly-archive.timer`
+3. Verify the timer:
+   - `systemctl list-timers wormhole-weekly-archive.timer`
+   - `sudo journalctl -u wormhole-weekly-archive.service -n 50`
+
+The timer uses `Timezone=America/Los_Angeles`. If your systemd version does not support that setting, set the server timezone with `sudo timedatectl set-timezone America/Los_Angeles`, remove the `Timezone=` line, then reload systemd.

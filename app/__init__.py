@@ -15,7 +15,7 @@ migrate = Migrate()
 socketio = SocketIO()
 
 
-def create_app(testing=True):
+def create_app(testing=False):
     """
     Create and configure the Flask application instance.
 
@@ -95,6 +95,7 @@ def create_app(testing=True):
     # The '# noqa: F401' tells Ruff that although the import isn't used directly
     # in this file, it is intentional (for registering models and events).
     from app import models  # noqa: F401
+    from app.archive_utils import register_archive_cli
     from app.routes import queue_events  # noqa: F401
     from app.routes.auth import auth_bp
     from app.routes.error import error_bp
@@ -105,6 +106,7 @@ def create_app(testing=True):
     app.register_blueprint(views_bp)
     app.register_blueprint(tickets_bp)
     app.register_blueprint(error_bp)
+    register_archive_cli(app)
 
     # ---------------------------------------------------
     # Health Check Route

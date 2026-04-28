@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Wormhole weekly ticket archive every Saturday at midnight Pacific
+
+[Timer]
+OnCalendar=Sat *-*-* 00:00:00
+Timezone=America/Los_Angeles
+Persistent=true
+Unit=wormhole-weekly-archive.service
+
+[Install]
+WantedBy=timers.target
