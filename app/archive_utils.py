@@ -269,39 +269,40 @@ def append_weekly_archive(
     )
 
     existing_keys = _existing_archive_keys(archive_path)
-    rows: list[list[object]] = []
+    rows_written = 0
     skipped = 0
+    archive_file = None
+    writer = None
 
-    for ticket in tickets:
-        row = ticket_archive_row(ticket)
-        key = _row_dedupe_key(row)
-        if key in existing_keys:
-            skipped += 1
-            continue
-        existing_keys.add(key)
-        rows.append(row)
+    try:
+        for ticket in tickets:
+            row = ticket_archive_row(ticket)
+            key = _row_dedupe_key(row)
+            if key in existing_keys:
+                skipped += 1
+                continue
 
-    if not rows:
-        return ArchiveWriteResult(
-            path=archive_path,
-            rows_written=0,
-            rows_skipped=skipped,
-            start_utc=start_utc,
-            end_utc=end_utc,
-        )
+            existing_keys.add(key)
 
-    archive_path.parent.mkdir(parents=True, exist_ok=True)
-    needs_header = not archive_path.exists() or archive_path.stat().st_size == 0
+            if writer is None:
+                archive_path.parent.mkdir(parents=True, exist_ok=True)
+                needs_header = (
+                    not archive_path.exists() or archive_path.stat().st_size == 0
+                )
+                archive_file = archive_path.open("a", encoding="utf-8", newline="")
+                writer = csv.writer(archive_file)
+                if needs_header:
+                    writer.writerow(ARCHIVE_HEADERS)
 
-    with archive_path.open("a", encoding="utf-8", newline="") as archive_file:
-        writer = csv.writer(archive_file)
-        if needs_header:
-            writer.writerow(ARCHIVE_HEADERS)
-        writer.writerows(rows)
+            writer.writerow(row)
+            rows_written += 1
+    finally:
+        if archive_file is not None:
+            archive_file.close()
 
     return ArchiveWriteResult(
         path=archive_path,
-        rows_written=len(rows),
+        rows_written=rows_written,
         rows_skipped=skipped,
         start_utc=start_utc,
         end_utc=end_utc,
