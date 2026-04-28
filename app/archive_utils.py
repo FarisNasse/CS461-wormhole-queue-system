@@ -12,6 +12,7 @@ from typing import Iterable, Optional
 import click
 from flask import Flask
 from sqlalchemy import and_, func, or_
+from sqlalchemy.sql.elements import ColumnElement
 
 from app import db
 from app.models import Ticket
@@ -77,19 +78,26 @@ def archive_ticket_query(
     include_end: bool = True,
 ):
     """Build the ticket query used by manual and weekly archive exports."""
-    start_utc = ensure_aware_utc(start_utc)
-    end_utc = ensure_aware_utc(end_utc)
+    normalized_start = ensure_aware_utc(start_utc)
+    normalized_end = ensure_aware_utc(end_utc)
 
-    if start_utc is None or end_utc is None:
+    if normalized_start is None or normalized_end is None:
         raise ValueError("start_utc and end_utc are required")
 
+    closed_range: ColumnElement[bool]
+    created_range: ColumnElement[bool]
+
     if include_end:
-        closed_range = Ticket.closed_at.between(start_utc, end_utc)
-        created_range = Ticket.created_at.between(start_utc, end_utc)
+        closed_range = Ticket.closed_at.between(normalized_start, normalized_end)
+        created_range = Ticket.created_at.between(normalized_start, normalized_end)
     else:
-        closed_range = and_(Ticket.closed_at >= start_utc, Ticket.closed_at < end_utc)
+        closed_range = and_(
+            Ticket.closed_at >= normalized_start,
+            Ticket.closed_at < normalized_end,
+        )
         created_range = and_(
-            Ticket.created_at >= start_utc, Ticket.created_at < end_utc
+            Ticket.created_at >= normalized_start,
+            Ticket.created_at < normalized_end,
         )
 
     return Ticket.query.filter(
