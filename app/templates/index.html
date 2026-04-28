@@ -10,7 +10,7 @@
                 For Students
             </h2>
             <p class="index-section-link">
-                <a href="{{ url_for("views.create_ticket_page") }}">Submit a Help Request</a>
+                <a href="{{ url_for('views.create_ticket_page') }}">Submit a Help Request</a>
             </p>
             <p class="index-section-link">
                 <a href="https://oregonstate.zoom.us/j/95601298258">Join Zoom Meeting</a>
@@ -29,7 +29,7 @@
             </h2>
             {% if current_user.is_anonymous %}
                 <p class="index-section-link">
-                    <a href="{{ url_for("views.assistant_login") }}">Log In</a>
+                    <a href="{{ url_for('views.assistant_login') }}">Log In</a>
                 </p>
             {% else %}
                 <p class="index-section-link">
@@ -79,7 +79,7 @@
                 </p>
                 <p>
                     If you or your group needs help with a physics question, send a request to the queue.
-                    In person, use the box on your table. Online, use this <a href="{{ url_for("views.create_ticket_page") }}">link</a>.
+                    In person, use the box on your table. Online, use this <a href="{{ url_for('views.create_ticket_page') }}">link</a>.
                     Only one person in the group needs to enter the request, and only one time for each
                     question, please. You can see your place in the help queue using the Live Queue link at
                     the top of the page. Multiple requests for a question won’t get you help any faster, and
