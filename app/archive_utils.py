@@ -12,9 +12,9 @@ from typing import Iterable, Optional
 import click
 from flask import Flask
 from sqlalchemy import and_, func, or_
+from sqlalchemy.orm import selectinload
 from sqlalchemy.sql.elements import ColumnElement
 
-from app import db
 from app.models import Ticket
 from app.time_utils import PACIFIC_TZ, ensure_aware_utc
 
@@ -100,19 +100,23 @@ def archive_ticket_query(
             Ticket.created_at < normalized_end,
         )
 
-    return Ticket.query.filter(
-        or_(
-            and_(
-                Ticket.status.in_(["closed", "resolved"]),
-                closed_range,
-            ),
-            and_(
-                Ticket.status == "resolved",
-                Ticket.closed_at.is_(None),
-                created_range,
-            ),
+    return (
+        Ticket.query.options(selectinload(Ticket.wormhole_assistant))
+        .filter(
+            or_(
+                and_(
+                    Ticket.status.in_(["closed", "resolved"]),
+                    closed_range,
+                ),
+                and_(
+                    Ticket.status == "resolved",
+                    Ticket.closed_at.is_(None),
+                    created_range,
+                ),
+            )
         )
-    ).order_by(func.coalesce(Ticket.closed_at, Ticket.created_at).desc())
+        .order_by(func.coalesce(Ticket.closed_at, Ticket.created_at).desc())
+    )
 
 
 def ticket_archive_row(ticket: Ticket) -> list[object]:
@@ -122,7 +126,7 @@ def ticket_archive_row(ticket: Ticket) -> list[object]:
         sanitize_csv_value(ticket.student_name),
         sanitize_csv_value(ticket.table),
         sanitize_csv_value(ticket.physics_course),
-        ticket.closed_reason,
+        ticket.status,
         ticket.created_at.strftime("%Y-%m-%d %H:%M:%S"),
         ticket.closed_at.strftime("%Y-%m-%d %H:%M:%S") if ticket.closed_at else "N/A",
         ticket.number_of_students,
@@ -153,17 +157,20 @@ def render_archive_csv(tickets: Iterable[Ticket]) -> str:
 def write_archive_file(path: Path, tickets: Iterable[Ticket]) -> ArchiveWriteResult:
     """Write a standalone archive CSV, replacing any existing file."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    ticket_list = list(tickets)
-    csv_content = render_archive_csv(ticket_list)
+    rows_written = 0
 
     with path.open("w", encoding="utf-8", newline="") as archive_file:
-        archive_file.write(csv_content)
+        writer = csv.writer(archive_file)
+        writer.writerow(ARCHIVE_HEADERS)
+        for ticket in tickets:
+            writer.writerow(ticket_archive_row(ticket))
+            rows_written += 1
 
     # start/end are not meaningful for this low-level helper; callers that need
     # those values should use create_archive_file or append_weekly_archive.
     return ArchiveWriteResult(
         path=path,
-        rows_written=len(ticket_list),
+        rows_written=rows_written,
         rows_skipped=0,
         start_utc=datetime.min.replace(tzinfo=timezone.utc),
         end_utc=datetime.min.replace(tzinfo=timezone.utc),
@@ -179,13 +186,12 @@ def create_archive_file(
 ) -> ArchiveWriteResult:
     """Create or replace a manual archive file for an explicit date range."""
     tickets = archive_ticket_query(start_utc, end_utc, include_end=True).yield_per(1000)
-    ticket_list = list(tickets)
     path = archive_dir(root_path) / filename
-    write_archive_file(path, ticket_list)
+    write_result = write_archive_file(path, tickets)
     return ArchiveWriteResult(
         path=path,
-        rows_written=len(ticket_list),
-        rows_skipped=0,
+        rows_written=write_result.rows_written,
+        rows_skipped=write_result.rows_skipped,
         start_utc=start_utc,
         end_utc=end_utc,
     )
@@ -339,7 +345,6 @@ def register_archive_cli(app: Flask) -> None:
             now=_parse_iso_datetime(now_value),
             filename=filename,
         )
-        db.session.commit()
 
         click.echo(
             "Weekly archive complete: "

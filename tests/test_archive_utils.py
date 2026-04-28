@@ -1,10 +1,10 @@
 import csv
 from datetime import datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from app import db
-from app.archive_utils import CUMULATIVE_ARCHIVE_FILENAME
 from app.models import Ticket, User
 
 
@@ -67,37 +67,49 @@ def test_archive_weekly_cli_appends_previous_week_once(test_app):
     db.session.add_all([inside_week, before_week, next_week_boundary])
     db.session.commit()
 
-    archive_path = (
-        Path(test_app.root_path) / "data" / "archives" / CUMULATIVE_ARCHIVE_FILENAME
-    )
-    if archive_path.exists():
-        archive_path.unlink()
+    archive_filename = f"wormhole_archive_weekly_cli_{uuid4().hex}.csv"
+    archive_path = Path(test_app.root_path) / "data" / "archives" / archive_filename
 
     runner = test_app.test_cli_runner()
-    first_run = runner.invoke(
-        args=["archive-weekly", "--now", "2026-04-25T00:00:00-07:00"]
-    )
-    assert first_run.exit_code == 0
-    assert "1 row(s) appended" in first_run.output
-    assert archive_path.exists()
+    try:
+        first_run = runner.invoke(
+            args=[
+                "archive-weekly",
+                "--now",
+                "2026-04-25T00:00:00-07:00",
+                "--filename",
+                archive_filename,
+            ]
+        )
+        assert first_run.exit_code == 0
+        assert "1 row(s) appended" in first_run.output
+        assert archive_path.exists()
 
-    with archive_path.open("r", encoding="utf-8", newline="") as archive_file:
-        rows = list(csv.DictReader(archive_file))
+        with archive_path.open("r", encoding="utf-8", newline="") as archive_file:
+            rows = list(csv.DictReader(archive_file))
 
-    assert len(rows) == 1
-    assert rows[0]["Student Name"] == "Inside Week"
-    assert rows[0]["Assistant Name"] == "Weekly Helper"
+        assert len(rows) == 1
+        assert rows[0]["Student Name"] == "Inside Week"
+        assert rows[0]["Status"] == "closed"
+        assert rows[0]["Assistant Name"] == "Weekly Helper"
 
-    second_run = runner.invoke(
-        args=["archive-weekly", "--now", "2026-04-25T00:00:00-07:00"]
-    )
-    assert second_run.exit_code == 0
-    assert "0 row(s) appended" in second_run.output
-    assert "1 duplicate row(s) skipped" in second_run.output
+        second_run = runner.invoke(
+            args=[
+                "archive-weekly",
+                "--now",
+                "2026-04-25T00:00:00-07:00",
+                "--filename",
+                archive_filename,
+            ]
+        )
+        assert second_run.exit_code == 0
+        assert "0 row(s) appended" in second_run.output
+        assert "1 duplicate row(s) skipped" in second_run.output
 
-    with archive_path.open("r", encoding="utf-8", newline="") as archive_file:
-        rows = list(csv.DictReader(archive_file))
+        with archive_path.open("r", encoding="utf-8", newline="") as archive_file:
+            rows = list(csv.DictReader(archive_file))
 
-    assert len(rows) == 1
-
-    archive_path.unlink()
+        assert len(rows) == 1
+    finally:
+        if archive_path.exists():
+            archive_path.unlink()
