@@ -67,7 +67,9 @@ def test_archive_weekly_cli_appends_previous_week_once(test_app):
     db.session.add_all([inside_week, before_week, next_week_boundary])
     db.session.commit()
 
-    archive_path = Path(test_app.root_path) / "data" / "archives" / CUMULATIVE_ARCHIVE_FILENAME
+    archive_path = (
+        Path(test_app.root_path) / "data" / "archives" / CUMULATIVE_ARCHIVE_FILENAME
+    )
     if archive_path.exists():
         archive_path.unlink()
 

@@ -88,24 +88,23 @@ def archive_ticket_query(
         created_range = Ticket.created_at.between(start_utc, end_utc)
     else:
         closed_range = and_(Ticket.closed_at >= start_utc, Ticket.closed_at < end_utc)
-        created_range = and_(Ticket.created_at >= start_utc, Ticket.created_at < end_utc)
-
-    return (
-        Ticket.query.filter(
-            or_(
-                and_(
-                    Ticket.status.in_(["closed", "resolved"]),
-                    closed_range,
-                ),
-                and_(
-                    Ticket.status == "resolved",
-                    Ticket.closed_at.is_(None),
-                    created_range,
-                ),
-            )
+        created_range = and_(
+            Ticket.created_at >= start_utc, Ticket.created_at < end_utc
         )
-        .order_by(func.coalesce(Ticket.closed_at, Ticket.created_at).desc())
-    )
+
+    return Ticket.query.filter(
+        or_(
+            and_(
+                Ticket.status.in_(["closed", "resolved"]),
+                closed_range,
+            ),
+            and_(
+                Ticket.status == "resolved",
+                Ticket.closed_at.is_(None),
+                created_range,
+            ),
+        )
+    ).order_by(func.coalesce(Ticket.closed_at, Ticket.created_at).desc())
 
 
 def ticket_archive_row(ticket: Ticket) -> list[object]:
@@ -207,12 +206,18 @@ def _existing_archive_keys(path: Path) -> set[tuple[str, str, str]]:
             ticket_id = row.get("Ticket ID")
             created_at = row.get("Created At")
             closed_at = row.get("Closed At")
-            if ticket_id is not None and created_at is not None and closed_at is not None:
+            if (
+                ticket_id is not None
+                and created_at is not None
+                and closed_at is not None
+            ):
                 keys.add((ticket_id, created_at, closed_at))
     return keys
 
 
-def previous_saturday_week_bounds(now: Optional[datetime] = None) -> tuple[datetime, datetime]:
+def previous_saturday_week_bounds(
+    now: Optional[datetime] = None,
+) -> tuple[datetime, datetime]:
     """
     Return the previous completed Saturday-to-Saturday week in UTC.
 
@@ -245,7 +250,9 @@ def append_weekly_archive(
     """Append the latest completed week of tickets to the cumulative archive CSV."""
     start_utc, end_utc = previous_saturday_week_bounds(now)
     archive_path = archive_dir(root_path) / filename
-    tickets = archive_ticket_query(start_utc, end_utc, include_end=False).yield_per(1000)
+    tickets = archive_ticket_query(start_utc, end_utc, include_end=False).yield_per(
+        1000
+    )
 
     existing_keys = _existing_archive_keys(archive_path)
     rows: list[list[object]] = []
