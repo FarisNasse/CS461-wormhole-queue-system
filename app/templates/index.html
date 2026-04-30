@@ -1,39 +1,148 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="page home-page">
-        <section class="section home-hero">
-            <div class="home-hero-copy">
+    <div class="page home-page home-showcase">
+        <section class="showcase-hero" data-reveal>
+            <div class="hero-copy" data-parallax="0.06">
                 <p class="section-kicker">
-                    Physics support, in person and online
+                    Physics help that feels live
                 </p>
-                <h1 class="index-page-title">
-                    Physics Collaboration and Help Center
+                <h1 class="showcase-title">
+                    Step into the Wormhole.
                 </h1>
-                <p class="home-hero-text">
-                    The Wormhole helps students get physics support from experienced assistants while keeping the help queue clear, fair, and easy to follow.
+                <p class="showcase-lede">
+                    A smoother, smarter help queue for Oregon State physics students — built for quick requests,
+                    clear turn order, and a support experience that feels calm even when the room is busy.
                 </p>
                 <div class="hero-actions">
-                    <a class="button button-primary"
+                    <a class="button button-primary button-glow"
                        href="{{ url_for('views.create_ticket_page') }}">Submit a Help Request</a>
-                    <a class="button button-secondary"
-                       href="{{ url_for('views.livequeue') }}">View Live Queue</a>
+                    <a class="button button-secondary button-glass"
+                       href="{{ url_for('views.livequeue') }}">Watch the Live Queue</a>
+                </div>
+                <div class="hero-trust-row" aria-label="Wormhole highlights">
+                    <span>Fair first-come queue</span>
+                    <span>Remote and in-person support</span>
+                    <span>Assistant-managed workflow</span>
                 </div>
             </div>
-            <div class="home-hero-panel" aria-label="Wormhole schedule summary">
-                <span class="status-pill">Spring 2026</span>
-                <h2>
-                    Open Monday–Friday
-                </h2>
-                <p>
-                    Assistants are available <strong>10 AM – 5 PM</strong>.
-                </p>
-                <p>
-                    The Wormhole closes at <strong>4 PM</strong> on Mondays and Wednesdays for departmental colloquia.
-                </p>
+            <div class="hero-visual" data-parallax="-0.04">
+                <div class="wormhole-orbit" aria-hidden="true">
+                    <span class="orbit-ring orbit-ring-one"></span>
+                    <span class="orbit-ring orbit-ring-two"></span>
+                    <span class="orbit-ring orbit-ring-three"></span>
+                    <span class="orbit-dot orbit-dot-one"></span>
+                    <span class="orbit-dot orbit-dot-two"></span>
+                    <span class="orbit-dot orbit-dot-three"></span>
+                </div>
+                <div class="queue-preview-card">
+                    <div class="preview-header">
+                        <span class="live-dot"></span>
+                        <span>Live queue preview</span>
+                    </div>
+                    <ol class="queue-preview-list">
+                        <li>
+                            <span class="queue-position">01</span>
+                            <span>
+                                <strong>Table 4</strong>
+                                <small>PH 212 · waiting</small>
+                            </span>
+                        </li>
+                        <li class="queue-active">
+                            <span class="queue-position">02</span>
+                            <span>
+                                <strong>Remote request</strong>
+                                <small>PH 211 · in progress</small>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="queue-position">03</span>
+                            <span>
+                                <strong>Table 9</strong>
+                                <small>PH 213 · waiting</small>
+                            </span>
+                        </li>
+                    </ol>
+                    <div class="preview-footer">
+                        <span>Updated moments ago</span>
+                        <a href="{{ url_for('views.livequeue') }}">Open queue</a>
+                    </div>
+                </div>
             </div>
         </section>
-        <section class="home-card-grid" aria-label="Primary Wormhole actions">
-            <div class="section student-home index-home-section">
+        <section class="showcase-metrics" aria-label="What Wormhole does well">
+            <article class="metric-card" data-reveal>
+                <span class="metric-icon">↯</span>
+                <h2>
+                    Request help fast
+                </h2>
+                <p>
+                    Students can submit a question in seconds without hunting for the right person or process.
+                </p>
+            </article>
+            <article class="metric-card" data-reveal>
+                <span class="metric-icon">◌</span>
+                <h2>
+                    See the line
+                </h2>
+                <p>
+                    The live queue keeps turn order visible, reducing confusion while the room gets busy.
+                </p>
+            </article>
+            <article class="metric-card" data-reveal>
+                <span class="metric-icon">✓</span>
+                <h2>
+                    Resolve cleanly
+                </h2>
+                <p>
+                    Assistants can claim, skip, and resolve tickets so support stays organized.
+                </p>
+            </article>
+        </section>
+        <section class="section journey-section" data-reveal>
+            <div class="section-heading-row">
+                <div>
+                    <p class="section-kicker">
+                        How it works
+                    </p>
+                    <h2>
+                        From question to support in three clear steps
+                    </h2>
+                </div>
+                <a class="button button-soft"
+                   href="{{ url_for('views.create_ticket_page') }}">Start a request</a>
+            </div>
+            <div class="journey-track">
+                <article class="journey-step" data-reveal>
+                    <span class="step-number">01</span>
+                    <h3>
+                        Send your request
+                    </h3>
+                    <p>
+                        Pick your course, describe the question, and enter the queue once for your group.
+                    </p>
+                </article>
+                <article class="journey-step" data-reveal>
+                    <span class="step-number">02</span>
+                    <h3>
+                        Watch your place
+                    </h3>
+                    <p>
+                        Use the live queue to see where your request sits and whether a ticket is in progress.
+                    </p>
+                </article>
+                <article class="journey-step" data-reveal>
+                    <span class="step-number">03</span>
+                    <h3>
+                        Work with an assistant
+                    </h3>
+                    <p>
+                        Bring the problem, your work so far, and the assistant will help you reason through it.
+                    </p>
+                </article>
+            </div>
+        </section>
+        <section class="home-card-grid action-showcase" aria-label="Primary Wormhole actions">
+            <div class="section action-card student-home index-home-section" data-reveal>
                 <p class="card-label">
                     For Students
                 </p>
@@ -54,7 +163,7 @@
                     Zoom password: <strong>Wormhole</strong>
                 </p>
             </div>
-            <div class="section ta-home index-home-section">
+            <div class="section action-card ta-home index-home-section" data-reveal>
                 <p class="card-label">
                     For Assistants
                 </p>
@@ -74,41 +183,50 @@
                 </div>
             </div>
         </section>
-        <section class="section generic wormhole-content">
-            <div class="subsection wormhole-schedule">
-                <div class="section-heading-row">
-                    <div>
-                        <p class="section-kicker">
-                            Schedule
-                        </p>
-                        <h3>
-                            Wormhole Schedule
-                        </h3>
-                    </div>
-                    <span class="status-pill status-open">Open for Spring 2026</span>
-                </div>
+        <section class="section schedule-showcase" data-reveal>
+            <div class="schedule-copy">
+                <p class="section-kicker">
+                    Schedule
+                </p>
+                <h2>
+                    Open Monday–Friday for Spring 2026
+                </h2>
                 <p>
                     Wormhole Assistants are available <strong>10 AM – 5 PM, Monday–Friday</strong>.
+                    The Wormhole closes at <strong>4 PM</strong> on Mondays and Wednesdays for departmental colloquia.
                 </p>
-                <p>
-                    <em>NOTE: The Wormhole closes at 4 PM on Mondays and Wednesdays for departmental colloquia.</em>
-                </p>
-                <h4>
-                    Holiday Closures
-                </h4>
-                <ul class="browser-default compact-list">
-                    <li>
-                        <em>Memorial Day</em> — Monday, May 25
-                    </li>
-                </ul>
+                <div class="schedule-badges" aria-label="Schedule notes">
+                    <span>In person</span>
+                    <span>Remote support</span>
+                    <span>Zoom + Teams</span>
+                </div>
+                <div class="schedule-alert">
+                    <strong>Holiday closure:</strong> Memorial Day — Monday, May 25.
+                </div>
+            </div>
+            <div class="schedule-frame">
                 <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRcotW2LQyMMUHgBjvig-ZcHnybkT4_0XfiHDp-IVeqkX7VGh4vtrXBuHmDfTAVHdmHM2jcHInYuwOn/pubhtml?widget=true&headers=false"
                         title="Wormhole assistant schedule"
                         width="100%"
                         height="600">
                 </iframe>
             </div>
+        </section>
+        <section class="section generic wormhole-content content-showcase" data-reveal>
+            <div class="section-heading-row">
+                <div>
+                    <p class="section-kicker">
+                        Details
+                    </p>
+                    <h2>
+                        Everything students need to know
+                    </h2>
+                </div>
+                <span class="status-pill status-open">Common courtesy keeps the queue moving</span>
+            </div>
             <div class="info-grid">
-                <div class="subsection About">
+                <div class="subsection info-card About" data-reveal>
+                    <span class="info-card-icon">?</span>
                     <h4>
                         About The Wormhole
                     </h4>
@@ -122,12 +240,11 @@
                         If you or your group needs help with a physics question, send a request to the queue.
                         In person, use the box on your table. Online, use this <a href="{{ url_for('views.create_ticket_page') }}">link</a>.
                         Only one person in the group needs to enter the request, and only one time for each
-                        question, please. You can see your place in the help queue using the Live Queue link at
-                        the top of the page. Multiple requests for a question won’t get you help any faster, and
-                        it slows down the process for everyone.
+                        question, please.
                     </p>
                 </div>
-                <div class="subsection Assistants">
+                <div class="subsection info-card Assistants" data-reveal>
+                    <span class="info-card-icon">WA</span>
                     <h4>
                         Wormhole Assistants
                     </h4>
@@ -135,53 +252,43 @@
                         Wormhole assistants are graduate students in physics, physics majors, or other
                         undergraduates who took one of the introductory physics sequences. They all have
                         a level of expertise in physics, but they’re not experts on your course. When
-                        asking questions, be prepared to show them the problem you’re working on. They’ll
-                        do their best to answer it but may ultimately refer you to another Wormhole Assistant
-                        or to your course instructor. If your question is course related (e.g. How do we
-                        use the analysis app in lab?) you should look for a Wormhole Assistant affiliated
-                        with your course, as shown in the schedule.
+                        asking questions, be prepared to show them the problem you’re working on.
                     </p>
                 </div>
-                <div class="subsection Virtual-Wormhole">
+                <div class="subsection info-card Virtual-Wormhole" data-reveal>
+                    <span class="info-card-icon">⌁</span>
                     <h4>
                         Virtual Wormhole
                     </h4>
                     <p>
-                        The Virtual Wormhole allows you to request help remotely. You can get help through
-                        two different methods:
+                        The Virtual Wormhole allows you to request help remotely. Connect to the Virtual
+                        Wormhole channel in the Introductory Physics MS Team, or join the Wormhole Zoom session.
                     </p>
                     <ol class="browser-default compact-list">
                         <li>
-                            Connect to the Virtual Wormhole channel in the Introductory Physics MS Team.
-                            (Full instructions for joining the Team are in
-                            (<a href="{{ url_for('static', filename='files/MS Teams instructions.pdf') }}">MS Teams Instructions</a>.)
+                            <a href="{{ url_for('static', filename='files/MS Teams instructions.pdf') }}">MS Teams Instructions</a>
                         </li>
                         <li>
-                            Join the Wormhole Zoom session
-                            <a href="https://oregonstate.zoom.us/j/95601298258">here</a>
+                            <a href="https://oregonstate.zoom.us/j/95601298258">Join Zoom</a>
                             (password: <strong>Wormhole</strong>)
                         </li>
                     </ol>
                 </div>
-                <div class="subsection Requesting-Assistance">
+                <div class="subsection info-card Requesting-Assistance" data-reveal>
+                    <span class="info-card-icon">→</span>
                     <h4>
                         Requesting Assistance
                     </h4>
                     <p>
-                        In the Wormhole use the box on your table. Simply push the button for your course
-                        to be put in the queue. In the Virtual Wormhole enter a request at
+                        In the Wormhole use the box on your table. In the Virtual Wormhole enter a request at
                         <a href="https://wormhole.physics.oregonstate.edu/createticket">
                             wormhole.physics.oregonstate.edu/createticket
                         </a>.
-                        An Assistant will respond to your request as soon as your turn comes up in the
-                        queue. Help is provided in the order requests are received. You can check the
-                        status of your request at
-                        <a href="https://wormhole.physics.oregonstate.edu/livequeue">
-                            wormhole.physics.oregonstate.edu/livequeue
-                        </a>.
+                        Help is provided in the order requests are received.
                     </p>
                 </div>
-                <div class="subsection Conduct info-grid-wide">
+                <div class="subsection info-card Conduct info-grid-wide" data-reveal>
+                    <span class="info-card-icon">★</span>
                     <h4>
                         Code of Conduct
                     </h4>
