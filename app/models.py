@@ -169,3 +169,16 @@ class Skipped(Base):
 
     def __repr__(self) -> str:
         return f"<User {self.wa_id} skipped Ticket {self.tkt_id}>"
+    
+class Box(Base):
+    __tablename__ = "boxes"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    box_name: Mapped[str] = mapped_column(sa.String(100))
+    battery_status: Mapped[str] = mapped_column(sa.String(50))
+    update_time: Mapped[str] = mapped_column(sa.String(100))
+    # No Foreign Keys
+    # No Relationships
+
+    def __repr__(self) -> str:
+        return f"<Box {self.box_name} - {self.battery_status}>"

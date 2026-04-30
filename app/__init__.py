@@ -15,7 +15,7 @@ migrate = Migrate()
 socketio = SocketIO()
 
 
-def create_app(testing=True):
+def create_app(testing=None):
     """
     Create and configure the Flask application instance.
 
@@ -31,6 +31,10 @@ def create_app(testing=True):
     Flask
         The configured Flask application instance.
     """
+
+    if testing is None:
+        testing = os.environ.get("TESTING", "false").lower() in ("1", "true", "yes")
+    
     app = Flask(__name__)
 
     # ---------------------------------------------------

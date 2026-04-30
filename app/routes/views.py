@@ -37,7 +37,7 @@ from app.forms import (
     ResolveTicketForm,
     TicketForm,
 )
-from app.models import Skipped, Ticket, User
+from app.models import Skipped, Ticket, User, Box
 from app.time_utils import (
     PACIFIC_TZ,
     format_pacific,
@@ -841,3 +841,35 @@ def pastticket(username, tktid):
 
     ticket_ns = _ticket_to_ns(t)
     return render_template("pastticket.html", ticket=ticket_ns, form=form)
+
+# -------------------------------
+# POST /hardwareapi (Hardware Status From WConnector)
+# -------------------------------
+@views_bp.route("/hardwareapi", methods=["POST"])
+def hardwareapi():
+    from flask import jsonify
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No JSON payload received"}), 400
+
+    name = data.get("name")
+    status = data.get("status")
+    time = data.get("time")
+
+    if not all([name, status, time]):
+        return jsonify({"error": "Missing required fields: name, status, time"}), 400
+
+    box = Box.query.filter_by(Box_Name=name).first()
+
+    if box:
+        box.battery_status = status
+        box.update_time = time
+    else:
+        box = Box(box_name=name, battery_status=status, update_time=time)
+        db.session.add(box)
+
+    db.session.commit()
+
+    return jsonify({"message": f"Hardware '{name}' updated successfully"}), 200
