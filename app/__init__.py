@@ -1,17 +1,13 @@
 # app/__init__.py
-import os
 from types import SimpleNamespace
 
-from dotenv import load_dotenv
 from flask import Flask, current_app, jsonify, redirect, request, session
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from config import Config
-
-load_dotenv()
+from config import Config, validate_non_testing_config
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -36,32 +32,8 @@ def create_app(testing=False):
             PREFERRED_URL_SCHEME="http",
         )
 
-    database_url = app.config.get("SQLALCHEMY_DATABASE_URI")
-
-    if not testing and database_url == "sqlite:///:memory:":
-        raise RuntimeError(
-            "Refusing to start non-testing app with in-memory SQLite. "
-            "Set DATABASE_URL, or explicitly set ALLOW_SQLITE_FALLBACK=1 for local development."
-        )
-
-    if (
-        not testing
-        and not os.environ.get("DATABASE_URL")
-        and os.environ.get("ALLOW_SQLITE_FALLBACK") != "1"
-    ):
-        raise RuntimeError(
-            "DATABASE_URL must be set for non-testing environments. "
-            "Set ALLOW_SQLITE_FALLBACK=1 only for local development."
-        )
-
     if not testing:
-        secret_key = app.config.get("SECRET_KEY")
-        if not secret_key or secret_key == "dev-secret-key":
-            raise RuntimeError(
-                "SECRET_KEY must be set to a strong non-default value for non-testing "
-                "environments. Generate a strong random value and store it as an "
-                "environment variable."
-            )
+        validate_non_testing_config(app.config)
 
     @app.before_request
     def enforce_https():
