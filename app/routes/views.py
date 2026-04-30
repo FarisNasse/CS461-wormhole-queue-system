@@ -1,6 +1,4 @@
 # app/routes/views.py
-import csv
-import io
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -9,6 +7,7 @@ from urllib.parse import urljoin, urlparse
 from flask import (
     Blueprint,
     abort,
+    current_app,
     flash,
     redirect,
     render_template,
@@ -19,9 +18,17 @@ from flask import (
 )
 
 # Explicit imports for SQLAlchemy operators to ensure compatibility
-from sqlalchemy import and_, func, or_, text
+from sqlalchemy import text
 
 from app import db
+from app.archive_utils import (
+    archive_dir as get_archive_dir,
+)
+from app.archive_utils import (
+    archive_ticket_query,
+    create_archive_file,
+    list_archive_files,
+)
 from app.auth_utils import admin_required, login_required
 from app.forms import (
     ChangePassForm,
@@ -92,20 +99,6 @@ def _ticket_to_ns(ticket: Ticket):
         closed_reason=ticket.closed_reason,
         closed_by=assistant_display_name,
         assigned_to=assistant_display_name,
-    )
-
-
-def _archive_dir() -> Path:
-    archive_dir = Path(__file__).resolve().parents[1] / "data" / "archives"
-    archive_dir.mkdir(parents=True, exist_ok=True)
-    return archive_dir
-
-
-def _list_archive_files() -> list[str]:
-    archive_dir = _archive_dir()
-    return sorted(
-        [path.name for path in archive_dir.glob("*.csv") if path.is_file()],
-        reverse=True,
     )
 
 
@@ -387,88 +380,24 @@ def export_archive():
         flash("Dates cannot be in the future.", "error")
         return redirect(url_for("views.archive"))
 
-    # Query the database using closed_at OR fallback to created_at for resolved tickets
-    # Using explicit or_ / and_ for compatibility
-    tickets_query = Ticket.query.filter(
-        or_(
-            and_(
-                Ticket.status.in_(["closed", "resolved"]),
-                Ticket.closed_at.between(start_date, end_date),
-            ),
-            and_(
-                Ticket.status == "resolved",
-                Ticket.closed_at.is_(None),
-                Ticket.created_at.between(start_date, end_date),
-            ),
-        )
-    ).order_by(func.coalesce(Ticket.closed_at, Ticket.created_at).desc())
+    tickets_query = archive_ticket_query(start_date, end_date, include_end=True)
 
     # Optimization: Use limit(1) instead of count() to check for existence
     if tickets_query.limit(1).first() is None:
         flash("No closed or resolved tickets found for this period.", "info")
         return redirect(url_for("views.archive"))
 
-    output = io.StringIO()
-    writer = csv.writer(output)
-
-    # CSV Injection Sanitization Helper
-    def sanitize(value):
-        if value and isinstance(value, str):
-            normalized = value.lstrip()
-            if normalized.startswith(("=", "+", "-", "@")):
-                # Prepend quote to the ORIGINAL value so leading whitespace is preserved
-                return f"'{value}"
-        return value
-
-    writer.writerow(
-        [
-            "Ticket ID",
-            "Student Name",
-            "Table",
-            "Course",
-            "Status",
-            "Created At",
-            "Closed At",
-            "Students Helped",
-            "Assistant ID",
-            "Assistant Name",
-            "Ticket Type",
-        ]
-    )
-
-    for t in tickets_query.yield_per(1000):
-        writer.writerow(
-            [
-                t.id,
-                sanitize(t.student_name),
-                sanitize(t.table),
-                sanitize(t.physics_course),
-                t.closed_reason,
-                t.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                t.closed_at.strftime("%Y-%m-%d %H:%M:%S") if t.closed_at else "N/A",
-                t.number_of_students,
-                t.wa_id or "Unassigned",
-                t.wormhole_assistant.name
-                if t.wormhole_assistant and t.wormhole_assistant.name
-                else ("N/A"),
-                "Zoom"
-                if t.table == "Zoom"
-                else "Teams"
-                if t.table == "Teams"
-                else "Box",
-            ]
-        )
-
-    csv_content = output.getvalue()
-
     safe_start = start_date.date().isoformat()
     safe_end = end_date.date().isoformat()
     filename = f"wormhole_archive_{safe_start}_to_{safe_end}.csv"
 
-    archive_path = _archive_dir() / filename
     try:
-        with archive_path.open("w", encoding="utf-8", newline="") as archive_file:
-            archive_file.write(csv_content)
+        create_archive_file(
+            root_path=current_app.root_path,
+            start_utc=start_date,
+            end_utc=end_date,
+            filename=filename,
+        )
     except OSError:
         flash("Failed to save archive file on server.", "error")
         return redirect(url_for("views.archive"))
@@ -486,7 +415,7 @@ def archive():
     # Instantiate form for the template to render CSRF token and fields
     form = ExportArchiveForm()
     delete_form = DeleteArchiveForm()
-    archive_files = _list_archive_files()
+    archive_files = list_archive_files(current_app.root_path)
     tkt_list = []
     assoc_list = []
     return render_template(
@@ -512,7 +441,7 @@ def delete_archives():
         flash("No archive files selected.", "info")
         return redirect(url_for("views.archive"))
 
-    archive_dir = _archive_dir()
+    archive_dir_path = get_archive_dir(current_app.root_path)
     deleted_count = 0
 
     for raw_name in selected_files:
@@ -520,7 +449,7 @@ def delete_archives():
         if safe_name != raw_name or not safe_name.lower().endswith(".csv"):
             continue
 
-        archive_path = archive_dir / safe_name
+        archive_path = archive_dir_path / safe_name
         try:
             if archive_path.is_file():
                 archive_path.unlink()
@@ -543,12 +472,12 @@ def download_archive(filename):
     if safe_filename != filename or not safe_filename.lower().endswith(".csv"):
         abort(404)
 
-    archive_dir = _archive_dir()
-    file_path = archive_dir / safe_filename
+    archive_dir_path = get_archive_dir(current_app.root_path)
+    file_path = archive_dir_path / safe_filename
     if not file_path.is_file():
         abort(404)
 
-    return send_from_directory(str(archive_dir), safe_filename, as_attachment=True)
+    return send_from_directory(str(archive_dir_path), safe_filename, as_attachment=True)
 
 
 @views_bp.route("/user/<username>")

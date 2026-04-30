@@ -1,0 +1,13 @@
+[Unit]
+Description=Append Wormhole weekly ticket archive
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/CS461-wormhole-queue-system
+EnvironmentFile=/etc/wormhole/wormhole.env
+Environment=FLASK_APP=application:application
+ExecStart=/home/ec2-user/CS461-wormhole-queue-system/venv/bin/flask archive-weekly
