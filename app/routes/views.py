@@ -1,5 +1,5 @@
 # app/routes/views.py
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urljoin, urlparse
@@ -45,6 +45,7 @@ from app.forms import (
     TicketForm,
 )
 from app.models import Skipped, Ticket, User
+from app.queue_maintenance import flush_open_tickets
 from app.time_utils import (
     PACIFIC_TZ,
     format_pacific,
@@ -189,21 +190,7 @@ def flush():
         flash("Invalid request or session expired.", "error")
         return redirect(url_for("views.queue"))
 
-    # Use bulk UPDATE for performance
-    now = datetime.now(timezone.utc)
-
-    # Update all non-closed/resolved tickets
-    count = Ticket.query.filter(~Ticket.status.in_(["closed", "resolved"])).update(
-        {
-            Ticket.status: "closed",
-            Ticket.closed_reason: "Queue Flushed",
-            Ticket.closed_at: now,
-            Ticket.number_of_students: 0,
-        },
-        synchronize_session=False,
-    )
-
-    db.session.commit()
+    count = flush_open_tickets(reason="Queue Flushed")
 
     # broadcast refresh to queue clients
     try:

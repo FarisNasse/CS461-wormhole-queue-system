@@ -97,6 +97,7 @@ def create_app(testing=False):
     # in this file, it is intentional (for registering models and events).
     from app import models  # noqa: F401
     from app.archive_utils import register_archive_cli
+    from app.queue_maintenance import register_queue_maintenance_cli
     from app.routes import queue_events  # noqa: F401
     from app.routes.auth import auth_bp
     from app.routes.error import error_bp
@@ -108,6 +109,7 @@ def create_app(testing=False):
     app.register_blueprint(tickets_bp)
     app.register_blueprint(error_bp)
     register_archive_cli(app)
+    register_queue_maintenance_cli(app)
 
     # ---------------------------------------------------
     # Health Check Route

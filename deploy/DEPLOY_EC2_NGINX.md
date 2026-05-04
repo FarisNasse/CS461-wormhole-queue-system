@@ -93,3 +93,27 @@ To run this automatically every Saturday at midnight Pacific using systemd:
    - `sudo journalctl -u wormhole-weekly-archive.service -n 50`
 
 The timer uses `Timezone=America/Los_Angeles`. If your systemd version does not support that setting, set the server timezone with `sudo timedatectl set-timezone America/Los_Angeles`, remove the `Timezone=` line, then reload systemd.
+
+## 8) Enable automatic nightly queue flush
+
+The app includes a Flask CLI command that closes all active tickets (`live` and `in_progress`) with reason `Queue Flushed`:
+
+```bash
+source venv/bin/activate
+export FLASK_APP=application:application
+flask flush-open-tickets --reason "Queue Flushed"
+```
+
+To run this automatically every day at midnight Pacific using systemd:
+
+1. Copy the timer and service files:
+   - `sudo cp deploy/systemd/wormhole-nightly-flush.service /etc/systemd/system/wormhole-nightly-flush.service`
+   - `sudo cp deploy/systemd/wormhole-nightly-flush.timer /etc/systemd/system/wormhole-nightly-flush.timer`
+2. Reload systemd and enable the timer:
+   - `sudo systemctl daemon-reload`
+   - `sudo systemctl enable --now wormhole-nightly-flush.timer`
+3. Verify the timer:
+   - `systemctl list-timers wormhole-nightly-flush.timer`
+   - `sudo journalctl -u wormhole-nightly-flush.service -n 50`
+
+The timer uses `Timezone=America/Los_Angeles`. If your systemd version does not support that setting, set the server timezone with `sudo timedatectl set-timezone America/Los_Angeles`, remove the `Timezone=` line, then reload systemd.
