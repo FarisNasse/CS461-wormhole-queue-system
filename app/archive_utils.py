@@ -16,7 +16,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.sql.elements import ColumnElement
 
 from app.models import Ticket
-from app.time_utils import PACIFIC_TZ, ensure_aware_utc
+from app.time_utils import PACIFIC_TZ, ensure_aware_utc, format_pacific
 
 ARCHIVE_HEADERS = [
     "Ticket ID",
@@ -27,7 +27,6 @@ ARCHIVE_HEADERS = [
     "Created At",
     "Closed At",
     "Students Helped",
-    "Assistant ID",
     "Assistant Name",
     "Ticket Type",
 ]
@@ -137,10 +136,9 @@ def ticket_archive_row(ticket: Ticket) -> list[object]:
         sanitize_csv_value(ticket.table),
         sanitize_csv_value(ticket.physics_course),
         ticket.status,
-        ticket.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-        ticket.closed_at.strftime("%Y-%m-%d %H:%M:%S") if ticket.closed_at else "N/A",
+        format_pacific(ticket.created_at, "%Y-%m-%d %H:%M:%S"),
+        format_pacific(ticket.closed_at, "%Y-%m-%d %H:%M:%S"),
         ticket.number_of_students,
-        ticket.wa_id or "Unassigned",
         sanitize_csv_value(
             ticket.wormhole_assistant.name
             if ticket.wormhole_assistant and ticket.wormhole_assistant.name
