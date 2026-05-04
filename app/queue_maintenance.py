@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import cast
 
 import click
 from flask import Flask
@@ -14,14 +15,17 @@ from app.models import Ticket
 def flush_open_tickets(reason: str = "Queue Flushed") -> int:
     """Close all active tickets and return how many were updated."""
     now = datetime.now(timezone.utc)
-    count = Ticket.query.filter(~Ticket.status.in_(["closed", "resolved"])).update(
-        {
-            Ticket.status: "closed",
-            Ticket.closed_reason: reason,
-            Ticket.closed_at: now,
-            Ticket.number_of_students: 0,
-        },
-        synchronize_session=False,
+    count = cast(
+        int,
+        Ticket.query.filter(~Ticket.status.in_(["closed", "resolved"])).update(
+            {
+                Ticket.status: "closed",
+                Ticket.closed_reason: reason,
+                Ticket.closed_at: now,
+                Ticket.number_of_students: 0,
+            },
+            synchronize_session=False,
+        ),
     )
 
     db.session.commit()
