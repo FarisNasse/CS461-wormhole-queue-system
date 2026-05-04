@@ -6,7 +6,9 @@ from app.models import Ticket
 
 def test_flush_open_tickets_cli_closes_live_and_in_progress(test_app):
     """CLI flush should close active tickets and leave closed/resolved unchanged."""
-    live = Ticket(student_name="Live", table="T1", physics_course="Ph 211", status="live")
+    live = Ticket(
+        student_name="Live", table="T1", physics_course="Ph 211", status="live"
+    )
     in_progress = Ticket(
         student_name="InProgress",
         table="T2",
