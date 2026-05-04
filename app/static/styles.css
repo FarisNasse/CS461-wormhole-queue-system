@@ -384,6 +384,10 @@
     border-radius: 50px;
 }
 
+.live-queue #tickets tbody td {
+    font-size: 1.25rem;
+}
+
 .tickets {
     background: #FFF;
     border-radius: 15px;
