@@ -1,4 +1,6 @@
 # run.py
+import os
+
 import sqlalchemy as sa
 from dotenv import load_dotenv
 from sqlalchemy import orm
@@ -7,6 +9,7 @@ from app import create_app, db, socketio
 from app.models import Skipped, Ticket, User
 
 result = load_dotenv("wormhole.env")
+os.environ.setdefault("ALLOW_SQLITE_FALLBACK", "1")
 
 
 app = create_app()
