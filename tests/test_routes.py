@@ -309,7 +309,9 @@ def test_delete_archives_with_no_selection(test_client, test_app):
 
 def test_download_current_users_csv(test_client):
     """Current user CSV export should include only active users and expected columns."""
-    admin = User(username="admin_csv_current", email="currentcsv@test.com", is_admin=True)
+    admin = User(
+        username="admin_csv_current", email="currentcsv@test.com", is_admin=True
+    )
     admin.set_password("pass")
 
     active = User(
@@ -338,9 +340,8 @@ def test_download_current_users_csv(test_client):
     response = test_client.get("/user_list/download/current")
     assert response.status_code == 200
     assert "text/csv" in response.headers.get("Content-Type", "")
-    assert (
-        "attachment; filename=current_users.csv"
-        in response.headers.get("Content-Disposition", "")
+    assert "attachment; filename=current_users.csv" in response.headers.get(
+        "Content-Disposition", ""
     )
 
     decoded = response.data.decode("utf-8")
@@ -417,7 +418,9 @@ def test_download_old_users_csv_rejects_non_admin(test_client):
 
 def test_download_current_users_csv_sanitizes_formula_cells(test_client):
     """CSV export should neutralize spreadsheet formula-leading values."""
-    admin = User(username="admin_csv_sanitize", email="sanitize@test.com", is_admin=True)
+    admin = User(
+        username="admin_csv_sanitize", email="sanitize@test.com", is_admin=True
+    )
     admin.set_password("pass")
 
     risky = User(
