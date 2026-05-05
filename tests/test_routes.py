@@ -1,5 +1,7 @@
 # tests/test_routes.py
+import csv
 from datetime import datetime, timedelta, timezone
+from io import StringIO
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -26,6 +28,33 @@ def test_home_page_loads(test_client):
     response = test_client.get("/")
     assert response.status_code == 200
     assert b"Physics Collaboration and Help Center" in response.data
+
+
+def test_instruction_pdf_routes_are_present_on_home(test_client):
+    """Home page should link to instruction routes that serve PDF files."""
+    response = test_client.get("/")
+    assert response.status_code == 200
+    assert b"/instructions/Wormhole_Student_Instructions.pdf" in response.data
+    assert b"/instructions/MS_Teams_Instructions.pdf" in response.data
+
+
+def test_download_instruction_files_serves_known_pdfs(test_client):
+    """Known instruction PDFs should be downloadable via the instructions route."""
+    wormhole_response = test_client.get(
+        "/instructions/Wormhole_Student_Instructions.pdf"
+    )
+    assert wormhole_response.status_code == 200
+    assert "application/pdf" in wormhole_response.headers.get("Content-Type", "")
+
+    teams_response = test_client.get("/instructions/MS_Teams_Instructions.pdf")
+    assert teams_response.status_code == 200
+    assert "application/pdf" in teams_response.headers.get("Content-Type", "")
+
+
+def test_download_instruction_file_rejects_unknown_name(test_client):
+    """Unknown or non-allowlisted instruction filename should return 404."""
+    response = test_client.get("/instructions/not-allowed.pdf")
+    assert response.status_code == 404
 
 
 def test_login_route_exists(test_client):
@@ -303,6 +332,145 @@ def test_delete_archives_with_no_selection(test_client, test_app):
     response = test_client.post("/archive/delete", data={}, follow_redirects=True)
     assert response.status_code == 200
     assert b"No archive files selected." in response.data
+
+
+def test_download_current_users_csv(test_client):
+    """Current user CSV export should include only active users and expected columns."""
+    admin = User(
+        username="admin_csv_current", email="currentcsv@test.com", is_admin=True
+    )
+    admin.set_password("pass")
+
+    active = User(
+        username="jdoe",
+        email="jdoe@test.com",
+        name="Jane Doe",
+        is_active=True,
+    )
+    active.set_password("pass")
+
+    inactive = User(
+        username="olduser",
+        email="olduser@test.com",
+        name="Old User",
+        is_active=False,
+    )
+    inactive.set_password("pass")
+
+    db.session.add_all([admin, active, inactive])
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.get("/user_list/download/current")
+    assert response.status_code == 200
+    assert "text/csv" in response.headers.get("Content-Type", "")
+    assert "attachment; filename=current_users.csv" in response.headers.get(
+        "Content-Disposition", ""
+    )
+
+    decoded = response.data.decode("utf-8")
+    rows = list(csv.reader(StringIO(decoded)))
+    assert rows[0] == ["first name", "last name", "onid"]
+    assert ["Jane", "Doe", "jdoe"] in rows
+    assert ["Old", "User", "olduser"] not in rows
+
+
+def test_download_old_users_csv(test_client):
+    """Old user CSV export should include only inactive users and expected columns."""
+    admin = User(username="admin_csv_old", email="oldcsv@test.com", is_admin=True)
+    admin.set_password("pass")
+
+    active = User(
+        username="activeuser",
+        email="activeuser@test.com",
+        name="Active User",
+        is_active=True,
+    )
+    active.set_password("pass")
+
+    inactive = User(
+        username="retiredwa",
+        email="retiredwa@test.com",
+        name="Retired WA",
+        is_active=False,
+    )
+    inactive.set_password("pass")
+
+    db.session.add_all([admin, active, inactive])
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.get("/user_list/download/old")
+    assert response.status_code == 200
+    assert "text/csv" in response.headers.get("Content-Type", "")
+    assert "attachment; filename=old_users.csv" in response.headers.get(
+        "Content-Disposition", ""
+    )
+
+    decoded = response.data.decode("utf-8")
+    rows = list(csv.reader(StringIO(decoded)))
+    assert rows[0] == ["first name", "last name", "onid"]
+    assert ["Retired", "WA", "retiredwa"] in rows
+    assert ["Active", "User", "activeuser"] not in rows
+
+
+def test_download_current_users_csv_requires_login(test_client):
+    """CSV export should require authentication."""
+    response = test_client.get("/user_list/download/current")
+    assert response.status_code == 401
+    assert response.get_json() == {"error": "Authentication required"}
+
+
+def test_download_old_users_csv_rejects_non_admin(test_client):
+    """CSV export should reject authenticated non-admin users."""
+    regular = User(username="regular_csv", email="regularcsv@test.com", is_admin=False)
+    regular.set_password("pass")
+    db.session.add(regular)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = regular.id
+        sess["is_admin"] = False
+
+    response = test_client.get("/user_list/download/old")
+    assert response.status_code == 403
+    assert response.get_json() == {"error": "Admin access required"}
+
+
+def test_download_current_users_csv_sanitizes_formula_cells(test_client):
+    """CSV export should neutralize spreadsheet formula-leading values."""
+    admin = User(
+        username="admin_csv_sanitize", email="sanitize@test.com", is_admin=True
+    )
+    admin.set_password("pass")
+
+    risky = User(
+        username="=cmd",
+        email="risky@test.com",
+        name="=Jane +Doe",
+        is_active=True,
+    )
+    risky.set_password("pass")
+
+    db.session.add_all([admin, risky])
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    response = test_client.get("/user_list/download/current")
+    assert response.status_code == 200
+
+    decoded = response.data.decode("utf-8")
+    rows = list(csv.reader(StringIO(decoded)))
+    assert ["'=Jane", "'+Doe", "'=cmd"] in rows
 
 
 def test_pastticket_resolution(test_client):

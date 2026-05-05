@@ -12,11 +12,18 @@
                             Current Users
                         </th>
                     </tr>
+                    <tr>
+                        <td>
+                            <form action="{{ url_for('views.download_current_users') }}" method="get">
+                                <button type="submit">Download Current Users</button>
+                            </form>
+                        </td>
+                    </tr>
                     {% for u in new_users %}
                         <tr>
                             <td>
                                 <a href="{{ url_for('views.delete_user', username=u.username) }}">
-                                    {{ u.username }}
+                                    {{ u.name or u.username }}
                                 </a>
                             </td>
                         </tr>
@@ -28,11 +35,18 @@
                             Old Users
                         </th>
                     </tr>
+                    <tr>
+                        <td>
+                            <form action="{{ url_for('views.download_old_users') }}" method="get">
+                                <button type="submit">Download Old Users</button>
+                            </form>
+                        </td>
+                    </tr>
                     {% for u in old_users %}
                         <tr>
                             <td>
                                 <a href="{{ url_for('views.delete_user', username=u.username) }}">
-                                    {{ u.username }}
+                                    {{ u.name or u.username }}
                                 </a>
                             </td>
                         </tr>
