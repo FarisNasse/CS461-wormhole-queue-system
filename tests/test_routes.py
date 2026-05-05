@@ -30,6 +30,33 @@ def test_home_page_loads(test_client):
     assert b"Physics Collaboration and Help Center" in response.data
 
 
+def test_instruction_pdf_routes_are_present_on_home(test_client):
+    """Home page should link to instruction routes that serve PDF files."""
+    response = test_client.get("/")
+    assert response.status_code == 200
+    assert b"/instructions/Wormhole_Student_Instructions.pdf" in response.data
+    assert b"/instructions/MS_Teams_Instructions.pdf" in response.data
+
+
+def test_download_instruction_files_serves_known_pdfs(test_client):
+    """Known instruction PDFs should be downloadable via the instructions route."""
+    wormhole_response = test_client.get(
+        "/instructions/Wormhole_Student_Instructions.pdf"
+    )
+    assert wormhole_response.status_code == 200
+    assert "application/pdf" in wormhole_response.headers.get("Content-Type", "")
+
+    teams_response = test_client.get("/instructions/MS_Teams_Instructions.pdf")
+    assert teams_response.status_code == 200
+    assert "application/pdf" in teams_response.headers.get("Content-Type", "")
+
+
+def test_download_instruction_file_rejects_unknown_name(test_client):
+    """Unknown or non-allowlisted instruction filename should return 404."""
+    response = test_client.get("/instructions/not-allowed.pdf")
+    assert response.status_code == 404
+
+
 def test_login_route_exists(test_client):
     """Verify the login route is accessible."""
     response = test_client.get("/assistant-login")

@@ -58,6 +58,10 @@ from app.time_utils import (
 )
 
 views_bp = Blueprint("views", __name__)
+INSTRUCTION_FILES = {
+    "Wormhole_Student_Instructions.pdf",
+    "MS_Teams_Instructions.pdf",
+}
 
 
 # --- Helper Functions ---
@@ -520,6 +524,22 @@ def download_archive(filename):
         abort(404)
 
     return send_from_directory(str(archive_dir_path), safe_filename, as_attachment=True)
+
+
+@views_bp.route("/instructions/<path:filename>")
+def download_instruction_file(filename):
+    safe_filename = Path(filename).name
+    if safe_filename != filename or safe_filename not in INSTRUCTION_FILES:
+        abort(404)
+
+    instructions_dir = Path(current_app.root_path) / "files"
+    file_path = instructions_dir / safe_filename
+    if not file_path.is_file():
+        abort(404)
+
+    return send_from_directory(
+        str(instructions_dir), safe_filename, as_attachment=False
+    )
 
 
 @views_bp.route("/user/<username>")
