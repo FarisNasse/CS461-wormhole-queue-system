@@ -1,4 +1,6 @@
 # app/routes/views.py
+import csv
+import io
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -6,6 +8,7 @@ from urllib.parse import urljoin, urlparse
 
 from flask import (
     Blueprint,
+    Response,
     abort,
     current_app,
     flash,
@@ -19,6 +22,7 @@ from flask import (
 
 # Explicit imports for SQLAlchemy operators to ensure compatibility
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import db
 from app.archive_utils import (
@@ -100,6 +104,57 @@ def _ticket_to_ns(ticket: Ticket):
         closed_reason=ticket.closed_reason,
         closed_by=assistant_display_name,
         assigned_to=assistant_display_name,
+    )
+
+
+def _split_user_name(full_name):
+    if not full_name:
+        return "", ""
+
+    trimmed = full_name.strip()
+    if not trimmed:
+        return "", ""
+
+    parts = trimmed.split(maxsplit=1)
+    if len(parts) == 1:
+        return parts[0], ""
+
+    return parts[0], parts[1]
+
+
+def _last_name_key(user: User):
+    if not user.name:
+        return "", user.username.lower()
+
+    name_parts = user.name.split()
+    if not name_parts:
+        return "", user.username.lower()
+
+    return name_parts[-1].lower(), user.username.lower()
+
+
+def _csv_safe(value):
+    text = "" if value is None else str(value)
+    if text.startswith(("=", "+", "-", "@")):
+        return f"'{text}"
+    return text
+
+
+def _build_users_csv_response(users, filename):
+    output = io.StringIO()
+    writer = csv.writer(output, lineterminator="\n")
+    writer.writerow(["first name", "last name", "onid"])
+
+    for user in sorted(users, key=_last_name_key):
+        first_name, last_name = _split_user_name(user.name)
+        writer.writerow(
+            [_csv_safe(first_name), _csv_safe(last_name), _csv_safe(user.username)]
+        )
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
 
 
@@ -553,15 +608,34 @@ def user_list():
     current_users = User.query.filter_by(is_active=True).all()
     old_users = User.query.filter_by(is_active=False).all()
 
-    def last_name(user):
-        if not user.name:
-            return ""
-        return user.name.split()[-1].lower()
-
-    new_users = sorted(current_users, key=last_name)
-    old_users = sorted(old_users, key=last_name)
+    new_users = sorted(current_users, key=_last_name_key)
+    old_users = sorted(old_users, key=_last_name_key)
 
     return render_template("user_list.html", new_users=new_users, old_users=old_users)
+
+
+@views_bp.route("/user_list/download/current")
+@admin_required
+def download_current_users():
+    try:
+        current_users = User.query.filter_by(is_active=True).all()
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash("Unable to export current users right now.", "error")
+        return redirect(url_for("views.user_list"))
+    return _build_users_csv_response(current_users, "current_users.csv")
+
+
+@views_bp.route("/user_list/download/old")
+@admin_required
+def download_old_users():
+    try:
+        old_users = User.query.filter_by(is_active=False).all()
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash("Unable to export old users right now.", "error")
+        return redirect(url_for("views.user_list"))
+    return _build_users_csv_response(old_users, "old_users.csv")
 
 
 @views_bp.route("/register", methods=["GET"])

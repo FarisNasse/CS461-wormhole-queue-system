@@ -12,6 +12,13 @@
                             Current Users
                         </th>
                     </tr>
+                    <tr>
+                        <td>
+                            <form action="{{ url_for('views.download_current_users') }}" method="get">
+                                <button type="submit">Download Current Users CSV</button>
+                            </form>
+                        </td>
+                    </tr>
                     {% for u in new_users %}
                         <tr>
                             <td>
@@ -27,6 +34,13 @@
                         <th>
                             Old Users
                         </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <form action="{{ url_for('views.download_old_users') }}" method="get">
+                                <button type="submit">Download Old Users CSV</button>
+                            </form>
+                        </td>
                     </tr>
                     {% for u in old_users %}
                         <tr>
