@@ -135,7 +135,7 @@ def ticket_archive_row(ticket: Ticket) -> list[object]:
         sanitize_csv_value(ticket.student_name),
         sanitize_csv_value(ticket.table),
         sanitize_csv_value(ticket.physics_course),
-        ticket.status,
+        ticket.closed_reason if ticket.closed_reason else "Not Provided",
         format_pacific(ticket.created_at, "%Y-%m-%d %H:%M:%S"),
         format_pacific(ticket.closed_at, "%Y-%m-%d %H:%M:%S"),
         ticket.number_of_students,
