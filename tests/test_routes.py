@@ -881,3 +881,53 @@ def test_site_content_editor_rejects_google_sheets_edit_url(test_client):
         b"Schedule embed URL must be a published Google Sheets pubhtml URL."
         in response.data
     )
+
+
+def test_site_content_editor_renders_multiple_holiday_closures(test_client):
+    _login_as_admin(test_client)
+
+    response = test_client.post(
+        "/admin/site-content",
+        data={
+            "homepage_banner": "",
+            "schedule_announcement": "Updated announcement",
+            "schedule_hours": "Open Monday through Friday.",
+            "schedule_note": "",
+            "holiday_closures": "Memorial Day — Closed\nFinals Week — Reduced Hours",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/e/"
+                "2PACX-1vExamplePublishedSheetId/pubhtml?widget=true&headers=false"
+            ),
+        },
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert b"Memorial Day" in response.data
+    assert b"Finals Week" in response.data
+
+
+def test_site_content_editor_displays_audit_table(test_client):
+    _login_as_admin(test_client)
+
+    test_client.post(
+        "/admin/site-content",
+        data={
+            "homepage_banner": "Audit test banner",
+            "schedule_announcement": "Audit test announcement",
+            "schedule_hours": "Open Monday through Friday.",
+            "schedule_note": "",
+            "holiday_closures": "",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/e/"
+                "2PACX-1vExamplePublishedSheetId/pubhtml?widget=true&headers=false"
+            ),
+        },
+    )
+
+    response = test_client.get("/admin/site-content")
+
+    assert response.status_code == 200
+    assert b"Audit Information" in response.data
+    assert b"schedule_announcement" in response.data
+    assert b"site_admin" in response.data or b"example.com" in response.data

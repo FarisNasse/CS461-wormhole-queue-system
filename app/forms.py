@@ -1,6 +1,6 @@
 import calendar
-import re
 from datetime import date
+from urllib.parse import urlparse
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField, FileRequired
@@ -217,11 +217,15 @@ class SiteContentForm(FlaskForm):
         if not value:
             return
 
-        published_sheet_pattern = (
-            r"^https://docs\.google\.com/spreadsheets/d/e/[^/]+/pubhtml" r"(\?.*)?$"
-        )
+        parsed = urlparse(value)
 
-        if not re.match(published_sheet_pattern, value):
+        is_https = parsed.scheme == "https"
+        is_google_sheets = parsed.netloc == "docs.google.com"
+        is_published_sheet = parsed.path.startswith(
+            "/spreadsheets/d/e/"
+        ) and parsed.path.endswith("/pubhtml")
+
+        if not (is_https and is_google_sheets and is_published_sheet):
             raise ValidationError(
                 "Schedule embed URL must be a published Google Sheets pubhtml URL."
             )
