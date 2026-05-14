@@ -7,7 +7,6 @@ import sqlalchemy as sa
 from app import db
 from app.models import SiteContent
 
-
 DEFAULT_SITE_CONTENT: dict[str, str] = {
     "homepage_banner": "",
     "schedule_announcement": "The Wormhole is open for Spring 2026!",

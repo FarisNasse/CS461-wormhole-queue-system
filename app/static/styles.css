@@ -384,6 +384,13 @@
     border-radius: 50px;
 }
 
+.site-content-audit th,
+.site-content-audit td {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
 .live-queue #tickets tbody td {
     font-size: 1.25rem;
 }
@@ -741,6 +748,7 @@
         align-items: flex-start;
     }
 }
+
 .homepage-banner {
     width: 100%;
     margin-bottom: 18px;
@@ -766,9 +774,9 @@
 .form-section {
     margin-top: 2rem;
     padding: 1rem;
-    border: 1px solid #cccccc;
+    border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #ffffff;
+    background-color: #fff;
 }
 
 .form-section h2 {
@@ -796,28 +804,14 @@
 .admin-editor small {
     display: block;
     margin-bottom: 0.25rem;
-    color: #555555;
+    color: #555;
 }
 
 .admin-editor-actions {
     margin-top: 1rem;
 }
 
-.form-error {
-    display: block;
-    margin-top: 0.25rem;
-    color: #b00020;
-    font-weight: bold;
-}
-
 .site-content-audit {
     width: 100%;
     border-collapse: collapse;
-}
-
-.site-content-audit th,
-.site-content-audit td {
-    padding: 0.5rem;
-    border: 1px solid #cccccc;
-    text-align: left;
 }
