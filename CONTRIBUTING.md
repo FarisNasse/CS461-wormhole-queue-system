@@ -67,7 +67,11 @@ Before contributing, make sure you have the following installed:
    flask run
    ```
 
-   The app should be available at `http://localhost:5000` by default.
+   The app should be available at `http://localhost:5000` by default. The
+   committed `.flaskenv` sets `APP_ENV=development`, which disables forced HTTPS
+   for local Flask CLI commands. Production deployments should set
+   `APP_ENV=production`, or leave `APP_ENV` unset, so the secure HTTPS defaults
+   remain enabled.
 
 ---
 

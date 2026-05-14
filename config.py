@@ -7,16 +7,32 @@ def _env_bool(name, default="0"):
     return os.environ.get(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 
+_APP_ENV = os.environ.get("APP_ENV", "production").strip().lower() or "production"
+_LOCAL_APP_ENVS = {"development", "dev", "local", "testing"}
+_IS_LOCAL_ENV = _APP_ENV in _LOCAL_APP_ENVS
+_HTTPS_DEFAULT = "0" if _IS_LOCAL_ENV else "1"
+_SCHEME_DEFAULT = "http" if _IS_LOCAL_ENV else "https"
+
+
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-secret-key"
 
+    # APP_ENV controls the default security posture for each environment.
+    #
+    # Local development/testing should run over plain HTTP so `flask run` works
+    # without TLS certificates. Production remains secure by default when APP_ENV
+    # is unset or set to "production". Individual settings can still be
+    # overridden explicitly with environment variables.
+    APP_ENV = _APP_ENV
+    IS_LOCAL_ENV = _IS_LOCAL_ENV
+
     # Reverse-proxy HTTPS defaults for production deployments.
-    SESSION_COOKIE_SECURE = _env_bool("SESSION_COOKIE_SECURE", "1")
+    SESSION_COOKIE_SECURE = _env_bool("SESSION_COOKIE_SECURE", _HTTPS_DEFAULT)
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
-    PREFERRED_URL_SCHEME = os.environ.get("PREFERRED_URL_SCHEME", "https")
-    FORCE_HTTPS = _env_bool("FORCE_HTTPS", "1")
-    ENABLE_HSTS = _env_bool("ENABLE_HSTS", "1")
+    PREFERRED_URL_SCHEME = os.environ.get("PREFERRED_URL_SCHEME", _SCHEME_DEFAULT)
+    FORCE_HTTPS = _env_bool("FORCE_HTTPS", _HTTPS_DEFAULT)
+    ENABLE_HSTS = _env_bool("ENABLE_HSTS", _HTTPS_DEFAULT)
 
     # In production (Elastic Beanstalk), DATABASE_URL must be set as an
     # environment variable pointing to an RDS instance.

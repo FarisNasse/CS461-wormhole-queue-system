@@ -29,6 +29,12 @@ Start the Flask development server:
    flask run
 The app will be available at http://localhost:5000 by default.
 
+The committed .flaskenv sets APP_ENV=development for local Flask CLI commands.
+That disables forced HTTPS, HSTS, and secure-only cookies while using the
+plain HTTP development server. Production deployments should set
+APP_ENV=production, or leave APP_ENV unset, so the secure HTTPS defaults remain
+enabled.
+
 Running Tests
 -------------
 Run all tests:
