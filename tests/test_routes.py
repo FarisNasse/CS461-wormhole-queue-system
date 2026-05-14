@@ -129,7 +129,7 @@ def test_admin_can_update_schedule_content(test_client):
 
 
 def test_site_content_editor_rejects_non_google_embed_url(test_client):
-    """The schedule iframe should only accept Google Sheets embed URLs."""
+    """The schedule iframe should reject non-Google Sheets URLs."""
     _login_as_admin(test_client)
 
     response = test_client.post(
@@ -140,15 +140,15 @@ def test_site_content_editor_rejects_non_google_embed_url(test_client):
             "schedule_hours": "Open Monday through Friday.",
             "schedule_note": "",
             "holiday_closures": "",
-            "schedule_embed_url": (
-                "https://docs.google.com/spreadsheets/d/e/"
-                "2PACX-1vExamplePublishedSheetId/pubhtml?widget=true&headers=false"
-            ),
+            "schedule_embed_url": "https://example.com/bad-embed",
         },
     )
 
     assert response.status_code == 200
-    assert b"Schedule embed URL must be a published Google Sheets URL." in response.data
+    assert (
+        b"Schedule embed URL must be a published Google Sheets pubhtml URL."
+        in response.data
+    )
 
 
 def test_download_instruction_files_serves_known_pdfs(test_client):
@@ -859,8 +859,8 @@ def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
         expected_file.unlink()
 
 
-def test_site_content_editor_rejects_google_sheets_edit_url(test_client, test_app):
-    _login_as_admin(test_client, test_app)
+def test_site_content_editor_rejects_google_sheets_edit_url(test_client):
+    _login_as_admin(test_client)
 
     response = test_client.post(
         "/admin/site-content",
