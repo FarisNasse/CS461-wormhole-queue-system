@@ -108,7 +108,10 @@ def test_admin_can_update_schedule_content(test_client):
             "schedule_hours": "Open Monday through Friday, 11 AM to 4 PM.",
             "schedule_note": "Reduced hours during finals week.",
             "holiday_closures": "Memorial Day — Closed",
-            "schedule_embed_url": "https://docs.google.com/spreadsheets/example",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/e/"
+                "2PACX-1vExamplePublishedSheetId/pubhtml?widget=true&headers=false"
+            ),
         },
         follow_redirects=True,
     )
@@ -137,7 +140,10 @@ def test_site_content_editor_rejects_non_google_embed_url(test_client):
             "schedule_hours": "Open Monday through Friday.",
             "schedule_note": "",
             "holiday_closures": "",
-            "schedule_embed_url": "https://example.com/bad-embed",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/e/"
+                "2PACX-1vExamplePublishedSheetId/pubhtml?widget=true&headers=false"
+            ),
         },
     )
 
@@ -851,3 +857,27 @@ def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
 
     if not existed_before:
         expected_file.unlink()
+
+
+def test_site_content_editor_rejects_google_sheets_edit_url(test_client, test_app):
+    _login_as_admin(test_client, test_app)
+
+    response = test_client.post(
+        "/admin/site-content",
+        data={
+            "homepage_banner": "",
+            "schedule_announcement": "Updated announcement",
+            "schedule_hours": "Open Monday through Friday.",
+            "schedule_note": "",
+            "holiday_closures": "",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/" "abc123/edit#gid=0"
+            ),
+        },
+    )
+
+    assert response.status_code == 200
+    assert (
+        b"Schedule embed URL must be a published Google Sheets pubhtml URL."
+        in response.data
+    )

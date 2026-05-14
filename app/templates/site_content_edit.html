@@ -101,7 +101,7 @@
                                         {{ row.key }}
                                     </td>
                                     <td>
-                                        {{ row.updated_at }}
+                                        {{ row.updated_at|datetime_pacific }}
                                     </td>
                                     <td>
                                         {% if row.updated_by %}

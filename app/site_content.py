@@ -51,14 +51,16 @@ def save_site_content(
     value: str,
     updated_by_id: Optional[int] = None,
 ) -> None:
-    """Create or update one editable content field."""
-
     row = db.session.get(SiteContent, key)
 
     if row is None:
-        row = SiteContent(key=key, value=value, updated_by_id=updated_by_id)
+        row = SiteContent(
+            key=key,
+            value=value,
+            updated_by_id=updated_by_id,
+        )
         db.session.add(row)
-    else:
+    elif row.value != value:
         row.value = value
         row.updated_by_id = updated_by_id
 

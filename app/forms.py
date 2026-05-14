@@ -1,4 +1,5 @@
 import calendar
+import re
 from datetime import date
 
 from flask_wtf import FlaskForm
@@ -211,14 +212,16 @@ class SiteContentForm(FlaskForm):
     submit = SubmitField("Save Website Changes")
 
     def validate_schedule_embed_url(self, field):
-        """Restrict schedule embeds to published Google Sheets URLs."""
-
         value = (field.data or "").strip()
+
         if not value:
             return
 
-        allowed_prefix = "https://docs.google.com/spreadsheets/"
-        if not value.startswith(allowed_prefix):
+        published_sheet_pattern = (
+            r"^https://docs\.google\.com/spreadsheets/d/e/[^/]+/pubhtml" r"(\?.*)?$"
+        )
+
+        if not re.match(published_sheet_pattern, value):
             raise ValidationError(
-                "Schedule embed URL must be a published Google Sheets URL."
+                "Schedule embed URL must be a published Google Sheets pubhtml URL."
             )
