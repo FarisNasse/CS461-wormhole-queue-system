@@ -52,14 +52,6 @@ def create_app(testing=None):
         app.config["FORCE_HTTPS"] = False
         app.config["ENABLE_HSTS"] = False
         app.config["PREFERRED_URL_SCHEME"] = "http"
-    elif (
-        not os.environ.get("DATABASE_URL")
-        and os.environ.get("ALLOW_SQLITE_FALLBACK") != "1"
-    ):
-        raise RuntimeError(
-            "DATABASE_URL must be set for non-testing environments. "
-            "Set ALLOW_SQLITE_FALLBACK=1 only for local development."
-        )
 
     @app.before_request
     def enforce_https():
