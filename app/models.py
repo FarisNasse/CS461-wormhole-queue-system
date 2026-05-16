@@ -169,3 +169,32 @@ class Skipped(Base):
 
     def __repr__(self) -> str:
         return f"<User {self.wa_id} skipped Ticket {self.tkt_id}>"
+
+
+class SiteContent(Base):
+    """Stores editable operational website content.
+
+    This model intentionally stores only simple homepage content fields such as
+    schedule text, holiday closures, a short banner, and the schedule embed URL.
+    Structurally complex homepage sections with links should remain in Jinja
+    templates so the page cannot lose important navigation by accident.
+    """
+
+    __tablename__ = "site_content"
+
+    key: Mapped[str] = mapped_column(sa.String(100), primary_key=True)
+    value: Mapped[str] = mapped_column(sa.Text, nullable=False, default="")
+    updated_at: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+    updated_by_id: Mapped[Optional[int]] = mapped_column(
+        sa.ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    updated_by: Mapped[Optional["User"]] = orm.relationship("User")
+
+    def __repr__(self) -> str:
+        return f"<SiteContent key={self.key}>"

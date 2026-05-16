@@ -4,6 +4,11 @@
         <h1 class="index-page-title">
             Physics Collaboration and Help Center
         </h1>
+        {% if content.homepage_banner %}
+            <div class="homepage-banner">
+                {{ content.homepage_banner }}
+            </div>
+        {% endif %}
         <!-- STUDENT SECTION -->
         <div class="section student-home index-home-section">
             <h2 class="index-section-title">
@@ -44,27 +49,36 @@
                     Wormhole Schedule
                 </h3>
                 <p class="center-align">
-                    <strong>The Wormhole is open for Spring 2026!</strong>
+                    <strong>{{ content.schedule_announcement }}</strong>
                 </p>
                 <p class="center-align">
-                    Wormhole Assistants are available <strong>10 AM – 5 PM, Monday–Friday</strong>.
+                    {{ content.schedule_hours }}
                 </p>
-                <p class="center-align">
-                    <em>NOTE: The Wormhole closes at 4 PM on Mondays and Wednesdays for departmental colloquia.</em>
-                </p>
-                <h4 class="center-align">
-                    Holiday Closures
-                </h4>
-                <ul class="browser-default">
-                    <li>
-                        <em>Memorial Day</em> — Monday, May 25
-                    </li>
-                </ul>
-                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRcotW2LQyMMUHgBjvig-ZcHnybkT4_0XfiHDp-IVeqkX7VGh4vtrXBuHmDfTAVHdmHM2jcHInYuwOn/pubhtml?widget=true&headers=false"
-                        width="100%"
-                        height="600"
-                        style="border:none">
-                </iframe>
+                {% if content.schedule_note %}
+                    <p class="center-align">
+                        <em>{{ content.schedule_note }}</em>
+                    </p>
+                {% endif %}
+                {% if holiday_closures %}
+                    <h4 class="center-align">
+                        Holiday Closures
+                    </h4>
+                    <ul class="browser-default holiday-closures">
+                        {% for closure in holiday_closures %}
+                            <li>
+                                {{ closure }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if content.schedule_embed_url %}
+                    <iframe src="{{ content.schedule_embed_url }}"
+                            width="100%"
+                            height="600"
+                            style="border:none"
+                            title="Wormhole Schedule">
+                    </iframe>
+                {% endif %}
             </div>
             <!-- ABOUT -->
             <div class="subsection About">

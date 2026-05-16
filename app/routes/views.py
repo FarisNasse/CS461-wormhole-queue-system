@@ -46,10 +46,17 @@ from app.forms import (
     RegisterBatchForm,
     RegisterForm,
     ResolveTicketForm,
+    SiteContentForm,
     TicketForm,
 )
 from app.models import Skipped, Ticket, User
 from app.queue_maintenance import flush_open_tickets
+from app.site_content import (
+    get_site_content,
+    get_site_content_rows,
+    save_site_content_bulk,
+    split_lines,
+)
 from app.time_utils import (
     PACIFIC_TZ,
     format_pacific,
@@ -168,7 +175,57 @@ def _build_users_csv_response(users, filename):
 @views_bp.route("/")
 @views_bp.route("/index", endpoint="index")
 def index():
-    return render_template("index.html")
+    content = get_site_content()
+
+    return render_template(
+        "index.html",
+        content=content,
+        holiday_closures=split_lines(content["holiday_closures"]),
+    )
+
+
+@views_bp.route("/admin/site-content", methods=["GET", "POST"])
+@admin_required
+def edit_site_content():
+    """Allow administrators to edit operational public homepage content."""
+
+    content = get_site_content()
+
+    # WTForms accepts a dictionary through data= for initial field population.
+    # On POST, submitted form data takes precedence.
+    form = SiteContentForm(data=content)
+
+    if form.validate_on_submit():
+        updated_by_id = session.get("user_id")
+        updates = {
+            "homepage_banner": form.homepage_banner.data or "",
+            "schedule_announcement": form.schedule_announcement.data or "",
+            "schedule_hours": form.schedule_hours.data or "",
+            "schedule_note": form.schedule_note.data or "",
+            "holiday_closures": form.holiday_closures.data or "",
+            "schedule_embed_url": form.schedule_embed_url.data or "",
+        }
+
+        try:
+            save_site_content_bulk(updates, updated_by_id=updated_by_id)
+        except ValueError:
+            db.session.rollback()
+            flash("Invalid website content field.", "error")
+            return render_template(
+                "site_content_edit.html",
+                form=form,
+                content_rows=get_site_content_rows(),
+            )
+
+        flash("Website content updated successfully.", "success")
+        return redirect(url_for("views.index"))
+
+    return render_template(
+        "site_content_edit.html",
+        form=form,
+        content_rows=get_site_content_rows(),
+        title="Edit Website Content",
+    )
 
 
 @views_bp.route("/livequeue")
