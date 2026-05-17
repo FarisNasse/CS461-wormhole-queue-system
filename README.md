@@ -71,23 +71,35 @@ Students can use the live site to submit a help request or view queue activity. 
 
 ### Local Development
 
-To run the project locally:
+To run the project locally on macOS/Linux:
 
 ```bash
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 flask db upgrade
-python run.py
+flask run
 ```
 
-On Windows PowerShell, activate the virtual environment with:
+On Windows PowerShell:
 
 ```powershell
+python -m venv venv
 .\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+flask db upgrade
+flask run
 ```
 
-For production deployment, configure environment variables such as `SECRET_KEY`, `DATABASE_URL`, and HTTPS-related settings. See the deployment documentation in `deploy/` for more details.
+The local development server uses plain HTTP by default:
+
+```text
+http://127.0.0.1:5000
+```
+
+If a browser keeps trying HTTPS after a previous redirect, clear the browser's cached site data for `127.0.0.1` / `localhost`, open an incognito window, or run Flask on a different port, such as `flask run --port 5001`.
+
+For production deployment, configure environment variables such as `APP_ENV=production`, `SECRET_KEY`, `DATABASE_URL`, `FORCE_HTTPS=1`, `ENABLE_HSTS=1`, `SESSION_COOKIE_SECURE=1`, and `PREFERRED_URL_SCHEME=https`. See the deployment documentation in `deploy/` for more details.
 
 ## System Requirements
 
