@@ -384,6 +384,13 @@
     border-radius: 50px;
 }
 
+.site-content-audit th,
+.site-content-audit td {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
 .live-queue #tickets tbody td {
     font-size: 1.25rem;
 }
@@ -740,4 +747,71 @@
         flex-wrap: wrap;
         align-items: flex-start;
     }
+}
+
+.homepage-banner {
+    width: 100%;
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    border: 1px solid #bccfe3;
+    border-radius: 10px;
+    background: #fff8d9;
+    color: #1e2c3d;
+    line-height: 1.45;
+    white-space: pre-line;
+}
+
+.admin-editor {
+    max-width: 1000px;
+    margin: 2rem auto;
+}
+
+.admin-editor-help {
+    margin-bottom: 1.5rem;
+    line-height: 1.45;
+}
+
+.form-section {
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.form-section h2 {
+    margin-top: 0;
+}
+
+.admin-editor label {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+}
+
+.admin-editor input[type="text"],
+.admin-editor textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.admin-editor textarea {
+    min-height: 120px;
+}
+
+.admin-editor small {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #555;
+}
+
+.admin-editor-actions {
+    margin-top: 1rem;
+}
+
+.site-content-audit {
+    width: 100%;
+    border-collapse: collapse;
 }

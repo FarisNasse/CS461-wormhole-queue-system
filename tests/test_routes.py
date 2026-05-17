@@ -3,11 +3,30 @@ import csv
 from datetime import datetime, timedelta, timezone
 from io import StringIO
 from pathlib import Path
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from app import db
-from app.models import Ticket, User
+from app.models import SiteContent, Ticket, User
 from app.time_utils import pacific_day_bounds_to_utc
+
+
+def _login_as_admin(test_client):
+    unique = uuid4().hex
+    admin = User(
+        username=f"site_admin_{unique}",
+        email=f"site_admin_{unique}@example.com",
+        is_admin=True,
+    )
+    admin.set_password("password")
+    db.session.add(admin)
+    db.session.commit()
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin.id
+        sess["is_admin"] = True
+
+    return admin
 
 
 def test_health_check_route(test_client):
@@ -36,6 +55,100 @@ def test_instruction_pdf_routes_are_present_on_home(test_client):
     assert response.status_code == 200
     assert b"/instructions/Wormhole_Student_Instructions.pdf" in response.data
     assert b"/instructions/MS_Teams_Instructions.pdf" in response.data
+
+
+def test_homepage_uses_default_site_content(test_client):
+    """Homepage should render safe default editable content when DB is empty."""
+    response = test_client.get("/")
+
+    assert response.status_code == 200
+    assert b"The Wormhole is open for Spring 2026!" in response.data
+    assert b"10 AM" in response.data
+    assert b"Memorial Day" in response.data
+
+
+def test_homepage_preserves_static_links_when_content_is_dynamic(test_client):
+    """Dynamic schedule content should not remove existing static homepage links."""
+    response = test_client.get("/")
+
+    assert response.status_code == 200
+    assert b"/createticket" in response.data
+    assert b"/livequeue" in response.data
+    assert b"Wormhole_Student_Instructions.pdf" in response.data
+    assert b"MS_Teams_Instructions.pdf" in response.data
+
+
+def test_site_content_editor_requires_login(test_client):
+    """The website editor should be protected from anonymous users."""
+    response = test_client.get("/admin/site-content")
+
+    assert response.status_code == 401
+
+
+def test_admin_can_open_site_content_editor(test_client):
+    """Admins should be able to open the website content editor."""
+    _login_as_admin(test_client)
+
+    response = test_client.get("/admin/site-content")
+
+    assert response.status_code == 200
+    assert b"Edit Website Content" in response.data
+    assert b"Schedule Announcement" in response.data
+
+
+def test_admin_can_update_schedule_content(test_client):
+    """Admins should be able to update schedule content without code changes."""
+    admin = _login_as_admin(test_client)
+
+    response = test_client.post(
+        "/admin/site-content",
+        data={
+            "homepage_banner": "The Wormhole will close early this Friday.",
+            "schedule_announcement": "Updated schedule announcement",
+            "schedule_hours": "Open Monday through Friday, 11 AM to 4 PM.",
+            "schedule_note": "Reduced hours during finals week.",
+            "holiday_closures": "Memorial Day — Closed",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/e/"
+                "2PACX-1vExamplePublishedSheetId/pubhtml?widget=true&headers=false"
+            ),
+        },
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert b"Website content updated successfully." in response.data
+    assert b"The Wormhole will close early this Friday." in response.data
+    assert b"Updated schedule announcement" in response.data
+    assert b"Open Monday through Friday, 11 AM to 4 PM." in response.data
+
+    stored = db.session.get(SiteContent, "schedule_announcement")
+    assert stored is not None
+    assert stored.value == "Updated schedule announcement"
+    assert stored.updated_by_id == admin.id
+
+
+def test_site_content_editor_rejects_non_google_embed_url(test_client):
+    """The schedule iframe should reject non-Google Sheets URLs."""
+    _login_as_admin(test_client)
+
+    response = test_client.post(
+        "/admin/site-content",
+        data={
+            "homepage_banner": "",
+            "schedule_announcement": "Updated announcement",
+            "schedule_hours": "Open Monday through Friday.",
+            "schedule_note": "",
+            "holiday_closures": "",
+            "schedule_embed_url": "https://example.com/bad-embed",
+        },
+    )
+
+    assert response.status_code == 200
+    assert (
+        b"Schedule embed URL must be a published Google Sheets pubhtml URL."
+        in response.data
+    )
 
 
 def test_download_instruction_files_serves_known_pdfs(test_client):
@@ -744,3 +857,77 @@ def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
 
     if not existed_before:
         expected_file.unlink()
+
+
+def test_site_content_editor_rejects_google_sheets_edit_url(test_client):
+    _login_as_admin(test_client)
+
+    response = test_client.post(
+        "/admin/site-content",
+        data={
+            "homepage_banner": "",
+            "schedule_announcement": "Updated announcement",
+            "schedule_hours": "Open Monday through Friday.",
+            "schedule_note": "",
+            "holiday_closures": "",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/" "abc123/edit#gid=0"
+            ),
+        },
+    )
+
+    assert response.status_code == 200
+    assert (
+        b"Schedule embed URL must be a published Google Sheets pubhtml URL."
+        in response.data
+    )
+
+
+def test_site_content_editor_renders_multiple_holiday_closures(test_client):
+    _login_as_admin(test_client)
+
+    response = test_client.post(
+        "/admin/site-content",
+        data={
+            "homepage_banner": "",
+            "schedule_announcement": "Updated announcement",
+            "schedule_hours": "Open Monday through Friday.",
+            "schedule_note": "",
+            "holiday_closures": "Memorial Day — Closed\nFinals Week — Reduced Hours",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/e/"
+                "2PACX-1vExamplePublishedSheetId/pubhtml?widget=true&headers=false"
+            ),
+        },
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert b"Memorial Day" in response.data
+    assert b"Finals Week" in response.data
+
+
+def test_site_content_editor_displays_audit_table(test_client):
+    _login_as_admin(test_client)
+
+    test_client.post(
+        "/admin/site-content",
+        data={
+            "homepage_banner": "Audit test banner",
+            "schedule_announcement": "Audit test announcement",
+            "schedule_hours": "Open Monday through Friday.",
+            "schedule_note": "",
+            "holiday_closures": "",
+            "schedule_embed_url": (
+                "https://docs.google.com/spreadsheets/d/e/"
+                "2PACX-1vExamplePublishedSheetId/pubhtml?widget=true&headers=false"
+            ),
+        },
+    )
+
+    response = test_client.get("/admin/site-content")
+
+    assert response.status_code == 200
+    assert b"Audit Information" in response.data
+    assert b"schedule_announcement" in response.data
+    assert b"site_admin" in response.data or b"example.com" in response.data

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="page">
+        <div class="section generic admin-editor">
+            <h1>
+                Edit Website Content
+            </h1>
+            <p class="admin-editor-help">
+                Use this page to update public schedule information and short
+                homepage notices. Structurally complex homepage sections with
+                links are intentionally managed in code.
+            </p>
+            <form method="post" action="{{ url_for('views.edit_site_content') }}">
+                {{ form.hidden_tag() }}
+                <div class="form-section">
+                    <h2>
+                        Homepage Notice
+                    </h2>
+                    <p>
+                        {{ form.homepage_banner.label }}
+                        <small>{{ form.homepage_banner.description }}</small>
+                        {{ form.homepage_banner(rows=4, cols=80) }}
+                        {% for error in form.homepage_banner.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    </p>
+                </div>
+                <div class="form-section">
+                    <h2>
+                        Schedule
+                    </h2>
+                    <p>
+                        {{ form.schedule_announcement.label }}
+                        {{ form.schedule_announcement(size=80) }}
+                        {% for error in form.schedule_announcement.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.schedule_hours.label }}
+                        {{ form.schedule_hours(size=80) }}
+                        {% for error in form.schedule_hours.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.schedule_note.label }}
+                        {{ form.schedule_note(rows=4, cols=80) }}
+                        {% for error in form.schedule_note.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.holiday_closures.label }}
+                        <small>Enter one closure per line.</small>
+                        {{ form.holiday_closures(rows=5, cols=80) }}
+                        {% for error in form.holiday_closures.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        {{ form.schedule_embed_url.label }}
+                        <small>
+                            Must be a published Google Sheets URL beginning with
+                            https://docs.google.com/spreadsheets/
+                        </small>
+                        {{ form.schedule_embed_url(size=100) }}
+                        {% for error in form.schedule_embed_url.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    </p>
+                </div>
+                <p class="admin-editor-actions">
+                    {{ form.submit(class_="button") }}
+                    <a href="{{ url_for('views.index') }}">Cancel</a>
+                </p>
+            </form>
+            {% if content_rows %}
+                <div class="form-section">
+                    <h2>
+                        Audit Information
+                    </h2>
+                    <table class="site-content-audit">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Field
+                                </th>
+                                <th>
+                                    Last Updated
+                                </th>
+                                <th>
+                                    Updated By
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in content_rows %}
+                                <tr>
+                                    <td>
+                                        {{ row.key }}
+                                    </td>
+                                    <td>
+                                        {{ row.updated_at|datetime_pacific }}
+                                    </td>
+                                    <td>
+                                        {% if row.updated_by %}
+                                            {{ row.updated_by.email }}
+                                        {% else %}
+                                            Unknown
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

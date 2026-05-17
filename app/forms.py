@@ -1,5 +1,6 @@
 import calendar
 from datetime import date
+from urllib.parse import urlparse
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField, FileRequired
@@ -11,8 +12,17 @@ from wtforms import (
     SelectField,
     StringField,
     SubmitField,
+    TextAreaField,
 )
-from wtforms.validators import DataRequired, Email, EqualTo, NumberRange, Optional
+from wtforms.validators import (
+    DataRequired,
+    Email,
+    EqualTo,
+    Length,
+    NumberRange,
+    Optional,
+    ValidationError,
+)
 
 
 def _subtract_months(from_date: date, months: int) -> date:
@@ -163,3 +173,59 @@ class ClearQueueForm(FlaskForm):
     """Simple form to handle CSRF protection for the Clear Queue action."""
 
     submit = SubmitField("Clear Queue")
+
+
+class SiteContentForm(FlaskForm):
+    """Admin-facing form for simple public homepage content fields.
+
+    This form intentionally avoids raw HTML and large rich-text homepage
+    sections. Sections containing links remain hardcoded in templates so admins
+    cannot accidentally remove important navigation or introduce unsafe markup.
+    """
+
+    homepage_banner = TextAreaField(
+        "Homepage Banner",
+        validators=[Optional(), Length(max=500)],
+        description="Optional message shown near the top of the homepage.",
+    )
+    schedule_announcement = StringField(
+        "Schedule Announcement",
+        validators=[DataRequired(), Length(max=200)],
+    )
+    schedule_hours = StringField(
+        "Schedule Hours",
+        validators=[DataRequired(), Length(max=250)],
+    )
+    schedule_note = TextAreaField(
+        "Schedule Note",
+        validators=[Optional(), Length(max=500)],
+    )
+    holiday_closures = TextAreaField(
+        "Holiday Closures",
+        validators=[Optional(), Length(max=1000)],
+        description="Enter one closure per line.",
+    )
+    schedule_embed_url = StringField(
+        "Google Sheets Schedule Embed URL",
+        validators=[Optional(), Length(max=1000)],
+    )
+    submit = SubmitField("Save Website Changes")
+
+    def validate_schedule_embed_url(self, field):
+        value = (field.data or "").strip()
+
+        if not value:
+            return
+
+        parsed = urlparse(value)
+
+        is_https = parsed.scheme == "https"
+        is_google_sheets = parsed.netloc == "docs.google.com"
+        is_published_sheet = parsed.path.startswith(
+            "/spreadsheets/d/e/"
+        ) and parsed.path.endswith("/pubhtml")
+
+        if not (is_https and is_google_sheets and is_published_sheet):
+            raise ValidationError(
+                "Schedule embed URL must be a published Google Sheets pubhtml URL."
+            )
