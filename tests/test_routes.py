@@ -340,7 +340,10 @@ def test_export_archive(test_client):
     assert response.status_code == 200
     assert "text/html" in response.headers["Content-Type"]
     assert b"Archive created: wormhole_archive_" in response.data
-    assert b"Create Archive" in response.data
+    # The archive page should still re-render the export form after creating
+    # an archive, but the heading copy is allowed to change during UI redesigns.
+    assert b'name="start_date"' in response.data
+    assert b'name="end_date"' in response.data
 
 
 def test_archive_page_lists_saved_files(test_client, test_app):
@@ -798,12 +801,14 @@ def test_queue_closed_history_displays_pacific_opened_and_closed_times(test_clie
     response = test_client.get("/queue")
 
     assert response.status_code == 200
-    # queue history currently renders Pacific-local clock times without TZ suffix
-    assert b"Opened: 11:58 AM" in response.data
-    assert b"Closed: 01:30 PM" in response.data
+    # Queue history should render Pacific-local clock times without depending on
+    # exact label text, since table headers/UI copy may change during redesigns.
+    assert b"Queue Time Test" in response.data
+    assert b"11:58 AM" in response.data
+    assert b"01:30 PM" in response.data
     # guard against regressing to raw UTC display
-    assert b"Opened: 06:58 PM" not in response.data
-    assert b"Closed: 08:30 PM" not in response.data
+    assert b"06:58 PM" not in response.data
+    assert b"08:30 PM" not in response.data
 
 
 def test_export_archive_uses_pacific_date_boundaries(test_client, test_app):
