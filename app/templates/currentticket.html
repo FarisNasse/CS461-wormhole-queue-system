@@ -1,81 +1,113 @@
 {% extends "base.html" %}
-{% block scripts %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJ+YRFb2v3l+6Gk5bQ5f5Q5h5Yt1lV9l8a5Qg="
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/currentticket.js') }}"></script>
-{% endblock %}
+
 {% block content %}
-    <div class="page">
-        <div class="section tick-info">
-            <h3 style="text-align:center">
-                Current Help Request
-            </h3>
-            <table id="tickets"
-                   style="margin-left:30px;
-                          width: 75%;
-                          text-align: left;
-                          border-collapse:separate;
-                          border-spacing:10px">
-                <tr>
-                    <th>
-                        Name: <b>{{ ticket.name }}</b>
-                    </th>
-                </tr>
-                <tr>
-                    {% if ticket.table == 0 %}
-                        <th>
-                            Table: <b>Ecampus</b>
-                        </th>
-                    {% else %}
-                        <th>
-                            Table: <b>{{ ticket.table }}</b>
-                        </th>
-                    {% endif %}
-                </tr>
-                <tr>
-                    <th>
-                        Class: <b>{{ ticket.phClass }}</b>
-                    </th>
-                </tr>
-            </table>
-            <p style="text-align:center; vertical-align:bottom;">
-                Time Stamp: <b>{{ ticket.time_create|datetime_pacific }}</b>
-            </p>
-        </div>
-        <div class="section tick-resol">
-            <h3 style="text-align:center">
-                Resolve As:
-            </h3>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div class="mb-5">
+                <h1 class="text-2xl font-bold text-gray-900">
+                    Current Help Request
+                </h1>
+                <p class="mt-1 text-sm text-gray-600">
+                    Review the ticket details before choosing a resolution.
+                </p>
+            </div>
+
+            <dl class="space-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Name</dt>
+                    <dd class="mt-1 text-base font-semibold text-gray-900">
+                        {{ ticket.name }}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Table</dt>
+                    <dd class="mt-1 text-base font-semibold text-gray-900">
+                        {% if ticket.table == 0 %}
+                            Ecampus
+                        {% else %}
+                            {{ ticket.table }}
+                        {% endif %}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Class</dt>
+                    <dd class="mt-1 text-base font-semibold text-gray-900">
+                        {{ ticket.phClass }}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Time Stamp</dt>
+                    <dd class="mt-1 text-base font-semibold text-gray-900">
+                        {{ ticket.time_create|datetime_pacific }}
+                    </dd>
+                </div>
+            </dl>
+        </section>
+
+        <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div class="mb-5">
+                <h2 class="text-2xl font-bold text-gray-900">
+                    Resolve Ticket
+                </h2>
+                <p class="mt-1 text-sm text-gray-600">
+                    Choose how this request should be closed or returned to the queue.
+                </p>
+            </div>
+
             <form id="resolve-form"
                   action="{{ url_for('tickets.resolve_ticket', ticket_id=ticket.id) }}"
                   method="post"
                   novalidate
-                  style="text-align:center">
-                <button type="submit" name="resolve" value="duplicate">
-                    Duplicate
-                </button>
-                <button type="submit" name="resolve" value="helped">
-                    Helped
-                </button>
-                <button type="submit" name="resolve" value="no_show">
-                    No Show
-                </button>
-                <button type="submit" name="resolve" value="return_to_queue">
-                    Return To Queue
-                </button>
-                <label for="numstudents">
-                    Number of Students:
-                </label>
-                <input type="number"
-                       id="numstudents"
-                       name="numstudents"
-                       min="0"
-                       max="100"
-                       step="1"
-                       value="1">
+                  class="space-y-5">
+                <div>
+                    <label for="numstudents"
+                           class="mb-1 block text-sm font-medium text-gray-700">
+                        Number of Students
+                    </label>
+
+                    <input type="number"
+                           id="numstudents"
+                           name="numstudents"
+                           min="0"
+                           max="100"
+                           step="1"
+                           value="1"
+                           class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy">
+                </div>
+
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <button type="submit"
+                            name="resolve"
+                            value="helped"
+                            class="rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        Helped
+                    </button>
+
+                    <button type="submit"
+                            name="resolve"
+                            value="duplicate"
+                            class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                        Duplicate
+                    </button>
+
+                    <button type="submit"
+                            name="resolve"
+                            value="no_show"
+                            class="rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-4 focus:ring-yellow-200">
+                        No Show
+                    </button>
+
+                    <button type="submit"
+                            name="resolve"
+                            value="return_to_queue"
+                            class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                        Return To Queue
+                    </button>
+                </div>
             </form>
-        </div>
+        </section>
     </div>
 {% endblock %}

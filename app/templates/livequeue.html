@@ -1,49 +1,41 @@
 {% extends "base.html" %}
+
 {% block content %}
-    <div class="page">
-        <div class="section live-queue">
-            <h1 style="text-align:center">
-                Live Queue
-            </h1>
-            <!--
-        <form id="refresh" method='POST' action='#'>
-            <input type='submit' value='Refresh'>
-        </form>
-        -->
-            <hr>
-            <table id="tickets" style="width: 100%; text-align: center">
-                <thead>
-                    <tr>
-                        <th>
-                            Position / Status
-                        </th>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Table
-                        </th>
-                        <th>
-                            Class
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Ticket rows will be dynamically inserted here -->
-                </tbody>
-            </table>
-            <!--
-        <hr>
-        <h1>Term Log</h1>
-        <ul id="log"></ul>
-        -->
-        </div>
+  <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div class="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Live Queue</h1>
+        <p class="mt-1 text-sm text-gray-600">
+          Current Wormhole help requests waiting for assistance.
+        </p>
+      </div>
+
+      <p class="text-sm text-gray-500">
+        Last refresh:
+        <span id="refresh-time" class="font-medium text-gray-700">Never</span>
+      </p>
     </div>
-    <p align="center">
-        Last Refresh Time: <span align="center" id="refresh-time"></span>
-    </p>
+
+    <div class="overflow-x-auto rounded-lg border border-gray-200">
+      <table id="tickets" class="w-full text-left text-sm text-gray-700">
+        <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
+          <tr>
+            <th scope="col" class="px-4 py-3">Position / Status</th>
+            <th scope="col" class="px-4 py-3">Name</th>
+            <th scope="col" class="px-4 py-3">Table</th>
+            <th scope="col" class="px-4 py-3">Class</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-100 bg-white">
+          {# Ticket rows are inserted by app/static/js/livequeue.js #}
+        </tbody>
+      </table>
+    </div>
+  </section>
 {% endblock %}
+
 {% block scripts %}
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/livequeue.js') }}"></script>
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script src="{{ url_for('static', filename='js/livequeue.js') }}"></script>
 {% endblock %}
