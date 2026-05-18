@@ -1,109 +1,146 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="page">
-        <div class="section generic admin-editor">
-            <h1>
+    <div class="space-y-6">
+        <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h1 class="text-2xl font-bold text-gray-900">
                 Edit Website Content
             </h1>
-            <p class="admin-editor-help">
-                Use this page to update public schedule information and short
-                homepage notices. Structurally complex homepage sections with
-                links are intentionally managed in code.
+            <p class="mt-1 text-sm text-gray-600">
+                Update public schedule information and homepage notices. Structurally complex homepage sections with links are intentionally managed in code.
             </p>
-            <form method="post" action="{{ url_for('views.edit_site_content') }}">
-                {{ form.hidden_tag() }}
-                <div class="form-section">
-                    <h2>
+        </section>
+        <form method="post" action="{{ url_for('views.edit_site_content') }}" class="space-y-6">
+            {{ form.hidden_tag() }}
+            <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="mb-5">
+                    <h2 class="text-xl font-semibold text-gray-900">
                         Homepage Notice
                     </h2>
-                    <p>
-                        {{ form.homepage_banner.label }}
-                        <small>{{ form.homepage_banner.description }}</small>
-                        {{ form.homepage_banner(rows=4, cols=80) }}
-                        {% for error in form.homepage_banner.errors %}
-                            <span class="form-error">{{ error }}</span>
-                        {% endfor %}
+                    <p class="mt-1 text-sm text-gray-600">
+                        Optional message shown near the top of the homepage.
                     </p>
                 </div>
-                <div class="form-section">
-                    <h2>
+                <div>
+                    {{ form.homepage_banner.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                    {{ form.homepage_banner(rows=4, class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                    {% if form.homepage_banner.description %}
+                        <p class="mt-1 text-sm text-gray-500">
+                            {{ form.homepage_banner.description }}
+                        </p>
+                    {% endif %}
+                    {% for error in form.homepage_banner.errors %}
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+            </section>
+            <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="mb-5">
+                    <h2 class="text-xl font-semibold text-gray-900">
                         Schedule
                     </h2>
-                    <p>
-                        {{ form.schedule_announcement.label }}
-                        {{ form.schedule_announcement(size=80) }}
-                        {% for error in form.schedule_announcement.errors %}
-                            <span class="form-error">{{ error }}</span>
-                        {% endfor %}
-                    </p>
-                    <p>
-                        {{ form.schedule_hours.label }}
-                        {{ form.schedule_hours(size=80) }}
-                        {% for error in form.schedule_hours.errors %}
-                            <span class="form-error">{{ error }}</span>
-                        {% endfor %}
-                    </p>
-                    <p>
-                        {{ form.schedule_note.label }}
-                        {{ form.schedule_note(rows=4, cols=80) }}
-                        {% for error in form.schedule_note.errors %}
-                            <span class="form-error">{{ error }}</span>
-                        {% endfor %}
-                    </p>
-                    <p>
-                        {{ form.holiday_closures.label }}
-                        <small>Enter one closure per line.</small>
-                        {{ form.holiday_closures(rows=5, cols=80) }}
-                        {% for error in form.holiday_closures.errors %}
-                            <span class="form-error">{{ error }}</span>
-                        {% endfor %}
-                    </p>
-                    <p>
-                        {{ form.schedule_embed_url.label }}
-                        <small>
-                            Must be a published Google Sheets URL beginning with
-                            https://docs.google.com/spreadsheets/
-                        </small>
-                        {{ form.schedule_embed_url(size=100) }}
-                        {% for error in form.schedule_embed_url.errors %}
-                            <span class="form-error">{{ error }}</span>
-                        {% endfor %}
+                    <p class="mt-1 text-sm text-gray-600">
+                        Update the public schedule text, closures, and optional Google Sheets embed.
                     </p>
                 </div>
-                <p class="admin-editor-actions">
-                    {{ form.submit(class_="button") }}
-                    <a href="{{ url_for('views.index') }}">Cancel</a>
-                </p>
-            </form>
-            {% if content_rows %}
-                <div class="form-section">
-                    <h2>
+                <div class="space-y-4">
+                    <div>
+                        {{ form.schedule_announcement.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                        {{ form.schedule_announcement(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                        {% for error in form.schedule_announcement.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ form.schedule_hours.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                        {{ form.schedule_hours(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                        {% for error in form.schedule_hours.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ form.schedule_note.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                        {{ form.schedule_note(rows=4, class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                        {% for error in form.schedule_note.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ form.holiday_closures.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                        {{ form.holiday_closures(rows=5, class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                        <p class="mt-1 text-sm text-gray-500">
+                            Enter one closure per line.
+                        </p>
+                        {% for error in form.holiday_closures.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ form.schedule_embed_url.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                        {{ form.schedule_embed_url(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                        <p class="mt-1 text-sm text-gray-500">
+                            Must be a published Google Sheets URL beginning with https://docs.google.com/spreadsheets/.
+                        </p>
+                        {% for error in form.schedule_embed_url.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                {{ form.submit(class_="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300") }}
+                <a href="{{ url_for('views.index') }}"
+                   class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                    Cancel
+                </a>
+            </div>
+        </form>
+        {% if content_rows %}
+            <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="mb-5">
+                    <h2 class="text-xl font-semibold text-gray-900">
                         Audit Information
                     </h2>
-                    <table class="site-content-audit">
-                        <thead>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Review the most recent update metadata for each managed content field.
+                    </p>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="w-full text-left text-sm text-gray-700">
+                        <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
                             <tr>
-                                <th>
+                                <th scope="col" class="px-4 py-3">
                                     Field
                                 </th>
-                                <th>
+                                <th scope="col" class="px-4 py-3">
                                     Last Updated
                                 </th>
-                                <th>
+                                <th scope="col" class="px-4 py-3">
                                     Updated By
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-gray-100 bg-white">
                             {% for row in content_rows %}
-                                <tr>
-                                    <td>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 font-medium text-gray-900">
                                         {{ row.key }}
                                     </td>
-                                    <td>
+                                    <td class="px-4 py-3">
                                         {{ row.updated_at|datetime_pacific }}
                                     </td>
-                                    <td>
+                                    <td class="px-4 py-3">
                                         {% if row.updated_by %}
                                             {{ row.updated_by.email }}
                                         {% else %}
@@ -115,7 +152,7 @@
                         </tbody>
                     </table>
                 </div>
-            {% endif %}
-        </div>
+            </section>
+        {% endif %}
     </div>
 {% endblock %}

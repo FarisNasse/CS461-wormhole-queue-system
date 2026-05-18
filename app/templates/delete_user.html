@@ -1,122 +1,148 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="page manage-user-page">
-        <h1 class="manage-user-title">
-            Manage User: {{ user.username }}
-        </h1>
-    </div>
-    <div class="page manage-user-grid">
-        <div class="section profile manage-user-panel">
-            <h2>
-                Edit User Information
-            </h2>
-            <form action="{{ url_for('views.delete_user', username=user.username) }}"
-                  method="post"
-                  novalidate
-                  class="manage-user-form">
-                {{ edit_form.hidden_tag() }}
-                <div class="manage-user-row">
-                    <div class="manage-user-input">
-                        {{ edit_form.first_name.label }}
-                        {{ edit_form.first_name(size=20) }}
+    <div class="space-y-6">
+        <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h1 class="text-2xl font-bold text-gray-900">
+                Manage User: {{ user.username }}
+            </h1>
+            <p class="mt-1 text-sm text-gray-600">
+                Update account details, admin status, account activity, or permanently delete this user.
+            </p>
+        </section>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
+                <div class="mb-5">
+                    <h2 class="text-xl font-semibold text-gray-900">
+                        Edit User Information
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Leave a field blank if you do not want to update that value.
+                    </p>
+                </div>
+                <form action="{{ url_for('views.delete_user', username=user.username) }}"
+                      method="post"
+                      novalidate
+                      class="space-y-4">
+                    {{ edit_form.hidden_tag() }}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            {{ edit_form.first_name.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                            {{ edit_form.first_name(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Current: {{ user_data.first_name or "N/A" }}
+                            </p>
+                            {% for er in edit_form.first_name.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ er }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            {{ edit_form.last_name.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                            {{ edit_form.last_name(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Current: {{ user_data.last_name or "N/A" }}
+                            </p>
+                            {% for er in edit_form.last_name.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ er }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            {{ edit_form.onid.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                            {{ edit_form.onid(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Current: {{ user_data.onid }}
+                            </p>
+                            {% for er in edit_form.onid.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ er }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            {{ edit_form.email.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                            {{ edit_form.email(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Current: {{ user_data.email }}
+                            </p>
+                            {% for er in edit_form.email.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ er }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            {{ edit_form.is_admin.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                            {{ edit_form.is_admin(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Current:
+                                {% if user_data.is_admin %}
+                                    True
+                                {% else %}
+                                    False
+                                {% endif %}
+                            </p>
+                            {% for er in edit_form.is_admin.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ er }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            {{ edit_form.is_active.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+                            {{ edit_form.is_active(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Current:
+                                {% if user_data.is_active %}
+                                    True
+                                {% else %}
+                                    False
+                                {% endif %}
+                            </p>
+                            {% for er in edit_form.is_active.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ er }}
+                                </p>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <small class="manage-user-current">Current: {{ user_data.first_name }}</small>
-                </div>
-                {% for er in edit_form.first_name.errors %}
-                    <span class="form-error">[{{ er }}]</span>
-                {% endfor %}
-                <div class="manage-user-row">
-                    <div class="manage-user-input">
-                        {{ edit_form.last_name.label }}
-                        {{ edit_form.last_name(size=20) }}
+                    <div class="pt-2">
+                        {{ edit_form.submit(class_="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300") }}
                     </div>
-                    <small class="manage-user-current">Current: {{ user_data.last_name }}</small>
+                </form>
+            </section>
+            <section class="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
+                <div class="mb-5">
+                    <h2 class="text-xl font-semibold text-red-900">
+                        Delete User
+                    </h2>
+                    <p class="mt-1 text-sm text-red-800">
+                        This action permanently removes the account and cannot be undone.
+                    </p>
                 </div>
-                {% for er in edit_form.last_name.errors %}
-                    <span class="form-error">[{{ er }}]</span>
-                {% endfor %}
-                <div class="manage-user-row">
-                    <div class="manage-user-input">
-                        {{ edit_form.onid.label }}
-                        {{ edit_form.onid(size=20) }}
+                <form action="{{ url_for('views.delete_user', username=user.username) }}"
+                      method="post"
+                      novalidate
+                      class="space-y-4">
+                    {{ delete_form.hidden_tag() }}
+                    <p class="rounded-lg border border-red-200 bg-white p-3 text-sm text-red-800">
+                        Deleting {{ user.username }} will remove them permanently. Type
+                        <span class="font-semibold">DELETE</span> to confirm user deletion.
+                    </p>
+                    <div>
+                        {{ delete_form.confirm.label(class="mb-1 block text-sm font-medium text-red-900") }}
+                        {{ delete_form.confirm(class="block w-full rounded-lg border border-red-300 bg-white p-2.5 text-sm text-gray-900 focus:border-red-500 focus:ring-red-500") }}
+                        {% for er in delete_form.confirm.errors %}
+                            <p class="mt-1 text-sm text-red-700">
+                                {{ er }}
+                            </p>
+                        {% endfor %}
                     </div>
-                    <small class="manage-user-current">Current: {{ user_data.onid }}</small>
-                </div>
-                {% for er in edit_form.onid.errors %}
-                    <span class="form-error">[{{ er }}]</span>
-                {% endfor %}
-                <div class="manage-user-row manage-user-row-email">
-                    <div class="manage-user-input">
-                        {{ edit_form.email.label }}
-                        {{ edit_form.email(size=20) }}
-                    </div>
-                    <small class="manage-user-current">Current: {{ user_data.email }}</small>
-                </div>
-                {% for er in edit_form.email.errors %}
-                    <span class="form-error">[{{ er }}]</span>
-                {% endfor %}
-                <div class="manage-user-row">
-                    <div class="manage-user-input manage-user-checkbox">
-                        {{ edit_form.is_admin.label }}
-                        {{ edit_form.is_admin() }}
-                    </div>
-                    <small class="manage-user-current">Current:
-                        {% if user_data.is_admin %}
-                            True
-                        {% else %}
-                            False
-                        {% endif %}
-                    </small>
-                </div>
-                {% for er in edit_form.is_admin.errors %}
-                    <span class="form-error">[{{ er }}]</span>
-                {% endfor %}
-                <div class="manage-user-row">
-                    <div class="manage-user-input manage-user-checkbox">
-                        {{ edit_form.is_active.label }}
-                        {{ edit_form.is_active() }}
-                    </div>
-                    <small class="manage-user-current">Current:
-                        {% if user_data.is_active %}
-                            True
-                        {% else %}
-                            False
-                        {% endif %}
-                    </small>
-                </div>
-                {% for er in edit_form.is_active.errors %}
-                    <span class="form-error">[{{ er }}]</span>
-                {% endfor %}
-                <div class="manage-user-actions">
-                    {{ edit_form.submit() }}
-                </div>
-            </form>
-        </div>
-        <div class="section generic manage-user-panel">
-            <h2>
-                Delete User
-            </h2>
-            <form action="{{ url_for('views.delete_user', username=user.username) }}"
-                  method="post"
-                  novalidate
-                  class="manage-user-form">
-                {{ delete_form.hidden_tag() }}
-                <p class="delete-user-note">
-                    Deleting {{ user.username }} will remove them permanently. Type "DELETE" to confirm user deletion.
-                </p>
-                <div class="manage-user-row">
-                    <div class="manage-user-input">
-                        {{ delete_form.confirm.label }}
-                        {{ delete_form.confirm(size=20) }}
-                    </div>
-                </div>
-                {% for er in delete_form.confirm.errors %}
-                    <span class="form-error">[{{ er }}]</span>
-                {% endfor %}
-                <div class="manage-user-actions">
-                    {{ delete_form.submit() }}
-                </div>
-            </form>
+                    {{ delete_form.submit(class_="inline-flex w-full items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300") }}
+                </form>
+            </section>
         </div>
     </div>
 {% endblock %}
