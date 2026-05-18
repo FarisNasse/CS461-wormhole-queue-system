@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="bg-slate-50">
-        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="bg-transparent">
+        <div>
             <section class="overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-osu-navy to-slate-800 p-8 text-white shadow-sm sm:p-10">
                 <div class="max-w-3xl">
                     <p class="text-sm font-semibold uppercase tracking-wide text-orange-300">
@@ -26,11 +26,11 @@
                 </div>
             </section>
             {% if content.homepage_banner %}
-                <section class="mt-6 rounded-2xl border border-orange-200 bg-orange-50 p-5 shadow-sm">
-                    <p class="text-sm font-semibold uppercase tracking-wide text-orange-800">
+                <section class="mt-6 rounded-2xl border border-orange-200 bg-orange-50 p-5 shadow-sm dark:border-osu-orange/30 dark:bg-osu-orange/10">
+                    <p class="text-sm font-semibold uppercase tracking-wide text-orange-800 dark:text-orange-200">
                         Announcement
                     </p>
-                    <p class="mt-2 text-sm leading-6 text-orange-900">
+                    <p class="mt-2 text-sm leading-6 text-orange-900 dark:text-orange-100">
                         {{ content.homepage_banner }}
                     </p>
                 </section>
@@ -48,17 +48,17 @@
                     </p>
                     <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <a href="{{ url_for('views.create_ticket_page') }}"
-                           class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 hover:border-osu-orange hover:bg-orange-50">
+                           class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 hover:border-osu-orange hover:bg-orange-50 dark:hover:border-osu-blue-light/40 dark:hover:bg-osu-navy-dark/30">
                             <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Submit Request</span>
                             <span class="mt-1 block text-xs text-gray-600 dark:text-gray-300">Join the help queue.</span>
                         </a>
                         <a href="https://oregonstate.zoom.us/j/95601298258"
-                           class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 hover:border-osu-orange hover:bg-orange-50">
+                           class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 hover:border-osu-orange hover:bg-orange-50 dark:hover:border-osu-blue-light/40 dark:hover:bg-osu-navy-dark/30">
                             <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Join Zoom</span>
                             <span class="mt-1 block text-xs text-gray-600 dark:text-gray-300">Password: Wormhole</span>
                         </a>
                         <a href="https://teams.microsoft.com/l/team/19%3APpRY4AEqZdtH64xvUccyQZUEtPyXkb98oJB3Mvxjtzk1%40thread.tacv2/conversations?groupId=8aef2617-21c6-493e-8ae5-42e11a9c9875&tenantId=ce6d05e1-3c5e-4d62-87a8-4c4a2713c113"
-                           class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 hover:border-osu-orange hover:bg-orange-50">
+                           class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 hover:border-osu-orange hover:bg-orange-50 dark:hover:border-osu-blue-light/40 dark:hover:bg-osu-navy-dark/30">
                             <span class="block text-sm font-semibold text-gray-900 dark:text-gray-100">Open Teams</span>
                             <span class="mt-1 block text-xs text-gray-600 dark:text-gray-300">Connect remotely.</span>
                         </a>
@@ -115,11 +115,11 @@
                             {% endif %}
                         </div>
                         {% if holiday_closures %}
-                            <div class="rounded-xl border border-red-200 bg-red-50 p-5">
-                                <h3 class="text-sm font-semibold uppercase tracking-wide text-red-900">
+                            <div class="rounded-xl border border-red-200 bg-red-50 p-5 dark:border-red-400/30 dark:bg-red-950/30">
+                                <h3 class="text-sm font-semibold uppercase tracking-wide text-red-900 dark:text-red-200">
                                     Holiday Closures
                                 </h3>
-                                <ul class="mt-3 space-y-2 text-sm text-red-800">
+                                <ul class="mt-3 space-y-2 text-sm text-red-800 dark:text-red-100">
                                     {% for closure in holiday_closures %}
                                         <li class="flex gap-2">
                                             <span aria-hidden="true">•</span>
@@ -132,7 +132,7 @@
                     </div>
                 </div>
                 {% if content.schedule_embed_url %}
-                    <div class="mt-6 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div class="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
                         <iframe src="{{ content.schedule_embed_url }}"
                                 class="h-[600px] w-full border-0"
                                 title="Wormhole Schedule">

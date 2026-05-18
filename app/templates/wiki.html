@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="bg-slate-50">
-        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <section class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm sm:p-8">
+    <div class="bg-transparent">
+        <div>
+            <section class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-900 dark:to-osu-navy/70 sm:p-8">
                 <p class="text-sm font-semibold uppercase tracking-wide text-osu-orange">
                     Documentation
                 </p>
@@ -13,19 +13,19 @@
                     A practical guide for students, Wormhole Assistants, and administrators using the queue management system.
                 </p>
             </section>
-            <section class="mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm sm:p-5">
+            <section class="mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:p-5">
                 <label for="wikiSearch"
                        class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
                     Search wiki articles
                 </label>
                 <input type="text"
                        id="wikiSearch"
-                       class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40"
+                       class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40"
                        placeholder="Search getting started, student help, admin features...">
             </section>
             <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-4">
                 <aside class="lg:col-span-1">
-                    <div class="sticky top-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm">
+                    <div class="sticky top-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                         <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                             Documentation
                         </h2>
@@ -79,7 +79,7 @@
                 </aside>
                 <main class="space-y-6 lg:col-span-3">
                     <section id="getting-started"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                         <div class="prose max-w-none dark:prose-invert">
                             <h2>
                                 Getting Started
@@ -96,7 +96,7 @@
                         </div>
                     </section>
                     <section id="student-guide"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                         <div class="prose max-w-none dark:prose-invert">
                             <h2>
                                 Student Guide
@@ -116,7 +116,7 @@
                         </div>
                     </section>
                     <section id="website-overview"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                         <div class="prose max-w-none dark:prose-invert">
                             <h2>
                                 Website Overview
@@ -148,7 +148,7 @@
                         </div>
                     </section>
                     <section id="wormhole-assistants"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                         <div class="prose max-w-none dark:prose-invert">
                             <h2>
                                 Wormhole Assistants
@@ -159,7 +159,7 @@
                         </div>
                     </section>
                     <section id="admin-features"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                         <div class="prose max-w-none dark:prose-invert">
                             <h2>
                                 Admin Features
@@ -170,7 +170,7 @@
                         </div>
                     </section>
                     <section id="troubleshooting"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                         <div class="prose max-w-none dark:prose-invert">
                             <h2>
                                 Troubleshooting
@@ -181,7 +181,7 @@
                         </div>
                     </section>
                     <section id="faq"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                         <div class="prose max-w-none dark:prose-invert">
                             <h2>
                                 FAQ
@@ -202,7 +202,7 @@
                     </section>
                     <div class="flex justify-end">
                         <a href="#"
-                           class="back-to-top inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700">
+                           class="back-to-top inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 dark:focus:ring-gray-700">
                             Back to Top
                         </a>
                     </div>
