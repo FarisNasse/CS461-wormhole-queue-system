@@ -1,42 +1,63 @@
 {% extends "base.html" %}
 {% block content %}
-    <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div class="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">
-                    Live Queue
-                </h1>
+    <section class="space-y-6">
+        <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <div class="mb-2 inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200">
+                        <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                        Live updating
+                    </div>
+                    <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+                        Live Queue
+                    </h1>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600">
+                        Current Wormhole help requests waiting for assistance. Tickets are shown in queue order and update automatically.
+                    </p>
+                </div>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+                    <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Last refresh
+                    </span>
+                    <span id="refresh-time" class="mt-1 block font-semibold text-gray-900">
+                        Never
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                <h2 class="text-base font-semibold text-gray-900">
+                    Current tickets
+                </h2>
                 <p class="mt-1 text-sm text-gray-600">
-                    Current Wormhole help requests waiting for assistance.
+                    Queue position, student name, table number, and course.
                 </p>
             </div>
-            <p class="text-sm text-gray-500">
-                Last refresh:
-                <span id="refresh-time" class="font-medium text-gray-700">Never</span>
-            </p>
-        </div>
-        <div class="overflow-x-auto rounded-lg border border-gray-200">
-            <table id="tickets" class="w-full text-left text-sm text-gray-700">
-                <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
-                    <tr>
-                        <th scope="col" class="px-4 py-3">
-                            Position / Status
-                        </th>
-                        <th scope="col" class="px-4 py-3">
-                            Name
-                        </th>
-                        <th scope="col" class="px-4 py-3">
-                            Table
-                        </th>
-                        <th scope="col" class="px-4 py-3">
-                            Class
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 bg-white">
-                    {# Ticket rows are inserted by app/static/js/livequeue.js #}
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table id="tickets"
+                       class="w-full min-w-[720px] text-left text-sm text-gray-700">
+                    <thead class="bg-white text-xs uppercase tracking-wide text-gray-500">
+                        <tr class="border-b border-gray-200">
+                            <th scope="col" class="w-40 px-6 py-3 font-semibold">
+                                Position
+                            </th>
+                            <th scope="col" class="px-6 py-3 font-semibold">
+                                Name
+                            </th>
+                            <th scope="col" class="w-32 px-6 py-3 font-semibold">
+                                Table
+                            </th>
+                            <th scope="col" class="w-40 px-6 py-3 font-semibold">
+                                Class
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 bg-white">
+                        {# Ticket rows are inserted by app/static/js/livequeue.js #}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 {% endblock %}
