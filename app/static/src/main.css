@@ -7,3 +7,174 @@
     min-height: 100vh;
   }
 }
+
+/*
+ * Project-owned motion and interaction utilities.
+ *
+ * Keep custom CSS here instead of app/static/styles.css so Tailwind's input
+ * file remains the single source of truth for non-generated styling. The
+ * generated app/static/dist/main.css should be rebuilt with `npm run build`.
+ */
+@layer components {
+  .hero-animated-bg {
+    background: linear-gradient(135deg, #0a0f1c 0%, #002147 36%, #0f2235 68%, #3a1500 100%);
+    background-size: 300% 300%;
+  }
+
+  .motion-button {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .motion-button:hover {
+    transform: translateY(-2px) scale(1.015);
+  }
+
+  .motion-button:active {
+    transform: translateY(0) scale(0.985);
+  }
+
+  .motion-card {
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .motion-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .interactive-link-card {
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .interactive-link-card:hover {
+    box-shadow: 0 12px 28px rgb(15 23 42 / 10%);
+    transform: translateY(-2px);
+  }
+
+  .dark .interactive-link-card:hover {
+    box-shadow: 0 12px 28px rgb(0 0 0 / 24%);
+  }
+
+  .interactive-table-row {
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .interactive-table-row:hover {
+    box-shadow: inset 3px 0 0 #d73f09;
+  }
+
+  .tilt-card {
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.2s ease;
+    will-change: transform;
+  }
+
+  .tilt-card::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    background: radial-gradient(
+      circle at var(--shine-x, 50%) var(--shine-y, 50%),
+      rgb(255 255 255 / 9%) 0%,
+      transparent 65%
+    );
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .tilt-card:hover::after {
+    opacity: 1;
+  }
+
+  .dark .tilt-card::after {
+    background: radial-gradient(
+      circle at var(--shine-x, 50%) var(--shine-y, 50%),
+      rgb(255 255 255 / 5%) 0%,
+      transparent 65%
+    );
+  }
+
+  .motion-enabled .reveal-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .motion-enabled .reveal-section.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgb(215 63 9 / 15%);
+  transition: box-shadow 0.2s ease;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  box-shadow: 0 0 0 3px rgb(162 206 255 / 20%);
+}
+
+@media (width >= 768px) {
+  .nav-link-underline {
+    position: relative;
+  }
+
+  .nav-link-underline::after {
+    position: absolute;
+    bottom: -0.35rem;
+    left: 0;
+    width: 0;
+    height: 2px;
+    content: "";
+    background: currentcolor;
+    border-radius: 9999px;
+    transition: width 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-link-underline:hover::after,
+  .nav-link-underline[aria-current="page"]::after {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .motion-enabled .reveal-section,
+  .motion-enabled .reveal-section.reveal-visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .tilt-card,
+  .motion-button,
+  .motion-card,
+  .interactive-link-card {
+    transform: none !important;
+  }
+}
