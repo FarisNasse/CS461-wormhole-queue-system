@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% from "macros.html" import confirm_button, warning_confirm_button %}
-
 {% block scripts %}
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/queue.js') }}"></script>
 {% endblock %}
-
 {% block content %}
     <div class="space-y-6">
         <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -18,39 +16,34 @@
                         Monitor open, in-progress, and recently closed Wormhole help requests.
                     </p>
                 </div>
-
                 {% if user.is_admin %}
                     <div class="flex flex-col gap-2 sm:flex-row">
-                        <form id="flush-queue-form" action="{{ url_for('views.flush') }}" method="post">
+                        <form id="flush-queue-form"
+                              action="{{ url_for('views.flush') }}"
+                              method="post">
                             {{ flush_form.hidden_tag() }}
-
-                            {{ warning_confirm_button(
-                                "flush-queue-form",
-                                label="Flush Queue",
-                                title="Flush old tickets?",
-                                message="This will close all currently active tickets. Make sure the queue state is correct before continuing.",
-                                confirm_label="Flush tickets",
-                                extra="w-full"
-                            ) }}
+                            {{ warning_confirm_button("flush-queue-form",
+                                                        label="Flush Queue",
+                                                        title="Flush old tickets?",
+                                                        message="This will close all currently active tickets. Make sure the queue state is correct before continuing.",
+                                                        confirm_label="Flush tickets",
+                                                        extra="w-full") }}
                         </form>
-
-                        <form id="clear-queue-form" action="{{ url_for('views.clear_queue') }}" method="post">
+                        <form id="clear-queue-form"
+                              action="{{ url_for('views.clear_queue') }}"
+                              method="post">
                             {{ clear_form.hidden_tag() }}
-
-                            {{ confirm_button(
-                                "clear-queue-form",
-                                label="Clear Queue",
-                                title="Clear the current queue?",
-                                message="This will permanently clear queue ticket data. Create an archive first if you need to preserve ticket history.",
-                                confirm_label="Clear queue",
-                                extra="w-full"
-                            ) }}
+                            {{ confirm_button("clear-queue-form",
+                                                        label="Clear Queue",
+                                                        title="Clear the current queue?",
+                                                        message="This will permanently clear queue ticket data. Create an archive first if you need to preserve ticket history.",
+                                                        confirm_label="Clear queue",
+                                                        extra="w-full") }}
                         </form>
                     </div>
                 {% endif %}
             </div>
         </section>
-
         <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -61,24 +54,29 @@
                         Requests waiting to be claimed.
                     </p>
                 </div>
-
                 <span class="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
                     {{ ol|length }} open
                 </span>
             </div>
-
             {% if ol %}
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
                     <table class="w-full text-left text-sm text-gray-700">
                         <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
                             <tr>
-                                <th scope="col" class="px-4 py-3">Student</th>
-                                <th scope="col" class="px-4 py-3">Class</th>
-                                <th scope="col" class="px-4 py-3">Table</th>
-                                <th scope="col" class="px-4 py-3">Action</th>
+                                <th scope="col" class="px-4 py-3">
+                                    Student
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Class
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Table
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Action
+                                </th>
                             </tr>
                         </thead>
-
                         <tbody class="divide-y divide-gray-100 bg-white">
                             {% for tk in ol %}
                                 <tr class="hover:bg-gray-50">
@@ -92,7 +90,7 @@
                                         {{ tk.table }}
                                     </td>
                                     <td class="px-4 py-3">
-                                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue')) }}"
+                                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}"
                                            class="font-medium text-osu-navy hover:underline">
                                             View
                                         </a>
@@ -108,7 +106,6 @@
                 </p>
             {% endif %}
         </section>
-
         <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -119,24 +116,29 @@
                         Requests currently assigned to assistants.
                     </p>
                 </div>
-
                 <span class="inline-flex w-fit rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
                     {{ cul|length }} in progress
                 </span>
             </div>
-
             {% if cul %}
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
                     <table class="w-full text-left text-sm text-gray-700">
                         <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
                             <tr>
-                                <th scope="col" class="px-4 py-3">Student</th>
-                                <th scope="col" class="px-4 py-3">Table</th>
-                                <th scope="col" class="px-4 py-3">Assistant</th>
-                                <th scope="col" class="px-4 py-3">Action</th>
+                                <th scope="col" class="px-4 py-3">
+                                    Student
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Table
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Assistant
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Action
+                                </th>
                             </tr>
                         </thead>
-
                         <tbody class="divide-y divide-gray-100 bg-white">
                             {% for tk in cul %}
                                 <tr class="hover:bg-gray-50">
@@ -166,7 +168,6 @@
                 </p>
             {% endif %}
         </section>
-
         <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -177,34 +178,49 @@
                         Recently closed ticket history.
                     </p>
                 </div>
-
                 <span class="inline-flex w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
                     {{ cll|length }} closed
                 </span>
             </div>
-
             {% if cll %}
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
                     <table class="w-full min-w-[900px] text-left text-sm text-gray-700">
                         <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
                             <tr>
-                                <th scope="col" class="px-4 py-3">ID</th>
-                                <th scope="col" class="px-4 py-3">Student</th>
-                                <th scope="col" class="px-4 py-3">Table</th>
-                                <th scope="col" class="px-4 py-3">Class</th>
-                                <th scope="col" class="px-4 py-3">Opened</th>
-                                <th scope="col" class="px-4 py-3">Closed</th>
-                                <th scope="col" class="px-4 py-3">Reason</th>
-                                <th scope="col" class="px-4 py-3">Students</th>
-                                <th scope="col" class="px-4 py-3">Closed By</th>
+                                <th scope="col" class="px-4 py-3">
+                                    ID
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Student
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Table
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Class
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Opened
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Closed
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Reason
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Students
+                                </th>
+                                <th scope="col" class="px-4 py-3">
+                                    Closed By
+                                </th>
                             </tr>
                         </thead>
-
                         <tbody class="divide-y divide-gray-100 bg-white">
                             {% for tk in cll %}
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-4 py-3">
-                                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue')) }}"
+                                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}"
                                            class="font-medium text-osu-navy hover:underline">
                                             {{ tk.id }}
                                         </a>
@@ -244,7 +260,6 @@
                 </p>
             {% endif %}
         </section>
-
         <div>
             <a href="{{ url_for('views.hardware_list') }}"
                class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200">

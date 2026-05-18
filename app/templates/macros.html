@@ -1,174 +1,136 @@
 {# app/templates/macros.html #}
-
 {% macro render_errors(field) %}
-  {% if field.errors %}
-    <div class="mt-1 space-y-1">
-      {% for error in field.errors %}
-        <p class="text-sm text-red-600">{{ error }}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
+    {% if field.errors %}
+        <div class="mt-1 space-y-1">
+            {% for error in field.errors %}
+                <p class="text-sm text-red-600">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endmacro %}
-
-
 {% macro render_field(field, help_text="") %}
-  <div class="mb-4">
-    {% if field.type == "BooleanField" %}
-      <div class="flex items-center gap-2">
-        {{ field(
-          class="h-4 w-4 rounded border-gray-300 text-osu-navy focus:ring-osu-navy"
-        ) }}
-        {{ field.label(class="text-sm font-medium text-gray-700") }}
-      </div>
-
-      {% if help_text %}
-        <p class="mt-1 text-sm text-gray-500">{{ help_text }}</p>
-      {% endif %}
-
-      {{ render_errors(field) }}
-
-    {% elif field.type in ["TextAreaField", "TextArea"] %}
-      {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
-
-      {{ field(
-        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy",
-        rows="4"
-      ) }}
-
-      {% if help_text %}
-        <p class="mt-1 text-sm text-gray-500">{{ help_text }}</p>
-      {% endif %}
-
-      {{ render_errors(field) }}
-
-    {% elif field.type == "FileField" %}
-      {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
-
-      {{ field(
-        class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 file:mr-4 file:border-0 file:bg-osu-navy file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-blue-900 focus:outline-none"
-      ) }}
-
-      {% if help_text %}
-        <p class="mt-1 text-sm text-gray-500">{{ help_text }}</p>
-      {% endif %}
-
-      {{ render_errors(field) }}
-
-    {% elif field.type == "SelectField" %}
-      {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
-
-      {{ field(
-        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy"
-      ) }}
-
-      {% if help_text %}
-        <p class="mt-1 text-sm text-gray-500">{{ help_text }}</p>
-      {% endif %}
-
-      {{ render_errors(field) }}
-
-    {% else %}
-      {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
-
-      {{ field(
-        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy"
-      ) }}
-
-      {% if help_text %}
-        <p class="mt-1 text-sm text-gray-500">{{ help_text }}</p>
-      {% endif %}
-
-      {{ render_errors(field) }}
-    {% endif %}
-  </div>
+    <div class="mb-4">
+        {% if field.type == "BooleanField" %}
+            <div class="flex items-center gap-2">
+                {{ field(class="h-4 w-4 rounded border-gray-300 text-osu-navy focus:ring-osu-navy") }}
+                {{ field.label(class="text-sm font-medium text-gray-700") }}
+            </div>
+            {% if help_text %}
+                <p class="mt-1 text-sm text-gray-500">
+                    {{ help_text }}
+                </p>
+            {% endif %}
+            {{ render_errors(field) }}
+        {% elif field.type in ["TextAreaField", "TextArea"] %}
+            {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+            {{ field(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy",
+                        rows="4") }}
+            {% if help_text %}
+                <p class="mt-1 text-sm text-gray-500">
+                    {{ help_text }}
+                </p>
+            {% endif %}
+            {{ render_errors(field) }}
+        {% elif field.type == "FileField" %}
+            {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+            {{ field(class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 file:mr-4 file:border-0 file:bg-osu-navy file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-blue-900 focus:outline-none") }}
+            {% if help_text %}
+                <p class="mt-1 text-sm text-gray-500">
+                    {{ help_text }}
+                </p>
+            {% endif %}
+            {{ render_errors(field) }}
+        {% elif field.type == "SelectField" %}
+            {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+            {{ field(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+            {% if help_text %}
+                <p class="mt-1 text-sm text-gray-500">
+                    {{ help_text }}
+                </p>
+            {% endif %}
+            {{ render_errors(field) }}
+        {% else %}
+            {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+            {{ field(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
+            {% if help_text %}
+                <p class="mt-1 text-sm text-gray-500">
+                    {{ help_text }}
+                </p>
+            {% endif %}
+            {{ render_errors(field) }}
+        {% endif %}
+    </div>
 {% endmacro %}
-
-
 {% macro card(title="", subtitle="", extra_class="") %}
-  <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm {{ extra_class }}">
-    {% if title or subtitle %}
-      <div class="mb-4">
-        {% if title %}
-          <h2 class="text-xl font-semibold text-gray-900">{{ title }}</h2>
+    <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm {{ extra_class }}">
+        {% if title or subtitle %}
+            <div class="mb-4">
+                {% if title %}
+                    <h2 class="text-xl font-semibold text-gray-900">
+                        {{ title }}
+                    </h2>
+                {% endif %}
+                {% if subtitle %}
+                    <p class="mt-1 text-sm text-gray-600">
+                        {{ subtitle }}
+                    </p>
+                {% endif %}
+            </div>
         {% endif %}
-
-        {% if subtitle %}
-          <p class="mt-1 text-sm text-gray-600">{{ subtitle }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
-
-    {{ caller() }}
-  </section>
+        {{ caller() }}
+    </section>
 {% endmacro %}
-
-
 {% macro btn(label, variant="primary", type="submit", extra="") %}
-  {% set styles = {
-    "primary": "bg-osu-navy text-white hover:bg-blue-900 focus:ring-blue-300",
-    "danger": "bg-red-600 text-white hover:bg-red-700 focus:ring-red-300",
-    "secondary": "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-200",
-    "outline": "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200"
-  } %}
-
-  <button
-    type="{{ type }}"
-    class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-4 {{ styles.get(variant, styles.primary) }} {{ extra }}"
-  >
-    {{ label }}
-  </button>
+    {% set styles = {
+        "primary": "bg-osu-navy text-white hover:bg-blue-900 focus:ring-blue-300",
+        "danger": "bg-red-600 text-white hover:bg-red-700 focus:ring-red-300",
+        "secondary": "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-200",
+        "outline": "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200"
+    } %}
+    <button type="{{ type }}"
+            class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-4 {{ styles.get(variant, styles.primary) }} {{ extra }}">
+        {{ label }}
+    </button>
 {% endmacro %}
-
-
-
-
 {% macro confirm_button(form_id, label="Delete", title="Confirm action", message="Are you sure you want to continue?", confirm_label="Confirm", extra="", submit_name="", submit_value="") %}
-  <button
-    type="button"
-    data-modal-target="confirm-action-modal"
-    data-modal-toggle="confirm-action-modal"
-    data-confirm-submit="{{ form_id }}"
-    data-confirm-title="{{ title }}"
-    data-confirm-message="{{ message }}"
-    data-confirm-label="{{ confirm_label }}"
-    {% if submit_name %}data-confirm-submit-name="{{ submit_name }}"{% endif %}
-    {% if submit_value %}data-confirm-submit-value="{{ submit_value }}"{% endif %}
-    class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 {{ extra }}"
-  >
-    {{ label }}
-  </button>
+    <button type="button"
+            data-modal-target="confirm-action-modal"
+            data-modal-toggle="confirm-action-modal"
+            data-confirm-submit="{{ form_id }}"
+            data-confirm-title="{{ title }}"
+            data-confirm-message="{{ message }}"
+            data-confirm-label="{{ confirm_label }}"
+            {% if submit_name %}data-confirm-submit-name="{{ submit_name }}"{% endif %}
+            {% if submit_value %}data-confirm-submit-value="{{ submit_value }}"{% endif %}
+            class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 {{ extra }}">
+        {{ label }}
+    </button>
 {% endmacro %}
-
-
 {% macro warning_confirm_button(form_id, label="Confirm", title="Confirm action", message="Are you sure you want to continue?", confirm_label="Confirm", extra="", submit_name="", submit_value="") %}
-  <button
-    type="button"
-    data-modal-target="confirm-action-modal"
-    data-modal-toggle="confirm-action-modal"
-    data-confirm-submit="{{ form_id }}"
-    data-confirm-title="{{ title }}"
-    data-confirm-message="{{ message }}"
-    data-confirm-label="{{ confirm_label }}"
-    {% if submit_name %}data-confirm-submit-name="{{ submit_name }}"{% endif %}
-    {% if submit_value %}data-confirm-submit-value="{{ submit_value }}"{% endif %}
-    class="inline-flex items-center justify-center rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 transition hover:bg-yellow-100 focus:outline-none focus:ring-4 focus:ring-yellow-200 {{ extra }}"
-  >
-    {{ label }}
-  </button>
+    <button type="button"
+            data-modal-target="confirm-action-modal"
+            data-modal-toggle="confirm-action-modal"
+            data-confirm-submit="{{ form_id }}"
+            data-confirm-title="{{ title }}"
+            data-confirm-message="{{ message }}"
+            data-confirm-label="{{ confirm_label }}"
+            {% if submit_name %}data-confirm-submit-name="{{ submit_name }}"{% endif %}
+            {% if submit_value %}data-confirm-submit-value="{{ submit_value }}"{% endif %}
+            class="inline-flex items-center justify-center rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 transition hover:bg-yellow-100 focus:outline-none focus:ring-4 focus:ring-yellow-200 {{ extra }}">
+        {{ label }}
+    </button>
 {% endmacro %}
-
 {% macro link_btn(label, href, variant="secondary", extra="") %}
-  {% set styles = {
-    "primary": "bg-osu-navy text-white hover:bg-blue-900 focus:ring-blue-300",
-    "danger": "bg-red-600 text-white hover:bg-red-700 focus:ring-red-300",
-    "secondary": "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-200",
-    "outline": "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200"
-  } %}
-
-  <a
-    href="{{ href }}"
-    class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-4 {{ styles.get(variant, styles.secondary) }} {{ extra }}"
-  >
-    {{ label }}
-  </a>
+    {% set styles = {
+        "primary": "bg-osu-navy text-white hover:bg-blue-900 focus:ring-blue-300",
+        "danger": "bg-red-600 text-white hover:bg-red-700 focus:ring-red-300",
+        "secondary": "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-200",
+        "outline": "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200"
+    } %}
+    <a href="{{ href }}"
+       class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-4 {{ styles.get(variant, styles.secondary) }} {{ extra }}">
+        {{ label }}
+    </a>
 {% endmacro %}

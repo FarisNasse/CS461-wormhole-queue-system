@@ -20,7 +20,9 @@
                         Select a Pacific Time date range for closed or resolved ticket data.
                     </p>
                 </div>
-                <form action="{{ url_for('views.export_archive') }}" method="post" class="space-y-4">
+                <form action="{{ url_for('views.export_archive') }}"
+                      method="post"
+                      class="space-y-4">
                     {{ form.hidden_tag() }}
                     <div>
                         {{ form.start_date.label(class="mb-1 block text-sm font-medium text-gray-700") }}
@@ -52,7 +54,10 @@
                         Download previous exports or select files to delete from the server.
                     </p>
                 </div>
-                <form id="delete-archives-form" action="{{ url_for('views.delete_archives') }}" method="post" class="space-y-4">
+                <form id="delete-archives-form"
+                      action="{{ url_for('views.delete_archives') }}"
+                      method="post"
+                      class="space-y-4">
                     {{ delete_form.hidden_tag() }}
                     {% if archive_files %}
                         <div class="overflow-hidden rounded-lg border border-gray-200">
@@ -75,13 +80,11 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        {{ confirm_button(
-                            "delete-archives-form",
-                            label="Delete Selected",
-                            title="Delete selected archive files?",
-                            message="This removes the selected archive exports from the server. This action cannot be undone.",
-                            confirm_label="Delete archives"
-                        ) }}
+                        {{ confirm_button("delete-archives-form",
+                                                label="Delete Selected",
+                                                title="Delete selected archive files?",
+                                                message="This removes the selected archive exports from the server. This action cannot be undone.",
+                                                confirm_label="Delete archives") }}
                     {% else %}
                         <p class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
                             No archive files found.

@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -11,38 +10,41 @@
                     Review the original ticket information and resolution status.
                 </p>
             </div>
-
             <dl class="space-y-4">
                 <div>
-                    <dt class="text-sm font-medium text-gray-500">Student Name</dt>
+                    <dt class="text-sm font-medium text-gray-500">
+                        Student Name
+                    </dt>
                     <dd class="mt-1 text-base font-semibold text-gray-900">
                         {{ ticket.name }}
                     </dd>
                 </div>
-
                 <div>
-                    <dt class="text-sm font-medium text-gray-500">Class</dt>
+                    <dt class="text-sm font-medium text-gray-500">
+                        Class
+                    </dt>
                     <dd class="mt-1 text-base font-semibold text-gray-900">
                         {{ ticket.phClass }}
                     </dd>
                 </div>
-
                 <div>
-                    <dt class="text-sm font-medium text-gray-500">Location</dt>
+                    <dt class="text-sm font-medium text-gray-500">
+                        Location
+                    </dt>
                     <dd class="mt-1 text-base font-semibold text-gray-900">
                         {{ ticket.table }}
                     </dd>
                 </div>
-
                 <div>
-                    <dt class="text-sm font-medium text-gray-500">Created At</dt>
+                    <dt class="text-sm font-medium text-gray-500">
+                        Created At
+                    </dt>
                     <dd class="mt-1 text-base font-semibold text-gray-900">
                         {{ ticket.time_create|datetime_pacific("%Y-%m-%d %H:%M:%S %Z") }}
                     </dd>
                 </div>
             </dl>
         </section>
-
         <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div class="mb-5">
                 <h2 class="text-2xl font-bold text-gray-900">
@@ -52,36 +54,31 @@
                     Update the resolution reason and number of students helped.
                 </p>
             </div>
-
             <form method="post" class="space-y-4" novalidate>
                 {{ form.hidden_tag() }}
-
                 <div>
                     {{ form.resolveReason.label(class="mb-1 block text-sm font-medium text-gray-700") }}
-
                     {{ form.resolveReason(class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
-
                     {% for error in form.resolveReason.errors %}
-                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ error }}
+                        </p>
                     {% endfor %}
                 </div>
-
                 <div>
                     {{ form.numStds.label(class="mb-1 block text-sm font-medium text-gray-700") }}
-
                     {{ form.numStds(type="number", min="1", class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy") }}
-
                     {% for error in form.numStds.errors %}
-                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ error }}
+                        </p>
                     {% endfor %}
                 </div>
-
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                     <button type="submit"
                             class="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300">
                         Resolve Ticket
                     </button>
-
                     <a href="{{ url_for('views.queue') }}"
                        class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200">
                         Back to Queue

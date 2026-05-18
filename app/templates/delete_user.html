@@ -143,16 +143,14 @@
                             </p>
                         {% endfor %}
                     </div>
-                    {{ confirm_button(
-                        "delete-user-form",
-                        label="Delete User",
-                        title="Delete this user?",
-                        message="This action cannot be undone. The user account and its access will be removed.",
-                        confirm_label="Delete user",
-                        extra="w-full",
-                        submit_name=delete_form.submit.name,
-                        submit_value=delete_form.submit.label.text
-                    ) }}
+                    {{ confirm_button("delete-user-form",
+                                        label="Delete User",
+                                        title="Delete this user?",
+                                        message="This action cannot be undone. The user account and its access will be removed.",
+                                        confirm_label="Delete user",
+                                        extra="w-full",
+                                        submit_name=delete_form.submit.name,
+                                        submit_value=delete_form.submit.label.text) }}
                 </form>
             </section>
         </div>

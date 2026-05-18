@@ -1,25 +1,19 @@
 {% extends "base.html" %}
 {% from "macros.html" import render_field, card, btn %}
-
 {% block content %}
-  {% call card("Assistant Login", "Sign in to access the Wormhole queue.", "mx-auto max-w-md") %}
-    <form action="" method="post" novalidate>
-      {{ form.hidden_tag() }}
-
-      {{ render_field(form.username) }}
-      {{ render_field(form.password) }}
-      {{ render_field(form.remember_me) }}
-
-      {{ btn("Sign In", extra="w-full") }}
-
-      <p class="mt-4 text-center text-sm">
-        <a
-          href="{{ url_for('auth.reset_password_request') }}"
-          class="font-medium text-osu-navy hover:underline"
-        >
-          Reset Password
-        </a>
-      </p>
-    </form>
-  {% endcall %}
+    {% call card("Assistant Login", "Sign in to access the Wormhole queue.", "mx-auto max-w-md") %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            {{ render_field(form.remember_me) }}
+            {{ btn("Sign In", extra="w-full") }}
+            <p class="mt-4 text-center text-sm">
+                <a href="{{ url_for('auth.reset_password_request') }}"
+                   class="font-medium text-osu-navy hover:underline">
+                    Reset Password
+                </a>
+            </p>
+        </form>
+    {% endcall %}
 {% endblock %}

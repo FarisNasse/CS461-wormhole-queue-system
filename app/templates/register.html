@@ -1,17 +1,14 @@
 {% extends "base.html" %}
 {% from "macros.html" import render_field, card, btn %}
-
 {% block content %}
-  {% call card("New User Registration", "Create a new Wormhole user account.", "mx-auto max-w-lg") %}
-    <form action="{{ url_for('users.users_add') }}" method="post" novalidate>
-      {{ form.hidden_tag() }}
-
-      {{ render_field(form.first_name) }}
-      {{ render_field(form.last_name) }}
-      {{ render_field(form.onid) }}
-      {{ render_field(form.is_admin) }}
-
-      {{ btn("Create User", extra="w-full") }}
-    </form>
-  {% endcall %}
+    {% call card("New User Registration", "Create a new Wormhole user account.", "mx-auto max-w-lg") %}
+        <form action="{{ url_for('users.users_add') }}" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ render_field(form.first_name) }}
+            {{ render_field(form.last_name) }}
+            {{ render_field(form.onid) }}
+            {{ render_field(form.is_admin) }}
+            {{ btn("Create User", extra="w-full") }}
+        </form>
+    {% endcall %}
 {% endblock %}

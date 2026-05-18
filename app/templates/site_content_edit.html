@@ -9,7 +9,9 @@
                 Update public schedule information and homepage notices. Structurally complex homepage sections with links are intentionally managed in code.
             </p>
         </section>
-        <form method="post" action="{{ url_for('views.edit_site_content') }}" class="space-y-6">
+        <form method="post"
+              action="{{ url_for('views.edit_site_content') }}"
+              class="space-y-6">
             {{ form.hidden_tag() }}
             <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <div class="mb-5">
