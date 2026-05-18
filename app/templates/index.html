@@ -1,210 +1,238 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="page">
-        <h1 class="index-page-title">
-            Physics Collaboration and Help Center
-        </h1>
-        {% if content.homepage_banner %}
-            <div class="homepage-banner">
-                {{ content.homepage_banner }}
-            </div>
-        {% endif %}
-        <!-- STUDENT SECTION -->
-        <div class="section student-home index-home-section">
-            <h2 class="index-section-title">
-                For Students
-            </h2>
-            <p class="index-section-link">
-                <a href="{{ url_for('views.create_ticket_page') }}">Submit a Help Request</a>
-            </p>
-            <p class="index-section-link">
-                <a href="https://oregonstate.zoom.us/j/95601298258">Join Zoom Meeting</a>
-                (password: <strong>Wormhole</strong>)
-            </p>
-            <p class="index-section-link">
-                <a href="https://teams.microsoft.com/l/team/19%3APpRY4AEqZdtH64xvUccyQZUEtPyXkb98oJB3Mvxjtzk1%40thread.tacv2/conversations?groupId=8aef2617-21c6-493e-8ae5-42e11a9c9875&tenantId=ce6d05e1-3c5e-4d62-87a8-4c4a2713c113">
-                    Join Microsoft Teams
-                </a>
-            </p>
-        </div>
-        <!-- ASSISTANT SECTION -->
-        <div class="section ta-home index-home-section">
-            <h2 class="index-section-title">
-                For Wormhole Assistants
-            </h2>
-            {% if current_user.is_anonymous %}
-                <p class="index-section-link">
-                    <a href="{{ url_for('views.assistant_login') }}">Log In</a>
-                </p>
-            {% else %}
-                <p class="index-section-link">
-                    <a href="{{ url_for('views.userpage', username=current_user.username) }}">Profile</a>
-                </p>
-            {% endif %}
-        </div>
-        <div class = "section generic wormhole-content">
-            <!-- WORMHOLE SCHEDULE -->
-            <div class="subsection wormhole-schedule">
-                <h3 class="center-align">
-                    Wormhole Schedule
-                </h3>
-                <p class="center-align">
-                    <strong>{{ content.schedule_announcement }}</strong>
-                </p>
-                <p class="center-align">
-                    {{ content.schedule_hours }}
-                </p>
-                {% if content.schedule_note %}
-                    <p class="center-align">
-                        <em>{{ content.schedule_note }}</em>
+    <div class="bg-slate-50">
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <section class="overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-osu-navy to-slate-800 p-8 text-white shadow-sm sm:p-10">
+                <div class="max-w-3xl">
+                    <p class="text-sm font-semibold uppercase tracking-wide text-orange-300">
+                        Oregon State Physics
                     </p>
-                {% endif %}
-                {% if holiday_closures %}
-                    <h4 class="center-align">
-                        Holiday Closures
-                    </h4>
-                    <ul class="browser-default holiday-closures">
-                        {% for closure in holiday_closures %}
-                            <li>
-                                {{ closure }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                    <h1 class="mt-3 text-3xl font-bold tracking-tight sm:text-5xl">
+                        Physics Collaboration and Help Center
+                    </h1>
+                    <p class="mt-4 text-base leading-7 text-slate-200 sm:text-lg">
+                        Join the Wormhole queue, connect with assistants, view the live schedule, and get help with physics in person or online.
+                    </p>
+                </div>
+
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <a href="{{ url_for('views.create_ticket_page') }}"
+                       class="inline-flex items-center justify-center rounded-lg bg-osu-orange px-5 py-3 text-sm font-semibold text-white hover:bg-orange-700 focus:outline-none focus:ring-4 focus:ring-orange-300">
+                        Submit a Help Request
+                    </a>
+                    <a href="{{ url_for('views.livequeue') }}"
+                       class="inline-flex items-center justify-center rounded-lg border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/30">
+                        View Live Queue
+                    </a>
+                </div>
+            </section>
+
+            {% if content.homepage_banner %}
+                <section class="mt-6 rounded-2xl border border-orange-200 bg-orange-50 p-5 shadow-sm">
+                    <p class="text-sm font-semibold uppercase tracking-wide text-orange-800">
+                        Announcement
+                    </p>
+                    <p class="mt-2 text-sm leading-6 text-orange-900">
+                        {{ content.homepage_banner }}
+                    </p>
+                </section>
+            {% endif %}
+
+            <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
+                    <p class="text-sm font-semibold uppercase tracking-wide text-osu-orange">
+                        For Students
+                    </p>
+                    <h2 class="mt-2 text-2xl font-bold text-gray-900">
+                        Get physics help faster
+                    </h2>
+                    <p class="mt-3 text-sm leading-6 text-gray-600">
+                        Submit a request, watch the live queue, and connect with Wormhole Assistants through Zoom or Microsoft Teams.
+                    </p>
+
+                    <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        <a href="{{ url_for('views.create_ticket_page') }}"
+                           class="rounded-xl border border-gray-200 bg-gray-50 p-4 hover:border-osu-orange hover:bg-orange-50">
+                            <span class="block text-sm font-semibold text-gray-900">Submit Request</span>
+                            <span class="mt-1 block text-xs text-gray-600">Join the help queue.</span>
+                        </a>
+
+                        <a href="https://oregonstate.zoom.us/j/95601298258"
+                           class="rounded-xl border border-gray-200 bg-gray-50 p-4 hover:border-osu-orange hover:bg-orange-50">
+                            <span class="block text-sm font-semibold text-gray-900">Join Zoom</span>
+                            <span class="mt-1 block text-xs text-gray-600">Password: Wormhole</span>
+                        </a>
+
+                        <a href="https://teams.microsoft.com/l/team/19%3APpRY4AEqZdtH64xvUccyQZUEtPyXkb98oJB3Mvxjtzk1%40thread.tacv2/conversations?groupId=8aef2617-21c6-493e-8ae5-42e11a9c9875&tenantId=ce6d05e1-3c5e-4d62-87a8-4c4a2713c113"
+                           class="rounded-xl border border-gray-200 bg-gray-50 p-4 hover:border-osu-orange hover:bg-orange-50">
+                            <span class="block text-sm font-semibold text-gray-900">Open Teams</span>
+                            <span class="mt-1 block text-xs text-gray-600">Connect remotely.</span>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <p class="text-sm font-semibold uppercase tracking-wide text-osu-orange">
+                        For Assistants
+                    </p>
+                    <h2 class="mt-2 text-2xl font-bold text-gray-900">
+                        Assistant Access
+                    </h2>
+                    <p class="mt-3 text-sm leading-6 text-gray-600">
+                        Log in to manage your profile and help students through the queue system.
+                    </p>
+
+                    {% if current_user.is_anonymous %}
+                        <a href="{{ url_for('views.assistant_login') }}"
+                           class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            Log In
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('views.userpage', username=current_user.username) }}"
+                           class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            View Profile
+                        </a>
+                    {% endif %}
+                </article>
+            </section>
+
+            <section class="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                    <div class="lg:col-span-1">
+                        <p class="text-sm font-semibold uppercase tracking-wide text-osu-orange">
+                            Schedule
+                        </p>
+                        <h2 class="mt-2 text-2xl font-bold text-gray-900">
+                            Wormhole Schedule
+                        </h2>
+                        <p class="mt-3 text-sm leading-6 text-gray-600">
+                            Check current Wormhole hours, notes, closures, and the embedded schedule when available.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4 lg:col-span-2">
+                        <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                            <p class="text-base font-semibold text-gray-900">
+                                {{ content.schedule_announcement }}
+                            </p>
+                            <p class="mt-2 text-sm text-gray-700">
+                                {{ content.schedule_hours }}
+                            </p>
+                            {% if content.schedule_note %}
+                                <p class="mt-2 text-sm italic text-gray-600">
+                                    {{ content.schedule_note }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        {% if holiday_closures %}
+                            <div class="rounded-xl border border-red-200 bg-red-50 p-5">
+                                <h3 class="text-sm font-semibold uppercase tracking-wide text-red-900">
+                                    Holiday Closures
+                                </h3>
+                                <ul class="mt-3 space-y-2 text-sm text-red-800">
+                                    {% for closure in holiday_closures %}
+                                        <li class="flex gap-2">
+                                            <span aria-hidden="true">•</span>
+                                            <span>{{ closure }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 {% if content.schedule_embed_url %}
-                    <iframe src="{{ content.schedule_embed_url }}"
-                            width="100%"
-                            height="600"
-                            style="border:none"
-                            title="Wormhole Schedule">
-                    </iframe>
+                    <div class="mt-6 overflow-hidden rounded-xl border border-gray-200">
+                        <iframe src="{{ content.schedule_embed_url }}"
+                                class="h-[600px] w-full border-0"
+                                title="Wormhole Schedule">
+                        </iframe>
+                    </div>
                 {% endif %}
-            </div>
-            <!-- ABOUT -->
-            <div class="subsection About">
-                <h4>
-                    About The Wormhole
-                </h4>
-                <p>
-                    The Wormhole (Valley Library and Remote) is a Physics Collaboration and Help Center.
-                    It is an informal space to work on physics with peers under the guidance of experienced Assistants.
-                    Complete instructions are available in
-                    <a href="{{ url_for('views.download_instruction_file', filename='Wormhole_Student_Instructions.pdf') }}">Wormhole Instructions</a>.
-                </p>
-                <p>
-                    If you or your group needs help with a physics question, send a request to the queue.
-                    In person, use the box on your table. Online, use this <a href="{{ url_for('views.create_ticket_page') }}">link</a>.
-                    Only one person in the group needs to enter the request, and only one time for each
-                    question, please. You can see your place in the help queue using the Live Queue link at
-                    the top of the page. Multiple requests for a question won’t get you help any faster, and
-                    it slows down the process for everyone.
-                </p>
-            </div>
-            <!-- ASSISTANTS -->
-            <div class="subsection Assistants">
-                <h4>
-                    Wormhole Assistants
-                </h4>
-                <p>
-                    Wormhole assistants are graduate students in physics, physics majors, or other
-                    undergraduates who took one of the introductory physics sequences. They all have
-                    a level of expertise in physics, but they’re not experts on your course. When
-                    asking questions, be prepared to show them the problem you’re working on. They’ll
-                    do their best to answer it but may ultimately refer you to another Wormhole Assistant
-                    or to your course instructor. If your question is course related (e.g. How do we
-                    use the analysis app in lab?) you should look for a Wormhole Assistant affiliated
-                    with your course, as shown in the schedule.
-                </p>
-            </div>
-            <!-- VIRTUAL WORMHOLE -->
-            <div class="subsection Virtual-Wormhole">
-                <h4>
-                    Virtual Wormhole
-                </h4>
-                <p>
-                    The Virtual Wormhole allows you to request help remotely. You can get help through
-                    two different methods:
-                </p>
-                <ol class="browser-default">
-                    <li>
-                        Connect to the Virtual Wormhole channel in the Introductory Physics MS Team.
-                        (Full instructions for joining the Team are in
-                        (<a href="{{ url_for('views.download_instruction_file', filename='MS_Teams_Instructions.pdf') }}">MS Teams Instructions</a>.)
-                    </li>
-                    <li>
-                        Join the Wormhole Zoom session
-                        <a href="https://oregonstate.zoom.us/j/95601298258">here</a>
-                        (password: <strong>Wormhole</strong>)
-                    </li>
-                </ol>
-            </div>
-            <!-- REQUESTING ASSISTANCE -->
-            <div class="subsection Requesting-Assistance">
-                <h4>
-                    Requesting Assistance
-                </h4>
-                <p>
-                    In the Wormhole use the box on your table. Simply push the button for your course
-                    to be put in the queue. In the Virtual Wormhole enter a request at
-                    <a href="https://wormhole.physics.oregonstate.edu/createticket">
-                        wormhole.physics.oregonstate.edu/createticket
-                    </a>.
-                    An Assistant will respond to your request as soon as your turn comes up in the
-                    queue. Help is provided in the order requests are received. You can check the
-                    status of your request at
-                    <a href="https://wormhole.physics.oregonstate.edu/livequeue">
-                        wormhole.physics.oregonstate.edu/livequeue
-                    </a>.
-                </p>
-            </div>
-            <!-- CODE OF CONDUCT -->
-            <div class="subsection Conduct">
-                <h4>
-                    Code of Conduct
-                </h4>
-                <p>
-                    The Wormhole is an informal space for physics collaboration. It works best when we accord
-                    each other common courtesy.
-                </p>
-                <ul class="browser-default">
-                    <li>
-                        Be respectful of other students.
-                    </li>
-                    <li>
-                        Respect others' personal and work spaces.
-                    </li>
-                    <li>
-                        Be conscious of aromas.
-                    </li>
-                    <li>
-                        Be aware of your speech.
-                    </li>
-                    <li>
-                        Respect those who will use the space next.
-                    </li>
-                    <li>
-                        Be mindful of the learning environment.
-                    </li>
-                    <li>
-                        Be respectful of the Assistants.
-                    </li>
-                    <li>
-                        Be patient - the Assistants will help as many people as possible.
-                    </li>
-                    <li>
-                        Remember that Assistants assist. They are there to help you learn, not to do the problem
-                        or tell you the answer.
-                    </li>
-                    <li>
-                        Assistants will try to help everyone, but be patient when they aren't familiar with the
-                        problem in your course.
-                    </li>
-                    <li>
-                        The wormhole gets crowded. If you're not working on physics, please give up your space
-                        to those who are.
-                    </li>
-                </ul>
-            </div>
+            </section>
+
+            <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="prose max-w-none">
+                        <h2>About The Wormhole</h2>
+                        <p>
+                            The Wormhole (Valley Library and Remote) is a Physics Collaboration and Help Center. It is an informal space to work on physics with peers under the guidance of experienced Assistants. Complete instructions are available in
+                            <a href="{{ url_for('views.download_instruction_file', filename='Wormhole_Student_Instructions.pdf') }}">Wormhole Instructions</a>.
+                        </p>
+                        <p>
+                            If you or your group needs help with a physics question, send a request to the queue. In person, use the box on your table. Online, use this <a href="{{ url_for('views.create_ticket_page') }}">link</a>. Only one person in the group needs to enter the request, and only one time for each question, please. You can see your place in the help queue using the Live Queue link at the top of the page. Multiple requests for a question won’t get you help any faster, and it slows down the process for everyone.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="prose max-w-none">
+                        <h2>Wormhole Assistants</h2>
+                        <p>
+                            Wormhole assistants are graduate students in physics, physics majors, or other undergraduates who took one of the introductory physics sequences. They all have a level of expertise in physics, but they’re not experts on your course.
+                        </p>
+                        <p>
+                            When asking questions, be prepared to show them the problem you’re working on. They’ll do their best to answer it but may ultimately refer you to another Wormhole Assistant or to your course instructor. If your question is course related, look for a Wormhole Assistant affiliated with your course, as shown in the schedule.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="prose max-w-none">
+                        <h2>Virtual Wormhole</h2>
+                        <p>
+                            The Virtual Wormhole allows you to request help remotely. You can get help through two different methods:
+                        </p>
+                        <ol>
+                            <li>
+                                Connect to the Virtual Wormhole channel in the Introductory Physics MS Team. Full instructions for joining the Team are in
+                                <a href="{{ url_for('views.download_instruction_file', filename='MS_Teams_Instructions.pdf') }}">MS Teams Instructions</a>.
+                            </li>
+                            <li>
+                                Join the Wormhole Zoom session <a href="https://oregonstate.zoom.us/j/95601298258">here</a> with password <strong>Wormhole</strong>.
+                            </li>
+                        </ol>
+                    </div>
+                </article>
+
+                <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="prose max-w-none">
+                        <h2>Requesting Assistance</h2>
+                        <p>
+                            In the Wormhole use the box on your table. Simply push the button for your course to be put in the queue. In the Virtual Wormhole enter a request at
+                            <a href="https://wormhole.physics.oregonstate.edu/createticket">wormhole.physics.oregonstate.edu/createticket</a>.
+                        </p>
+                        <p>
+                            An Assistant will respond to your request as soon as your turn comes up in the queue. Help is provided in the order requests are received. You can check the status of your request at
+                            <a href="https://wormhole.physics.oregonstate.edu/livequeue">wormhole.physics.oregonstate.edu/livequeue</a>.
+                        </p>
+                    </div>
+                </article>
+            </section>
+
+            <section class="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="prose max-w-none">
+                    <h2>Code of Conduct</h2>
+                    <p>
+                        The Wormhole is an informal space for physics collaboration. It works best when we accord each other common courtesy.
+                    </p>
+                    <ul>
+                        <li>Be respectful of other students.</li>
+                        <li>Respect others' personal and work spaces.</li>
+                        <li>Be conscious of aromas.</li>
+                        <li>Be aware of your speech.</li>
+                        <li>Respect those who will use the space next.</li>
+                        <li>Be mindful of the learning environment.</li>
+                        <li>Be respectful of the Assistants.</li>
+                        <li>Be patient - the Assistants will help as many people as possible.</li>
+                        <li>Remember that Assistants assist. They are there to help you learn, not to do the problem or tell you the answer.</li>
+                        <li>Assistants will try to help everyone, but be patient when they aren't familiar with the problem in your course.</li>
+                        <li>The wormhole gets crowded. If you're not working on physics, please give up your space to those who are.</li>
+                    </ul>
+                </div>
+            </section>
         </div>
     </div>
 {% endblock %}
