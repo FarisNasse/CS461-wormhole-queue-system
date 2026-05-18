@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div class="rounded-2xl bg-white p-8 shadow-sm">
+        <div class="rounded-2xl bg-white dark:bg-gray-900 p-8 shadow-sm">
             <h1 class="mb-3 text-5xl font-bold text-osu-navy">
                 404
             </h1>
-            <p class="mb-6 text-gray-600">
+            <p class="mb-6 text-gray-600 dark:text-gray-300">
                 Page not found.
             </p>
             <a href="{{ url_for('views.index') }}"

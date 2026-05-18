@@ -49,13 +49,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     emptyRow.innerHTML = `
             <td colspan="4" class="px-6 py-12 text-center">
                 <div class="mx-auto max-w-sm">
-                    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-500">
+                    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                         <svg class="h-6 w-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M4 11h16M5 21h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1Z"/>
                         </svg>
                     </div>
-                    <p class="text-sm font-semibold text-gray-900">No one is currently waiting</p>
-                    <p class="mt-1 text-sm text-gray-500">New help requests will appear here automatically.</p>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">No one is currently waiting</p>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">New help requests will appear here automatically.</p>
                 </div>
             </td>
         `;
@@ -86,21 +86,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     positionCell.appendChild(positionBadge);
 
                     const nameCell = document.createElement('td');
-                    nameCell.className = 'px-6 py-4 align-middle font-medium text-gray-900';
+                    nameCell.className = 'px-6 py-4 align-middle font-medium text-gray-900 dark:text-gray-100';
                     nameCell.textContent = ticket.student_name || 'Unknown student';
 
                     const tableCell = document.createElement('td');
-                    tableCell.className = 'px-6 py-4 align-middle text-gray-700';
+                    tableCell.className = 'px-6 py-4 align-middle text-gray-700 dark:text-gray-200';
 
                     const tableBadge = document.createElement('span');
                     tableBadge.className =
-                        'inline-flex min-w-10 items-center justify-center rounded-lg bg-gray-100 px-2.5 py-1 text-sm font-semibold tabular-nums text-gray-800 ring-1 ring-gray-200';
+                        'inline-flex min-w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 px-2.5 py-1 text-sm font-semibold tabular-nums text-gray-800 dark:text-gray-200 ring-1 ring-gray-200 dark:ring-gray-700';
                     tableBadge.textContent = ticket.table || '—';
 
                     tableCell.appendChild(tableBadge);
 
                     const courseCell = document.createElement('td');
-                    courseCell.className = 'px-6 py-4 align-middle text-gray-700';
+                    courseCell.className = 'px-6 py-4 align-middle text-gray-700 dark:text-gray-200';
                     courseCell.textContent = ticket.physics_course || '—';
 
                     row.appendChild(positionCell);

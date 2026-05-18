@@ -1,26 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="space-y-6">
-        <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         User List
                     </h1>
-                    <p class="mt-1 text-sm text-gray-600">
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
                         Manage current and inactive Wormhole Assistant accounts.
                     </p>
                 </div>
             </div>
         </section>
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                 <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-900">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
                             Current Users
                         </h2>
-                        <p class="mt-1 text-sm text-gray-600">
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
                             Active users who can currently access the system.
                         </p>
                     </div>
@@ -32,17 +32,17 @@
                     </form>
                 </div>
                 {% if new_users %}
-                    <div class="overflow-hidden rounded-lg border border-gray-200">
-                        <ul class="divide-y divide-gray-100 bg-white">
+                    <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800">
+                        <ul class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
                             {% for u in new_users %}
                                 <li>
                                     <a href="{{ url_for('views.delete_user', username=u.username) }}"
-                                       class="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
+                                       class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800">
                                         <span>
-                                            <span class="block text-sm font-medium text-gray-900">
+                                            <span class="block text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {{ u.name or u.username }}
                                             </span>
-                                            <span class="block text-xs text-gray-500">
+                                            <span class="block text-xs text-gray-500 dark:text-gray-400">
                                                 {{ u.username }}
                                             </span>
                                         </span>
@@ -53,40 +53,40 @@
                         </ul>
                     </div>
                 {% else %}
-                    <p class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
+                    <p class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 text-sm text-gray-600 dark:text-gray-300">
                         No current users found.
                     </p>
                 {% endif %}
             </section>
-            <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
                 <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-900">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
                             Old Users
                         </h2>
-                        <p class="mt-1 text-sm text-gray-600">
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
                             Inactive or former users retained for administrative review.
                         </p>
                     </div>
                     <form action="{{ url_for('views.download_old_users') }}" method="get">
                         <button type="submit"
-                                class="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 sm:w-auto">
+                                class="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 sm:w-auto">
                             Download CSV
                         </button>
                     </form>
                 </div>
                 {% if old_users %}
-                    <div class="overflow-hidden rounded-lg border border-gray-200">
-                        <ul class="divide-y divide-gray-100 bg-white">
+                    <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800">
+                        <ul class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
                             {% for u in old_users %}
                                 <li>
                                     <a href="{{ url_for('views.delete_user', username=u.username) }}"
-                                       class="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
+                                       class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800">
                                         <span>
-                                            <span class="block text-sm font-medium text-gray-900">
+                                            <span class="block text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {{ u.name or u.username }}
                                             </span>
-                                            <span class="block text-xs text-gray-500">
+                                            <span class="block text-xs text-gray-500 dark:text-gray-400">
                                                 {{ u.username }}
                                             </span>
                                         </span>
@@ -97,7 +97,7 @@
                         </ul>
                     </div>
                 {% else %}
-                    <p class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
+                    <p class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 text-sm text-gray-600 dark:text-gray-300">
                         No old users found.
                     </p>
                 {% endif %}
