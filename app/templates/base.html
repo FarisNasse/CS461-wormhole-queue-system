@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {% if title %}
             <title>{{ title }}</title>
         {% else %}
@@ -13,67 +15,223 @@
               sizes="32x32"
               href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}">
         <link rel="shortcut icon"
-              href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}" />
+              href="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}">
+        {# Keep the legacy stylesheet temporarily while the final pages are tested. #}
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='dist/main.css') }}">
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     </head>
-    <body>
-        <div class = "page">
-            <div class = "header">
-                <h1 style="color:#FFFFFF;text-align:center">
-                    Oregon State University Wormhole
-                </h1>
-                <div class="navbar">
-                    <a href="{{ url_for('views.index') }}">Home</a>
-                    <a href="{{ url_for('views.create_ticket_page') }}">Submit Request</a>
-                    <a href="{{ url_for('views.livequeue') }}">Live Queue</a>
-                    <a href="{{ url_for('views.wiki') }}">Wiki</a>
-                    <div class="dropdown">
-                        <button class="dropbtn">
+    <body class="flex min-h-screen flex-col bg-gray-50 text-gray-900 antialiased">
+        {% set nav_link_base = "block rounded px-3 py-2 text-sm font-medium transition-colors md:p-0 md:hover:bg-transparent" %}
+        {% set nav_link_active = "bg-gray-100 text-osu-orange md:bg-transparent md:text-osu-orange" %}
+        {% set nav_link_inactive = "text-gray-700 hover:bg-gray-100 hover:text-osu-navy md:hover:text-osu-orange" %}
+        <nav class="border-b border-gray-200 bg-white shadow-sm">
+            <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+                <a href="{{ url_for('views.index') }}" class="flex items-center gap-3">
+                    <img src="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}"
+                         class="h-9 w-9 rounded-lg"
+                         alt="Wormhole logo">
+                    <span class="leading-tight">
+                        <span class="block text-xs font-semibold uppercase tracking-wide text-osu-orange sm:text-sm">
+                            Oregon State Physics
+                        </span>
+                        <span class="block text-base font-bold text-gray-900 sm:text-lg">
+                            Wormhole Queue System
+                        </span>
+                    </span>
+                </a>
+
+                <div class="flex items-center gap-2 md:order-2">
+                    <button id="user-menu-button"
+                            data-dropdown-toggle="user-menu-dropdown"
+                            data-dropdown-placement="bottom-end"
+                            type="button"
+                            class="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200"
+                            aria-expanded="false">
+                        {% if current_user.is_anonymous %}
                             User
-                        </button>
-                        <div class="dropdown-content">
+                        {% else %}
+                            {{ current_user.username }}
+                        {% endif %}
+                        <svg class="ms-2 h-2.5 w-2.5"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 10 6">
+                            <path stroke="currentColor"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="m1 1 4 4 4-4" />
+                        </svg>
+                    </button>
+
+                    <div id="user-menu-dropdown"
+                         class="z-50 hidden w-56 divide-y divide-gray-100 rounded-lg bg-white shadow-lg ring-1 ring-gray-200">
+                        <div class="px-4 py-3 text-sm text-gray-900">
                             {% if current_user.is_anonymous %}
-                                <a href="{{ url_for('views.assistant_login') }}">Log In</a>
+                                <div class="font-medium">Guest</div>
+                                <div class="truncate text-gray-500">Not signed in</div>
                             {% else %}
-                                <a href="{{ url_for('views.userpage', username=current_user.username) }}">Profile</a>
+                                <div class="font-medium">{{ current_user.username }}</div>
                                 {% if current_user.is_admin %}
-                                    <div class = "admin-links">
-                                        <a href="{{ url_for('views.register') }}">Register New User</a>
-                                        <a href="{{ url_for('views.queue') }}">Queue</a>
-                                        <a href="{{ url_for('views.archive') }}">Archive</a>
-                                        <a href="{{ url_for('views.edit_site_content') }}">Edit Website</a>
-                                    </div>
+                                    <div class="truncate text-gray-500">Admin account</div>
+                                {% else %}
+                                    <div class="truncate text-gray-500">Assistant account</div>
                                 {% endif %}
-                                <a href="{{ url_for('views.hardware_list') }}">Hardware List</a>
-                                <a href="{{ url_for('views.logout') }}">Log Out</a>
                             {% endif %}
                         </div>
+
+                        <ul class="py-2 text-sm text-gray-700" aria-labelledby="user-menu-button">
+                            {% if current_user.is_anonymous %}
+                                <li>
+                                    <a href="{{ url_for('views.assistant_login') }}"
+                                       class="block px-4 py-2 transition-colors hover:bg-gray-100">
+                                        Log In
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ url_for('views.userpage', username=current_user.username) }}"
+                                       class="block px-4 py-2 transition-colors hover:bg-gray-100">
+                                        Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('views.hardware_list') }}"
+                                       class="block px-4 py-2 transition-colors hover:bg-gray-100">
+                                        Hardware List
+                                    </a>
+                                </li>
+                                {% if current_user.is_admin %}
+                                    <li>
+                                        <a href="{{ url_for('views.register') }}"
+                                           class="block px-4 py-2 transition-colors hover:bg-gray-100">
+                                            Register New User
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url_for('views.queue') }}"
+                                           class="block px-4 py-2 transition-colors hover:bg-gray-100">
+                                            Queue Dashboard
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url_for('views.archive') }}"
+                                           class="block px-4 py-2 transition-colors hover:bg-gray-100">
+                                            Archive
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url_for('views.edit_site_content') }}"
+                                           class="block px-4 py-2 transition-colors hover:bg-gray-100">
+                                            Edit Website
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+
+                        {% if not current_user.is_anonymous %}
+                            <div class="py-2">
+                                <a href="{{ url_for('views.logout') }}"
+                                   class="block px-4 py-2 text-sm text-red-700 transition-colors hover:bg-red-50">
+                                    Log Out
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
+
+                    <button data-collapse-toggle="main-navbar"
+                            type="button"
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-sm text-gray-500 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 md:hidden"
+                            aria-controls="main-navbar"
+                            aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-5 w-5"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 17 14">
+                            <path stroke="currentColor"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M1 1h15M1 7h15M1 13h15" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="main-navbar" class="hidden w-full md:order-1 md:block md:w-auto">
+                    <ul class="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0">
+                        <li>
+                            <a href="{{ url_for('views.index') }}"
+                               class="{{ nav_link_base }} {{ nav_link_active if request.endpoint == 'views.index' else nav_link_inactive }}"
+                               aria-current="{{ 'page' if request.endpoint == 'views.index' else 'false' }}">
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('views.create_ticket_page') }}"
+                               class="{{ nav_link_base }} {{ nav_link_active if request.endpoint == 'views.create_ticket_page' else nav_link_inactive }}"
+                               aria-current="{{ 'page' if request.endpoint == 'views.create_ticket_page' else 'false' }}">
+                                Submit Request
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('views.livequeue') }}"
+                               class="{{ nav_link_base }} {{ nav_link_active if request.endpoint == 'views.livequeue' else nav_link_inactive }}"
+                               aria-current="{{ 'page' if request.endpoint == 'views.livequeue' else 'false' }}">
+                                Live Queue
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('views.wiki') }}"
+                               class="{{ nav_link_base }} {{ nav_link_active if request.endpoint == 'views.wiki' else nav_link_inactive }}"
+                               aria-current="{{ 'page' if request.endpoint == 'views.wiki' else 'false' }}">
+                                Wiki
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        {# Update get_flashed_messages to include categories (success, error, info) #}
+        </nav>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class ="section message">
-                    <ul>
+                <div class="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+                    <div class="space-y-3">
                         {% for category, ms in messages %}
-                            {# Apply a class based on the category (e.g., flash-success, flash-error) #}
-                            <li class="flash-{{ category }}">
+                            {% set alert_class = {
+                                'success': 'border-green-200 bg-green-50 text-green-800',
+                                'error': 'border-red-200 bg-red-50 text-red-800',
+                                'danger': 'border-red-200 bg-red-50 text-red-800',
+                                'warning': 'border-yellow-200 bg-yellow-50 text-yellow-800',
+                                'info': 'border-blue-200 bg-blue-50 text-blue-800'
+                            }.get(category, 'border-gray-200 bg-white text-gray-800') %}
+                            <div class="rounded-lg border p-4 text-sm shadow-sm {{ alert_class }}" role="alert">
+                                <span class="flash-{{ category }}" hidden></span>
                                 {{ ms }}
-                            </li>
+                            </div>
                         {% endfor %}
-                    </ul>
+                    </div>
                 </div>
             {% endif %}
         {% endwith %}
-        {% block content %}
-        {% endblock %}
+
+        <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer class="border-t border-gray-200 bg-white">
+            <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-sm text-gray-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+                <p>Oregon State University Physics Wormhole</p>
+                <p>Queue support for students and Wormhole Assistants</p>
+            </div>
+        </footer>
+
         <script src="{{ url_for('static', filename='dist/flowbite.min.js') }}"></script>
+        {% block body_scripts %}
+        {% endblock %}
     </body>
-    {% block body_scripts %}
-    {% endblock %}
 </html>
