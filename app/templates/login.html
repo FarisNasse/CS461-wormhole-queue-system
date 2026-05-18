@@ -1,39 +1,19 @@
 {% extends "base.html" %}
+{% from "macros.html" import render_field, card, btn %}
 {% block content %}
-    <div class='page'>
-        <div class='section create-ticket'>
-            <h2 style="text-align:center">
-                Assistant Login
-            </h2>
-            <h3 style="text-align:center">
-                Sign In
-            </h3>
-            <form align="center" action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
-                <p style="text-align:center">
-                    {{ form.username.label }}  {{ form.username(size=32) }}
-                    <br>
-                    {% for er in form.username.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p style="text-align:center">
-                    {{ form.password.label }}  {{ form.password(size=32) }}
-                    <br>
-                    {% for er in form.password.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p style="text-align:center">
-                    {{ form.remember_me() }} {{ form.remember_me.label }}
-                </p>
-                <p style="text-align:center">
-                    {{ form.submit() }}
-                </p>
-                <p style="text-align:center">
-                    <a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a>
-                </p>
-            </form>
-        </div>
-    </div>
+    {% call card("Assistant Login", "Sign in to access the Wormhole queue.", "mx-auto max-w-md") %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            {{ render_field(form.remember_me) }}
+            {{ btn("Sign In", extra="w-full") }}
+            <p class="mt-4 text-center text-sm">
+                <a href="{{ url_for('auth.reset_password_request') }}"
+                   class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
+                    Reset Password
+                </a>
+            </p>
+        </form>
+    {% endcall %}
 {% endblock %}

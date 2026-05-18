@@ -1,46 +1,14 @@
 {% extends "base.html" %}
+{% from "macros.html" import render_field, card, btn %}
 {% block content %}
-    <div class="page">
-        <div class="section generic">
-            <h1>
-                New User Registration
-            </h1>
-            <form action="{{ url_for('users.users_add') }}" method="post" novalidate>
-                {{ form.hidden_tag() }}
-                <p>
-                    {{ form.first_name.label }}
-                    <br>
-                    {{ form.first_name(size=32) }}
-                    <br>
-                    {% for er in form.first_name.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.last_name.label }}
-                    <br>
-                    {{ form.last_name(size=32) }}
-                    <br>
-                    {% for er in form.last_name.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.onid.label }}
-                    <br>
-                    {{ form.onid(size=32) }}
-                    <br>
-                    {% for er in form.onid.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.is_admin() }} {{ form.is_admin.label }}
-                </p>
-                <p>
-                    {{ form.submit() }}
-                </p>
-            </form>
-        </div>
-    </div>
+    {% call card("New User Registration", "Create a new Wormhole user account.", "mx-auto max-w-lg") %}
+        <form action="{{ url_for('users.users_add') }}" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ render_field(form.first_name) }}
+            {{ render_field(form.last_name) }}
+            {{ render_field(form.onid) }}
+            {{ render_field(form.is_admin) }}
+            {{ btn("Create User", extra="w-full") }}
+        </form>
+    {% endcall %}
 {% endblock %}

@@ -1,47 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="page">
-        <div class="section live-queue">
-            <h1 style="text-align:center">
-                Live Queue
-            </h1>
-            <!--
-        <form id="refresh" method='POST' action='#'>
-            <input type='submit' value='Refresh'>
-        </form>
-        -->
-            <hr>
-            <table id="tickets" style="width: 100%; text-align: center">
-                <thead>
-                    <tr>
-                        <th>
-                            Position / Status
-                        </th>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Table
-                        </th>
-                        <th>
-                            Class
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Ticket rows will be dynamically inserted here -->
-                </tbody>
-            </table>
-            <!--
-        <hr>
-        <h1>Term Log</h1>
-        <ul id="log"></ul>
-        -->
+    <section class="space-y-6">
+        <div class="animate-fade-up rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <div class="mb-2 inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200 dark:bg-osu-blue-light/10 dark:text-osu-blue-light dark:ring-osu-blue-light/30">
+                        <span class="relative flex h-2 w-2 text-green-500 dark:text-osu-blue-light"
+                              aria-hidden="true">
+                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-75"></span>
+                            <span class="relative inline-flex h-2 w-2 rounded-full bg-current"></span>
+                        </span>
+                        Live updating
+                    </div>
+                    <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+                        Live Queue
+                    </h1>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+                        Current Wormhole help requests waiting for assistance. Tickets are shown in queue order and update automatically.
+                    </p>
+                </div>
+                <div class="motion-card rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                    <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        Last refresh
+                    </span>
+                    <span id="refresh-time"
+                          class="mt-1 block font-semibold text-gray-900 dark:text-gray-100">
+                        Never
+                    </span>
+                </div>
+            </div>
         </div>
-    </div>
-    <p align="center">
-        Last Refresh Time: <span align="center" id="refresh-time"></span>
-    </p>
+        <div class="animate-fade-up overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm"
+             style="animation-delay: 80ms">
+            <div class="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    Current tickets
+                </h2>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    Queue position, student name, table number, and course.
+                </p>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="tickets"
+                       class="w-full min-w-[720px] text-left text-sm text-gray-700 dark:text-gray-200">
+                    <thead class="bg-white text-xs uppercase tracking-wide text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+                        <tr class="border-b border-gray-200 dark:border-gray-800">
+                            <th scope="col" class="w-40 px-6 py-3 font-semibold">
+                                Position
+                            </th>
+                            <th scope="col" class="px-6 py-3 font-semibold">
+                                Name
+                            </th>
+                            <th scope="col" class="w-32 px-6 py-3 font-semibold">
+                                Table
+                            </th>
+                            <th scope="col" class="w-40 px-6 py-3 font-semibold">
+                                Class
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
+                        {# Ticket rows are inserted by app/static/js/livequeue.js #}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 {% endblock %}
 {% block scripts %}
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>

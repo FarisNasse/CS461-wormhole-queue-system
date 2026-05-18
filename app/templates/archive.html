@@ -1,68 +1,97 @@
 {% extends "base.html" %}
+{% from "macros.html" import confirm_button %}
 {% block content %}
-    <div class="page">
-        <div class="section generic">
-            <h2>
+    <div class="space-y-6">
+        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 Data Archive Export
-            </h2>
-            <p>
-                Select a time period to export closed ticket data.
+            </h1>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                Export closed ticket data by date range, then download or remove previously created archive files.
             </p>
-            <h3>
-                Export Configuration
-            </h3>
-            <form action="{{ url_for('views.export_archive') }}" method="post">
-                {{ form.hidden_tag() }}
-                <div style="margin-bottom: 1rem;">
-                    {{ form.start_date.label() }}
-                    {{ form.start_date(type="date") }}
-                    {% for error in form.start_date.errors %}
-                        <span style="color: red;">{{ error }}</span>
-                    {% endfor %}
+        </section>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                <div class="mb-5">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                        Export Configuration
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        Select a Pacific Time date range for closed or resolved ticket data.
+                    </p>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    {{ form.end_date.label() }}
-                    {{ form.end_date(type="date") }}
-                    {% for error in form.end_date.errors %}
-                        <span style="color: red;">{{ error }}</span>
-                    {% endfor %}
+                <form action="{{ url_for('views.export_archive') }}"
+                      method="post"
+                      class="space-y-4">
+                    {{ form.hidden_tag() }}
+                    <div>
+                        {{ form.start_date.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
+                        {{ form.start_date(type="date", class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
+                        {% for error in form.start_date.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ form.end_date.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
+                        {{ form.end_date(type="date", class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
+                        {% for error in form.end_date.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                    {{ form.submit(class_="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50") }}
+                </form>
+            </section>
+            <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+                <div class="mb-5">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                        Archive Files
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        Download previous exports or select files to delete from the server.
+                    </p>
                 </div>
-                <div style="margin-top: 1.5rem;">
-                    <button type="submit" class="btn-success">
-                        Create Archive
-                    </button>
-                </div>
-            </form>
-        </div>
-        <div class="section generic">
-            <h2>
-                Archive Files
-            </h2>
-            <p>
-                Below is a list of previously exported archive files. Click on a file name to download it.
-            </p>
-            <form action="{{ url_for('views.delete_archives') }}" method="post">
-                {{ delete_form.hidden_tag() }}
-                <ul>
-                    {% for file in archive_files %}
-                        <li>
-                            <label>
-                                <input type="checkbox" name="filenames" value="{{ file }}">
-                                <a href="{{ url_for('views.download_archive', filename=file) }}">{{ file }}</a>
-                            </label>
-                        </li>
+                <form id="delete-archives-form"
+                      action="{{ url_for('views.delete_archives') }}"
+                      method="post"
+                      class="space-y-4">
+                    {{ delete_form.hidden_tag() }}
+                    {% if archive_files %}
+                        <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800">
+                            <ul class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
+                                {% for file in archive_files %}
+                                    <li class="flex items-center gap-3 px-4 py-3">
+                                        <input id="archive-{{ loop.index }}"
+                                               type="checkbox"
+                                               name="filenames"
+                                               value="{{ file }}"
+                                               class="h-4 w-4 rounded border-gray-300 text-osu-navy focus:ring-osu-navy dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-osu-blue-light/40">
+                                        <label for="archive-{{ loop.index }}" class="min-w-0 flex-1">
+                                            <a href="{{ url_for('views.download_archive', filename=file) }}"
+                                               class="block truncate text-sm font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
+                                                {{ file }}
+                                            </a>
+                                            <span class="block text-xs text-gray-500 dark:text-gray-400">CSV archive export</span>
+                                        </label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {{ confirm_button("delete-archives-form",
+                                                label="Delete Selected",
+                                                title="Delete selected archive files?",
+                                                message="This removes the selected archive exports from the server. This action cannot be undone.",
+                                                confirm_label="Delete archives") }}
                     {% else %}
-                        <li>
+                        <p class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 text-sm text-gray-600 dark:text-gray-300">
                             No archive files found.
-                        </li>
-                    {% endfor %}
-                </ul>
-                <div style="margin-top: 1rem;">
-                    <button type="submit" class="btn-danger">
-                        Delete Selected
-                    </button>
-                </div>
-            </form>
+                        </p>
+                    {% endif %}
+                </form>
+            </section>
         </div>
     </div>
 {% endblock %}

@@ -1,51 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="page">
-        <div class="section generic">
-            <h2>
-                Past Ticket Details
-            </h2>
-            <p>
-                <strong>Student Name:</strong> {{ ticket.name }}
-            </p>
-            <p>
-                <strong>Class:</strong> {{ ticket.phClass }}
-            </p>
-            <p>
-                <strong>Location:</strong> {{ ticket.table }}
-            </p>
-            <p>
-                <strong>Created At:</strong> {{ ticket.time_create|datetime_pacific("%Y-%m-%d %H:%M:%S %Z") }}
-            </p>
-            <hr>
-            <h3>
-                Resolve Ticket
-            </h3>
-            <form method="post">
-                {{ form.hidden_tag() }}
-                <div class="form-group">
-                    {{ form.resolveReason.label() }}
-                    <br>
-                    {{ form.resolveReason(class="form-control") }}
-                    {% for error in form.resolveReason.errors %}
-                        <span class="error-msg">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div class="form-group">
-                    {{ form.numStds.label() }}
-                    <br>
-                    {{ form.numStds(type="number", min="1", class="form-control") }}
-                    {% for error in form.numStds.errors %}
-                        <span class="error-msg">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <button type="submit" class="btn-success">
-                    Resolve Ticket
-                </button>
-            </form>
-            <div style="margin-top: 20px;">
-                <a href="{{ url_for('views.queue') }}">Back to Queue</a>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+            <div class="mb-5">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    Past Ticket Details
+                </h1>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    Review the original ticket information and resolution status.
+                </p>
             </div>
-        </div>
+            <dl class="space-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Student Name
+                    </dt>
+                    <dd class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {{ ticket.name }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Class
+                    </dt>
+                    <dd class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {{ ticket.phClass }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Location
+                    </dt>
+                    <dd class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {{ ticket.table }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Created At
+                    </dt>
+                    <dd class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {{ ticket.time_create|datetime_pacific("%Y-%m-%d %H:%M:%S %Z") }}
+                    </dd>
+                </div>
+            </dl>
+        </section>
+        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+            <div class="mb-5">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    Resolve Ticket
+                </h2>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    Update the resolution reason and number of students helped.
+                </p>
+            </div>
+            <form method="post" class="space-y-4" novalidate>
+                {{ form.hidden_tag() }}
+                <div>
+                    {{ form.resolveReason.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
+                    {{ form.resolveReason(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
+                    {% for error in form.resolveReason.errors %}
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.numStds.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
+                    {{ form.numStds(type="number", min="1", class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
+                    {% for error in form.numStds.errors %}
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <button type="submit"
+                            class="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50">
+                        Resolve Ticket
+                    </button>
+                    <a href="{{ url_for('views.queue') }}"
+                       class="inline-flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700">
+                        Back to Queue
+                    </a>
+                </div>
+            </form>
+        </section>
     </div>
 {% endblock %}

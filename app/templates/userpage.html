@@ -7,76 +7,147 @@
     <script src="{{ url_for('static', filename='js/userpage.js') }}"></script>
 {% endblock %}
 {% block content %}
-    <div class="page">
-        <div class="section tickets">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+            <div class="mb-5">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    Tickets
+                </h1>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    Claim and resolve Wormhole help requests from this dashboard.
+                </p>
+            </div>
             {% if user.tkt is not none %}
-                <h4 style="text-align:center; margin-bottom: 5px;">
-                    <a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}">Resolve Current Request</a>
-                </h4>
-                <br>
-                <p style="text-align:center">
-                    <b>Current Ticket:</b>
-                    <br>
-                    {% if user.tkt.student_name %}
-                        Name: {{ user.tkt.student_name }}
-                    {% else %}
-                        Name: N/A
-                    {% endif %}
-                    <br>
-                    {% if user.tkt.table == 0 %}
-                        Table: Ecampus
-                    {% else %}
-                        Table: {{ user.tkt.table }}
-                    {% endif %}
-                    <br>
-                    Class: {{ user.tkt.physics_course }}
-                </p>
+                <div class="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <p class="text-sm font-medium text-blue-900">
+                        Current Ticket
+                    </p>
+                    <dl class="mt-3 space-y-3 text-sm">
+                        <div>
+                            <dt class="font-medium text-gray-600 dark:text-gray-300">
+                                Name
+                            </dt>
+                            <dd class="text-gray-900 dark:text-gray-100">
+                                {{ user.tkt.student_name or "N/A" }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="font-medium text-gray-600 dark:text-gray-300">
+                                Table
+                            </dt>
+                            <dd class="text-gray-900 dark:text-gray-100">
+                                {% if user.tkt.table == 0 %}
+                                    Ecampus
+                                {% else %}
+                                    {{ user.tkt.table }}
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="font-medium text-gray-600 dark:text-gray-300">
+                                Class
+                            </dt>
+                            <dd class="text-gray-900 dark:text-gray-100">
+                                {{ user.tkt.physics_course }}
+                            </dd>
+                        </div>
+                    </dl>
+                    <a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}"
+                       class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50 sm:w-auto">
+                        Resolve Current Request
+                    </a>
+                </div>
             {% else %}
-                <h2 style="text-align:center">
-                    Tickets (<span id='ticket-count'></span>)
+                <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Available tickets:
+                        <span id="ticket-count"
+                              class="font-semibold text-gray-900 dark:text-gray-100">0</span>
+                    </p>
+                    {% if skipped_all %}
+                        <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                            No available tickets are currently ready for you to claim.
+                        </p>
+                    {% else %}
+                        <a id="get-new-ticket"
+                           href="{{ url_for('views.getnewticket', username=user.username) }}"
+                           class="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50 sm:w-auto">
+                            Get Next Request
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </section>
+        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+            <div class="mb-5">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    Profile
                 </h2>
-                <h4 id="get-new-ticket" style="text-align:center">
-                    <a href="{{ url_for('views.getnewticket', username=user.username) }}">Get Next Request</a>
-                </h4>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    Account details and assistant tools.
+                </p>
+            </div>
+            <dl class="space-y-3 text-sm">
+                <div>
+                    <dt class="font-medium text-gray-600 dark:text-gray-300">
+                        Username
+                    </dt>
+                    <dd class="text-gray-900 dark:text-gray-100">
+                        {{ user.username }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="font-medium text-gray-600 dark:text-gray-300">
+                        Email
+                    </dt>
+                    <dd class="text-gray-900 dark:text-gray-100">
+                        {{ user.email }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="font-medium text-gray-600 dark:text-gray-300">
+                        Administrator
+                    </dt>
+                    <dd class="text-gray-900 dark:text-gray-100">
+                        {{ user.is_admin }}
+                    </dd>
+                </div>
+            </dl>
+            {% if current_user.username == user.username or current_user.is_admin %}
+                <a href="{{ url_for('views.changepass') }}"
+                   class="mt-5 inline-flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700">
+                    Change Password
+                </a>
             {% endif %}
-        </div>
-        <div class="section profile">
-            <h2 style="text-align:center">
-                Profile
-            </h2>
-            <!-- Base profile atributes -->
-            <p style="margin:10px">
-                <b>Username: </b>{{ user.username }}
-                <br>
-                <b>Email: </b>{{ user.email }}
-                <br>
-                <b>Administrator: </b>{{ user.is_admin }}
-                <br>
-                {% if current_user.username==user.username or current_user.is_admin %}
-                    <a href="{{ url_for('views.changepass') }}">Change Password</a>
-                {% endif %}
-            </p>
             {% if current_user.is_admin %}
-                <h3 style="text-align:center">
-                    Admin Utilities
-                </h3>
-                <p style="margin:10px">
-                    <a href="{{ url_for('views.register') }}">Register New User</a>
-                </p>
-                <!--<p><a href="{{ url_for('views.changepass') }}">Change User Password</a></p>-->
-                <p style="margin:10px">
-                    <a href="{{ url_for('views.queue') }}">Queue</a>
-                </p>
-                <p style="margin:10px">
-                    <a href="{{ url_for('views.archive') }}">Archive</a>
-                </p>
-                <p style="margin:10px">
-                    <a href="{{ url_for('views.register_batch') }}">Register Users in Batch</a>
-                </p>
-                <p style="margin:10px">
-                    <a href="{{ url_for('views.user_list') }}">WA List</a>
-                </p>
+                <div class="mt-6 border-t border-gray-200 dark:border-gray-800 pt-5">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        Admin Utilities
+                    </h3>
+                    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        <a href="{{ url_for('views.register') }}"
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
+                            Register New User
+                        </a>
+                        <a href="{{ url_for('views.queue') }}"
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
+                            Queue
+                        </a>
+                        <a href="{{ url_for('views.archive') }}"
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
+                            Archive
+                        </a>
+                        <a href="{{ url_for('views.register_batch') }}"
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
+                            Register Users in Batch
+                        </a>
+                        <a href="{{ url_for('views.user_list') }}"
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
+                            WA List
+                        </a>
+                    </div>
+                </div>
             {% endif %}
-        </div>
+        </section>
     </div>
 {% endblock %}

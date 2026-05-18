@@ -3,16 +3,29 @@
   "version": "1.0.0",
   "description": "OSU Physics tutoring queue system",
   "main": "stylelint.config.js",
-  "scripts": {
-    "lint:html": "htmlhint \"templates/**/*.html\"",
-    "lint:css": "stylelint \"static/**/*.css\""
-  },
+    "scripts": {
+  "build:css": "tailwindcss -i ./app/static/src/main.css -o ./app/static/dist/main.css --minify",
+  "watch:css": "tailwindcss -i ./app/static/src/main.css -o ./app/static/dist/main.css --watch",
+  "copy:flowbite": "node -e \"const fs=require('fs'); fs.mkdirSync('app/static/dist',{recursive:true}); fs.copyFileSync('node_modules/flowbite/dist/flowbite.min.js','app/static/dist/flowbite.min.js')\"",
+  "build": "npm run build:css && npm run copy:flowbite",
+  "lint:css": "stylelint \"app/static/src/**/*.css\"",
+  "lint:html": "htmlhint \"app/templates/**/*.html\""
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.11",
+    "@tailwindcss/typography": "^0.5.19",
+    "autoprefixer": "^10.5.0",
     "htmlhint": "^0.16.3",
+    "postcss": "^8.5.14",
     "stylelint": "^16.25.0",
-    "stylelint-config-standard": "^39.0.1"
+    "stylelint-config-standard": "^39.0.1",
+    "tailwindcss": "^3.4.19"
+  },
+  "dependencies": {
+    "flowbite": "^2.5.2"
   }
+
 }
