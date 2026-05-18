@@ -41,7 +41,7 @@
         {% set nav_link_base = "nav-link-underline block rounded px-3 py-2 text-sm font-medium transition-colors md:p-0 md:hover:bg-transparent" %}
         {% set nav_link_active = "bg-gray-100 text-osu-orange dark:bg-osu-navy-dark md:bg-transparent md:text-osu-orange md:dark:bg-transparent" %}
         {% set nav_link_inactive = "text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark dark:hover:text-white md:hover:text-osu-orange" %}
-        <nav class="animate-slide-down border-b border-gray-200 bg-white shadow-sm dark:border-osu-navy dark:bg-osu-navy">
+        <nav class="relative z-50 animate-slide-down border-b border-gray-200 bg-white shadow-sm dark:border-osu-navy dark:bg-osu-navy">
             <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                 <a href="{{ url_for('views.index') }}" class="flex items-center gap-3">
                     <img src="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}"
