@@ -6,7 +6,7 @@ from app import db
 error_bp = Blueprint("error", __name__)
 
 
-@error_bp.errorhandler(404)
+@error_bp.app_errorhandler(404)
 def not_found_error(error):
     debug = bool(current_app.debug or current_app.config.get("DEBUG", False))
     return (
@@ -21,7 +21,7 @@ def not_found_error(error):
     )
 
 
-@error_bp.errorhandler(500)
+@error_bp.app_errorhandler(500)
 def internal_error(error):
     db.session.rollback()
     debug = bool(current_app.debug or current_app.config.get("DEBUG", False))

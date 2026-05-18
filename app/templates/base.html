@@ -17,6 +17,8 @@
         <link rel="stylesheet"
               href="{{ url_for('static', filename='styles.css') }}"
               type="text/css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='dist/main.css') }}">
         <meta name="viewport"
               content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     </head>
@@ -73,6 +75,7 @@
         {% endwith %}
         {% block content %}
         {% endblock %}
+        <script src="{{ url_for('static', filename='dist/flowbite.min.js') }}"></script>
     </body>
     {% block body_scripts %}
     {% endblock %}
