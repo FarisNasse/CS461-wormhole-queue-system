@@ -1,37 +1,16 @@
 {% extends "base.html" %}
+{% from "macros.html" import render_field, card, btn %}
+
 {% block content %}
-    <div class="page">
-        <div class="section create-ticket create-ticket-panel">
-            <h2 class="create-ticket-title">
-                Create Help Request
-            </h2>
-            <form class="create-ticket-form" action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
-                <div class="create-ticket-field">
-                    {{ form.name.label }}
-                    {{ form.name(size=32) }}
-                    {% for er in form.name.errors %}
-                        <span class="form-error">[{{ er }}]</span>
-                    {% endfor %}
-                </div>
-                <div class="create-ticket-field">
-                    {{ form.phClass.label }}
-                    {{ form.phClass() }}
-                    {% for er in form.phClass.errors %}
-                        <span class="form-error">[{{ er }}]</span>
-                    {% endfor %}
-                </div>
-                <div class="create-ticket-field">
-                    {{ form.location.label }}
-                    {{ form.location() }}
-                    {% for er in form.location.errors %}
-                        <span class="form-error">[{{ er }}]</span>
-                    {% endfor %}
-                </div>
-                <div class="create-ticket-actions">
-                    {{ form.submit() }}
-                </div>
-            </form>
-        </div>
-    </div>
+  {% call card("Create Help Request", "Submit a ticket to join the Wormhole queue.", "mx-auto max-w-xl") %}
+    <form action="" method="post" novalidate>
+      {{ form.hidden_tag() }}
+
+      {{ render_field(form.name) }}
+      {{ render_field(form.phClass) }}
+      {{ render_field(form.location) }}
+
+      {{ btn("Submit Help Request", extra="w-full") }}
+    </form>
+  {% endcall %}
 {% endblock %}

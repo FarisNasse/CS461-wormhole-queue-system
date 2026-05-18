@@ -1,34 +1,28 @@
 {% extends "base.html" %}
+{% from "macros.html" import render_field, card, btn %}
+
 {% block content %}
-    <div class="page">
-        <div class="section generic">
-            <h1>
-                New User Registration In Batch
-            </h1>
-            <form action="{{ url_for('users.users_add_batch') }}"
-                  method="post"
-                  enctype="multipart/form-data"
-                  novalidate>
-                {{ form.hidden_tag() }}
-                <p>
-                    Upload a CSV file with columns for first name, last name, and ONID.
-                    The first row must be the header:
-                    <strong>first name,last name,ONID</strong>.
-                    Any number of user rows can follow.
-                </p>
-                <p>
-                    {{ form.user_csv.label }}
-                    <br>
-                    {{ form.user_csv() }}
-                    <br>
-                    {% for er in form.user_csv.errors %}
-                        <span style="color: red;">[{{ er }}]</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {{ form.submit() }}
-                </p>
-            </form>
-        </div>
-    </div>
+  {% call card("Batch Register Users", "Upload a CSV file to create multiple users at once.", "mx-auto max-w-lg") %}
+    <form
+      action="{{ url_for('users.users_add_batch') }}"
+      method="post"
+      enctype="multipart/form-data"
+      novalidate
+    >
+      {{ form.hidden_tag() }}
+
+      <div class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+        <p class="font-medium">CSV format required:</p>
+        <p class="mt-1">
+          Upload a CSV file with columns for first name, last name, and ONID.
+          The first row must be the header:
+          <code class="rounded bg-white px-1 py-0.5 text-xs">first name,last name,ONID</code>.
+        </p>
+      </div>
+
+      {{ render_field(form.user_csv) }}
+
+      {{ btn("Upload Users", extra="w-full") }}
+    </form>
+  {% endcall %}
 {% endblock %}
