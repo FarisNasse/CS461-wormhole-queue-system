@@ -42,9 +42,9 @@
     </head>
     <body class="flex min-h-screen flex-col bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
         {% set nav_link_base = "block rounded px-3 py-2 text-sm font-medium transition-colors md:p-0 md:hover:bg-transparent" %}
-        {% set nav_link_active = "bg-gray-100 text-osu-orange dark:bg-gray-800 md:bg-transparent md:text-osu-orange md:dark:bg-transparent" %}
-        {% set nav_link_inactive = "text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white md:hover:text-osu-orange" %}
-        <nav class="border-b border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        {% set nav_link_active = "bg-gray-100 text-osu-orange dark:bg-osu-navy-dark md:bg-transparent md:text-osu-orange md:dark:bg-transparent" %}
+        {% set nav_link_inactive = "text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark dark:hover:text-white md:hover:text-osu-orange" %}
+        <nav class="border-b border-gray-200 bg-white shadow-sm dark:border-osu-navy dark:bg-osu-navy">
             <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                 <a href="{{ url_for('views.index') }}" class="flex items-center gap-3">
                     <img src="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}"
@@ -64,7 +64,7 @@
                 <div class="flex items-center gap-2 md:order-2">
                     <button id="theme-toggle"
                             type="button"
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-white/20 dark:bg-osu-navy-dark dark:text-gray-100 dark:hover:bg-osu-navy dark:focus:ring-osu-blue-light/40"
                             aria-label="Switch to dark mode"
                             aria-pressed="false">
                         <svg id="theme-toggle-dark-icon"
@@ -89,7 +89,7 @@
                             data-dropdown-toggle="user-menu-dropdown"
                             data-dropdown-placement="bottom-end"
                             type="button"
-                            class="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                            class="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-white/20 dark:bg-osu-navy-dark dark:text-gray-100 dark:hover:bg-osu-navy dark:focus:ring-osu-blue-light/40"
                             aria-expanded="false">
                         {% if current_user.is_anonymous %}
                             User
@@ -190,7 +190,7 @@
                     </div>
                     <button data-collapse-toggle="main-navbar"
                             type="button"
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-sm text-gray-500 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:ring-gray-700 md:hidden"
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-sm text-gray-500 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-100 dark:hover:bg-osu-navy-dark dark:focus:ring-osu-blue-light/40 md:hidden"
                             aria-controls="main-navbar"
                             aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
@@ -204,7 +204,7 @@
                     </button>
                 </div>
                 <div id="main-navbar" class="hidden w-full md:order-1 md:block md:w-auto">
-                    <ul class="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900 md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0 md:dark:bg-gray-900">
+                    <ul class="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-white/20 dark:bg-osu-navy-dark md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0 md:dark:bg-osu-navy">
                         <li>
                             <a href="{{ url_for('views.index') }}"
                                class="{{ nav_link_base }} {{ nav_link_active if request.endpoint == 'views.index' else nav_link_inactive }}"
@@ -263,7 +263,7 @@
             {% block content %}
             {% endblock %}
         </main>
-        <footer class="border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <footer class="border-t border-gray-200 bg-white dark:border-osu-navy dark:bg-gray-900">
             <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-sm text-gray-500 dark:text-gray-400 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
                 <p>
                     Oregon State University Physics Wormhole

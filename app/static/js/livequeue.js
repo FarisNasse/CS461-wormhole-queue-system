@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tickets.forEach((ticket, index) => {
                     const row = document.createElement('tr');
                     row.id = `ticket-${ticket.id}`;
-                    row.className = 'transition hover:bg-orange-50/60';
+                    row.className = 'transition hover:bg-orange-50/60 dark:hover:bg-osu-navy-dark/30';
 
                     const positionCell = document.createElement('td');
                     positionCell.className = 'px-6 py-4 align-middle';
@@ -75,11 +75,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (ticket.status === 'in_progress') {
                         positionBadge.className =
-                            'inline-flex min-w-28 items-center justify-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-yellow-800 ring-1 ring-yellow-200';
+                            'inline-flex min-w-28 items-center justify-center rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-purple-800 ring-1 ring-purple-200 dark:bg-osu-lavender/20 dark:text-osu-lavender-dark dark:ring-osu-lavender-dark/30';
                         positionBadge.textContent = 'In progress';
                     } else {
                         positionBadge.className =
-                            'inline-flex h-9 min-w-12 items-center justify-center rounded-full bg-osu-navy px-3 text-sm font-bold tabular-nums text-white shadow-sm';
+                            'inline-flex h-9 min-w-12 items-center justify-center rounded-lg bg-osu-navy px-3 text-sm font-bold tabular-nums text-white shadow-sm ring-1 ring-osu-navy/30 dark:bg-osu-navy-dark dark:ring-osu-blue-light/20';
                         positionBadge.textContent = `#${index + 1}`;
                     }
 
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const tableBadge = document.createElement('span');
                     tableBadge.className =
-                        'inline-flex min-w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 px-2.5 py-1 text-sm font-semibold tabular-nums text-gray-800 dark:text-gray-200 ring-1 ring-gray-200 dark:ring-gray-700';
+                        'inline-flex min-w-10 items-center justify-center rounded-lg bg-gray-100 px-2.5 py-1 text-sm font-semibold tabular-nums text-gray-800 ring-1 ring-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:ring-osu-blue-light/20';
                     tableBadge.textContent = ticket.table || '—';
 
                     tableCell.appendChild(tableBadge);

@@ -76,12 +76,12 @@
                     </p>
                     {% if current_user.is_anonymous %}
                         <a href="{{ url_for('views.assistant_login') }}"
-                           class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                           class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2.5 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50">
                             Log In
                         </a>
                     {% else %}
                         <a href="{{ url_for('views.userpage', username=current_user.username) }}"
-                           class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                           class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2.5 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50">
                             View Profile
                         </a>
                     {% endif %}

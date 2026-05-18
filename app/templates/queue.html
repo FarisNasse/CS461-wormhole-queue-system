@@ -54,7 +54,7 @@
                         Requests waiting to be claimed.
                     </p>
                 </div>
-                <span class="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                <span class="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800 dark:bg-osu-blue-light/10 dark:text-osu-blue-light dark:ring-1 dark:ring-osu-blue-light/30">
                     {{ ol|length }} open
                 </span>
             </div>
@@ -91,7 +91,7 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}"
-                                           class="font-medium text-osu-navy hover:underline">
+                                           class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
                                             View
                                         </a>
                                     </td>
@@ -116,7 +116,7 @@
                         Requests currently assigned to assistants.
                     </p>
                 </div>
-                <span class="inline-flex w-fit rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                <span class="inline-flex w-fit rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800 dark:bg-osu-lavender/20 dark:text-osu-lavender-dark">
                     {{ cul|length }} in progress
                 </span>
             </div>
@@ -153,7 +153,7 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <a href="{{ url_for('views.currentticket', tktid=tk.id) }}"
-                                           class="font-medium text-osu-navy hover:underline">
+                                           class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
                                             Resolve
                                         </a>
                                     </td>
@@ -178,7 +178,7 @@
                         Recently closed ticket history.
                     </p>
                 </div>
-                <span class="inline-flex w-fit rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gray-700 dark:text-gray-200">
+                <span class="inline-flex w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-200">
                     {{ cll|length }} closed
                 </span>
             </div>
@@ -221,7 +221,7 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                                     <td class="px-4 py-3">
                                         <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}"
-                                           class="font-medium text-osu-navy hover:underline">
+                                           class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
                                             {{ tk.id }}
                                         </a>
                                     </td>

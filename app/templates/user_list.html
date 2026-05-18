@@ -26,7 +26,7 @@
                     </div>
                     <form action="{{ url_for('views.download_current_users') }}" method="get">
                         <button type="submit"
-                                class="inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-auto">
+                                class="inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50 sm:w-auto">
                             Download CSV
                         </button>
                     </form>
@@ -46,7 +46,7 @@
                                                 {{ u.username }}
                                             </span>
                                         </span>
-                                        <span class="text-sm font-medium text-osu-navy">Manage</span>
+                                        <span class="text-sm font-medium text-osu-navy dark:text-osu-blue-light">Manage</span>
                                     </a>
                                 </li>
                             {% endfor %}
@@ -90,7 +90,7 @@
                                                 {{ u.username }}
                                             </span>
                                         </span>
-                                        <span class="text-sm font-medium text-osu-navy">Manage</span>
+                                        <span class="text-sm font-medium text-osu-navy dark:text-osu-blue-light">Manage</span>
                                     </a>
                                 </li>
                             {% endfor %}

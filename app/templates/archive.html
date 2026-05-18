@@ -26,7 +26,7 @@
                     {{ form.hidden_tag() }}
                     <div>
                         {{ form.start_date.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
-                        {{ form.start_date(type="date", class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy") }}
+                        {{ form.start_date(type="date", class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
                         {% for error in form.start_date.errors %}
                             <p class="mt-1 text-sm text-red-600">
                                 {{ error }}
@@ -35,14 +35,14 @@
                     </div>
                     <div>
                         {{ form.end_date.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
-                        {{ form.end_date(type="date", class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy") }}
+                        {{ form.end_date(type="date", class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
                         {% for error in form.end_date.errors %}
                             <p class="mt-1 text-sm text-red-600">
                                 {{ error }}
                             </p>
                         {% endfor %}
                     </div>
-                    {{ form.submit(class_="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300") }}
+                    {{ form.submit(class_="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50") }}
                 </form>
             </section>
             <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
@@ -68,10 +68,10 @@
                                                type="checkbox"
                                                name="filenames"
                                                value="{{ file }}"
-                                               class="h-4 w-4 rounded border-gray-300 dark:border-gray-700 text-osu-navy focus:ring-osu-navy">
+                                               class="h-4 w-4 rounded border-gray-300 text-osu-navy focus:ring-osu-navy dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-osu-blue-light/40">
                                         <label for="archive-{{ loop.index }}" class="min-w-0 flex-1">
                                             <a href="{{ url_for('views.download_archive', filename=file) }}"
-                                               class="block truncate text-sm font-medium text-osu-navy hover:underline">
+                                               class="block truncate text-sm font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
                                                 {{ file }}
                                             </a>
                                             <span class="block text-xs text-gray-500 dark:text-gray-400">CSV archive export</span>

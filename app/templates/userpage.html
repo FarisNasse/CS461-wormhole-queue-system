@@ -53,7 +53,7 @@
                         </div>
                     </dl>
                     <a href="{{ url_for('views.currentticket', tktid=user.tkt.id) }}"
-                       class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-auto">
+                       class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50 sm:w-auto">
                         Resolve Current Request
                     </a>
                 </div>
@@ -71,7 +71,7 @@
                     {% else %}
                         <a id="get-new-ticket"
                            href="{{ url_for('views.getnewticket', username=user.username) }}"
-                           class="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-auto">
+                           class="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50 sm:w-auto">
                             Get Next Request
                         </a>
                     {% endif %}
@@ -126,23 +126,23 @@
                     </h3>
                     <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
                         <a href="{{ url_for('views.register') }}"
-                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:hover:bg-gray-800">
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
                             Register New User
                         </a>
                         <a href="{{ url_for('views.queue') }}"
-                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:hover:bg-gray-800">
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
                             Queue
                         </a>
                         <a href="{{ url_for('views.archive') }}"
-                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:hover:bg-gray-800">
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
                             Archive
                         </a>
                         <a href="{{ url_for('views.register_batch') }}"
-                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:hover:bg-gray-800">
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
                             Register Users in Batch
                         </a>
                         <a href="{{ url_for('views.user_list') }}"
-                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:hover:bg-gray-800">
+                           class="rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm font-medium text-osu-navy hover:bg-gray-50 dark:text-osu-blue-light dark:hover:bg-osu-navy-dark/40 dark:hover:text-white">
                             WA List
                         </a>
                     </div>

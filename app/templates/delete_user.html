@@ -29,7 +29,7 @@
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             {{ edit_form.first_name.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
-                            {{ edit_form.first_name(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy") }}
+                            {{ edit_form.first_name(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Current: {{ user_data.first_name or "N/A" }}
                             </p>
@@ -41,7 +41,7 @@
                         </div>
                         <div>
                             {{ edit_form.last_name.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
-                            {{ edit_form.last_name(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy") }}
+                            {{ edit_form.last_name(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Current: {{ user_data.last_name or "N/A" }}
                             </p>
@@ -53,7 +53,7 @@
                         </div>
                         <div>
                             {{ edit_form.onid.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
-                            {{ edit_form.onid(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy") }}
+                            {{ edit_form.onid(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Current: {{ user_data.onid }}
                             </p>
@@ -65,7 +65,7 @@
                         </div>
                         <div>
                             {{ edit_form.email.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
-                            {{ edit_form.email(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy") }}
+                            {{ edit_form.email(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Current: {{ user_data.email }}
                             </p>
@@ -77,7 +77,7 @@
                         </div>
                         <div>
                             {{ edit_form.is_admin.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
-                            {{ edit_form.is_admin(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy") }}
+                            {{ edit_form.is_admin(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Current:
                                 {% if user_data.is_admin %}
@@ -94,7 +94,7 @@
                         </div>
                         <div>
                             {{ edit_form.is_active.label(class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200") }}
-                            {{ edit_form.is_active(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy") }}
+                            {{ edit_form.is_active(class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-osu-navy focus:ring-osu-navy dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40") }}
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Current:
                                 {% if user_data.is_active %}
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                     <div class="pt-2">
-                        {{ edit_form.submit(class_="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300") }}
+                        {{ edit_form.submit(class_="inline-flex items-center justify-center rounded-lg bg-osu-navy px-4 py-2 text-sm font-medium text-white hover:bg-osu-navy-dark focus:outline-none focus:ring-4 focus:ring-osu-blue-light dark:bg-osu-navy-dark dark:hover:bg-[#24507a] dark:focus:ring-osu-blue-light/50") }}
                     </div>
                 </form>
             </section>
