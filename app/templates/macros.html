@@ -1,0 +1,43 @@
+{% macro render_field(field, **kwargs) %}
+  <div class="mb-4">
+    {{ field.label(class="mb-1 block text-sm font-medium text-gray-700") }}
+
+    {% if field.type == "BooleanField" %}
+      <div class="flex items-center gap-2">
+        {{ field(class="h-4 w-4 rounded border-gray-300 text-osu-navy focus:ring-osu-navy", **kwargs) }}
+        <span class="text-sm text-gray-600">{{ field.label.text }}</span>
+      </div>
+    {% elif field.type in ["TextAreaField", "TextArea"] %}
+      {{ field(class="block w-full rounded-lg border-gray-300 bg-gray-50 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy", **kwargs) }}
+    {% else %}
+      {{ field(class="block w-full rounded-lg border-gray-300 bg-gray-50 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy", **kwargs) }}
+    {% endif %}
+
+    {% for error in field.errors %}
+      <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+
+{% macro card(title="", extra_class="") %}
+  <div class="rounded-xl bg-white p-6 shadow-sm {{ extra_class }}">
+    {% if title %}
+      <h2 class="mb-4 text-xl font-semibold text-gray-900">{{ title }}</h2>
+    {% endif %}
+    {{ caller() }}
+  </div>
+{% endmacro %}
+
+
+{% macro btn(label, variant="primary", type="submit", extra="") %}
+  {% set styles = {
+    "primary": "bg-osu-navy text-white hover:bg-blue-900 focus:ring-blue-300",
+    "danger": "bg-red-600 text-white hover:bg-red-700 focus:ring-red-300",
+    "secondary": "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-200"
+  } %}
+  <button type="{{ type }}"
+          class="rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-4 {{ styles.get(variant, styles.primary) }} {{ extra }}">
+    {{ label }}
+  </button>
+{% endmacro %}

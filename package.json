@@ -4,13 +4,13 @@
   "description": "OSU Physics tutoring queue system",
   "main": "stylelint.config.js",
     "scripts": {
-    "build:css": "tailwindcss -i ./app/static/src/main.css -o ./app/static/dist/main.css --minify",
-    "watch:css": "tailwindcss -i ./app/static/src/main.css -o ./app/static/dist/main.css --watch",
-    "copy:flowbite": "copy node_modules\\flowbite\\dist\\flowbite.min.js app\\static\\dist\\flowbite.min.js",
-    "build": "npm run build:css && npm run copy:flowbite",
-    "lint:css": "stylelint \"app/static/src/**/*.css\"",
-    "lint:html": "htmlhint \"app/templates/**/*.html\""
-  },
+  "build:css": "tailwindcss -i ./app/static/src/main.css -o ./app/static/dist/main.css --minify",
+  "watch:css": "tailwindcss -i ./app/static/src/main.css -o ./app/static/dist/main.css --watch",
+  "copy:flowbite": "node -e \"const fs=require('fs'); fs.mkdirSync('app/static/dist',{recursive:true}); fs.copyFileSync('node_modules/flowbite/dist/flowbite.min.js','app/static/dist/flowbite.min.js')\"",
+  "build": "npm run build:css && npm run copy:flowbite",
+  "lint:css": "stylelint \"app/static/src/**/*.css\"",
+  "lint:html": "htmlhint \"app/templates/**/*.html\""
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
