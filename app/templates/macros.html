@@ -64,7 +64,7 @@
     </div>
 {% endmacro %}
 {% macro card(title="", subtitle="", extra_class="") %}
-    <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 {{ extra_class }}">
+    <section class="motion-card animate-fade-up rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 {{ extra_class }}">
         {% if title or subtitle %}
             <div class="mb-4">
                 {% if title %}
@@ -90,7 +90,7 @@
         "outline": "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:focus:ring-osu-blue-light/30"
     } %}
     <button type="{{ type }}"
-            class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-4 {{ styles.get(variant, styles.primary) }} {{ extra }}">
+            class="motion-button inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-4 {{ styles.get(variant, styles.primary) }} {{ extra }}">
         {{ label }}
     </button>
 {% endmacro %}
@@ -104,7 +104,7 @@
             data-confirm-label="{{ confirm_label }}"
             {% if submit_name %}data-confirm-submit-name="{{ submit_name }}"{% endif %}
             {% if submit_value %}data-confirm-submit-value="{{ submit_value }}"{% endif %}
-            class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900 {{ extra }}">
+            class="motion-button inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-700/30 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900 {{ extra }}">
         {{ label }}
     </button>
 {% endmacro %}
@@ -118,7 +118,7 @@
             data-confirm-label="{{ confirm_label }}"
             {% if submit_name %}data-confirm-submit-name="{{ submit_name }}"{% endif %}
             {% if submit_value %}data-confirm-submit-value="{{ submit_value }}"{% endif %}
-            class="inline-flex items-center justify-center rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 transition hover:bg-yellow-100 focus:outline-none focus:ring-4 focus:ring-yellow-200 dark:border-yellow-700 dark:bg-yellow-950 dark:text-yellow-200 dark:hover:bg-yellow-900 dark:focus:ring-yellow-800 {{ extra }}">
+            class="motion-button inline-flex items-center justify-center rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 hover:bg-yellow-100 hover:shadow-lg hover:shadow-yellow-700/10 focus:outline-none focus:ring-4 focus:ring-yellow-200 dark:border-yellow-700 dark:bg-yellow-950 dark:text-yellow-200 dark:hover:bg-yellow-900 dark:focus:ring-yellow-800 {{ extra }}">
         {{ label }}
     </button>
 {% endmacro %}
@@ -130,7 +130,7 @@
         "outline": "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:focus:ring-osu-blue-light/30"
     } %}
     <a href="{{ href }}"
-       class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-4 {{ styles.get(variant, styles.secondary) }} {{ extra }}">
+       class="motion-button inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-4 {{ styles.get(variant, styles.secondary) }} {{ extra }}">
         {{ label }}
     </a>
 {% endmacro %}

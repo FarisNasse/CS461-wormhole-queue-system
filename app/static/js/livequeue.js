@@ -26,6 +26,22 @@ document.addEventListener('DOMContentLoaded', function () {
         location.reload();
     }
 
+    function updateRefreshTime() {
+        const refreshTime = document.getElementById('refresh-time');
+
+        if (!refreshTime) {
+            return;
+        }
+
+        refreshTime.style.transition = 'opacity 0.2s ease';
+        refreshTime.style.opacity = '0';
+
+        window.setTimeout(() => {
+            refreshTime.textContent = new Date().toLocaleTimeString();
+            refreshTime.style.opacity = '1';
+        }, 160);
+    }
+
     function updateTicketTable() {
         fetch('/api/livequeuetickets')
             .then(response => {
@@ -45,10 +61,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (tickets.length === 0) {
                     const emptyRow = document.createElement('tr');
+                    emptyRow.className = 'animate-ticket-in';
 
                     emptyRow.innerHTML = `
             <td colspan="4" class="px-6 py-12 text-center">
-                <div class="mx-auto max-w-sm">
+                <div class="mx-auto max-w-sm animate-fade-up">
                     <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                         <svg class="h-6 w-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M4 11h16M5 21h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1Z"/>
@@ -66,7 +83,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 tickets.forEach((ticket, index) => {
                     const row = document.createElement('tr');
                     row.id = `ticket-${ticket.id}`;
-                    row.className = 'transition hover:bg-orange-50/60 dark:hover:bg-osu-navy-dark/30';
+                    row.className = 'interactive-table-row animate-ticket-in hover:bg-orange-50/60 dark:hover:bg-osu-navy-dark/30';
+                    row.style.animationDelay = `${index * 55}ms`;
 
                     const positionCell = document.createElement('td');
                     positionCell.className = 'px-6 py-4 align-middle';
@@ -111,8 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     ticketTableBody.appendChild(row);
                 });
 
-                document.getElementById('refresh-time').textContent =
-                    new Date().toLocaleTimeString();
+                updateRefreshTime();
             })
     }
 });

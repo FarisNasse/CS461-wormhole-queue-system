@@ -41,16 +41,16 @@
               href="{{ url_for('static', filename='dist/main.css') }}">
     </head>
     <body class="flex min-h-screen flex-col bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
-        {% set nav_link_base = "block rounded px-3 py-2 text-sm font-medium transition-colors md:p-0 md:hover:bg-transparent" %}
+        {% set nav_link_base = "nav-link-underline block rounded px-3 py-2 text-sm font-medium transition-colors md:p-0 md:hover:bg-transparent" %}
         {% set nav_link_active = "bg-gray-100 text-osu-orange dark:bg-osu-navy-dark md:bg-transparent md:text-osu-orange md:dark:bg-transparent" %}
         {% set nav_link_inactive = "text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark dark:hover:text-white md:hover:text-osu-orange" %}
-        <nav class="border-b border-gray-200 bg-white shadow-sm dark:border-osu-navy dark:bg-osu-navy">
+        <nav class="animate-slide-down border-b border-gray-200 bg-white shadow-sm dark:border-osu-navy dark:bg-osu-navy">
             <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                 <a href="{{ url_for('views.index') }}" class="flex items-center gap-3">
                     <img src="{{ url_for('static', filename='Updated-Wormhole-Image.png') }}"
                          width="36"
                          height="36"
-                         class="h-9 w-9 rounded-lg"
+                         class="h-9 w-9 rounded-lg transition-transform duration-300 hover:rotate-[10deg] hover:scale-105"
                          alt="Wormhole logo">
                     <span class="leading-tight">
                         <span class="block text-xs font-semibold uppercase tracking-wide text-osu-orange sm:text-sm">
@@ -64,11 +64,11 @@
                 <div class="flex items-center gap-2 md:order-2">
                     <button id="theme-toggle"
                             type="button"
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-white/20 dark:bg-osu-navy-dark dark:text-gray-100 dark:hover:bg-osu-navy dark:focus:ring-osu-blue-light/40"
+                            class="motion-button inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-white/20 dark:bg-osu-navy-dark dark:text-gray-100 dark:hover:bg-osu-navy dark:focus:ring-osu-blue-light/40"
                             aria-label="Switch to dark mode"
                             aria-pressed="false">
                         <svg id="theme-toggle-dark-icon"
-                             class="hidden h-5 w-5"
+                             class="hidden h-5 w-5 transition-all duration-300"
                              aria-hidden="true"
                              xmlns="http://www.w3.org/2000/svg"
                              fill="currentColor"
@@ -76,7 +76,7 @@
                             <path d="M17.8 13.75a1 1 0 0 0-1.27-.48A7.5 7.5 0 0 1 6.73 3.47a1 1 0 0 0-1.32-1.25 9.5 9.5 0 1 0 12.34 12.34 1 1 0 0 0 .05-.81Z" />
                         </svg>
                         <svg id="theme-toggle-light-icon"
-                             class="hidden h-5 w-5"
+                             class="hidden h-5 w-5 transition-all duration-300"
                              aria-hidden="true"
                              xmlns="http://www.w3.org/2000/svg"
                              fill="currentColor"
@@ -89,14 +89,14 @@
                             data-dropdown-toggle="user-menu-dropdown"
                             data-dropdown-placement="bottom-end"
                             type="button"
-                            class="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-white/20 dark:bg-osu-navy-dark dark:text-gray-100 dark:hover:bg-osu-navy dark:focus:ring-osu-blue-light/40"
+                            class="motion-button inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-white/20 dark:bg-osu-navy-dark dark:text-gray-100 dark:hover:bg-osu-navy dark:focus:ring-osu-blue-light/40"
                             aria-expanded="false">
                         {% if current_user.is_anonymous %}
                             User
                         {% else %}
                             {{ current_user.username }}
                         {% endif %}
-                        <svg class="ms-2 h-2.5 w-2.5"
+                        <svg class="motion-chevron ms-2 h-2.5 w-2.5"
                              aria-hidden="true"
                              xmlns="http://www.w3.org/2000/svg"
                              fill="none"
@@ -249,7 +249,7 @@
                                                             'warning': 'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-950 dark:text-yellow-200',
                                                             'info': 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200'
                                                         }.get(category, 'border-gray-200 bg-white text-gray-800 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200') %}
-                            <div class="rounded-lg border p-4 text-sm shadow-sm {{ alert_class }}"
+                            <div class="animate-flash-drop rounded-lg border p-4 text-sm shadow-sm {{ alert_class }}"
                                  role="alert">
                                 <span class="flash-{{ category }}" hidden></span>
                                 {{ ms }}
@@ -298,12 +298,12 @@
                         <div class="flex justify-center gap-3">
                             <button data-modal-hide="confirm-action-modal"
                                     type="button"
-                                    class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
+                                    class="motion-button rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
                                 Cancel
                             </button>
                             <button id="confirm-action-submit"
                                     type="button"
-                                    class="rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
+                                    class="motion-button rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 hover:shadow-lg hover:shadow-red-700/30 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
                                 Confirm
                             </button>
                         </div>
@@ -314,6 +314,7 @@
         <script src="{{ url_for('static', filename='dist/flowbite.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/confirm-modal.js') }}"></script>
         <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/motion.js') }}"></script>
         {% block body_scripts %}
         {% endblock %}
     </body>
