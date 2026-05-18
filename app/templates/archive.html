@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import confirm_button %}
 {% block content %}
     <div class="space-y-6">
         <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -51,7 +52,7 @@
                         Download previous exports or select files to delete from the server.
                     </p>
                 </div>
-                <form action="{{ url_for('views.delete_archives') }}" method="post" class="space-y-4">
+                <form id="delete-archives-form" action="{{ url_for('views.delete_archives') }}" method="post" class="space-y-4">
                     {{ delete_form.hidden_tag() }}
                     {% if archive_files %}
                         <div class="overflow-hidden rounded-lg border border-gray-200">
@@ -74,11 +75,13 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        <button type="submit"
-                                class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300"
-                                onclick="return confirm('Delete the selected archive file(s)?');">
-                            Delete Selected
-                        </button>
+                        {{ confirm_button(
+                            "delete-archives-form",
+                            label="Delete Selected",
+                            title="Delete selected archive files?",
+                            message="This removes the selected archive exports from the server. This action cannot be undone.",
+                            confirm_label="Delete archives"
+                        ) }}
                     {% else %}
                         <p class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
                             No archive files found.

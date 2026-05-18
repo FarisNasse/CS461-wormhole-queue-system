@@ -230,7 +230,55 @@
             </div>
         </footer>
 
+        <div id="confirm-action-modal"
+             tabindex="-1"
+             aria-hidden="true"
+             class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0">
+            <div class="relative max-h-full w-full max-w-md p-4">
+                <div class="relative rounded-lg bg-white shadow">
+                    <div class="p-6 text-center">
+                        <svg class="mx-auto mb-4 h-12 w-12 text-red-600"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 20 20">
+                            <path stroke="currentColor"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+
+                        <h2 id="confirm-action-title"
+                            class="mb-2 text-lg font-semibold text-gray-900">
+                            Confirm action
+                        </h2>
+
+                        <p id="confirm-action-message"
+                           class="mb-6 text-sm text-gray-600">
+                            Are you sure you want to continue?
+                        </p>
+
+                        <div class="flex justify-center gap-3">
+                            <button data-modal-hide="confirm-action-modal"
+                                    type="button"
+                                    class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                                Cancel
+                            </button>
+
+                            <button id="confirm-action-submit"
+                                    type="button"
+                                    class="rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300">
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="{{ url_for('static', filename='dist/flowbite.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/confirm-modal.js') }}"></script>
         {% block body_scripts %}
         {% endblock %}
     </body>

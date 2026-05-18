@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import confirm_button, warning_confirm_button %}
 
 {% block scripts %}
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
@@ -20,24 +21,30 @@
 
                 {% if user.is_admin %}
                     <div class="flex flex-col gap-2 sm:flex-row">
-                        <form action="{{ url_for('views.flush') }}" method="post">
+                        <form id="flush-queue-form" action="{{ url_for('views.flush') }}" method="post">
                             {{ flush_form.hidden_tag() }}
 
-                            <button type="submit"
-                                    class="inline-flex w-full items-center justify-center rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-4 focus:ring-yellow-200"
-                                    onclick="return confirm('Are you sure you want to close all active tickets?');">
-                                Flush Queue
-                            </button>
+                            {{ warning_confirm_button(
+                                "flush-queue-form",
+                                label="Flush Queue",
+                                title="Flush old tickets?",
+                                message="This will close all currently active tickets. Make sure the queue state is correct before continuing.",
+                                confirm_label="Flush tickets",
+                                extra="w-full"
+                            ) }}
                         </form>
 
-                        <form action="{{ url_for('views.clear_queue') }}" method="post">
+                        <form id="clear-queue-form" action="{{ url_for('views.clear_queue') }}" method="post">
                             {{ clear_form.hidden_tag() }}
 
-                            <button type="submit"
-                                    class="inline-flex w-full items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300"
-                                    onclick="return confirm('The tickets will be permanently cleared. Make sure to create ticket archive to save history. Would you like to clear the queue data?');">
-                                Clear Queue
-                            </button>
+                            {{ confirm_button(
+                                "clear-queue-form",
+                                label="Clear Queue",
+                                title="Clear the current queue?",
+                                message="This will permanently clear queue ticket data. Create an archive first if you need to preserve ticket history.",
+                                confirm_label="Clear queue",
+                                extra="w-full"
+                            ) }}
                         </form>
                     </div>
                 {% endif %}
