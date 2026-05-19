@@ -35,6 +35,24 @@ class Config:
     FORCE_HTTPS = _env_bool("FORCE_HTTPS", _DEFAULT_SECURE)
     ENABLE_HSTS = _env_bool("ENABLE_HSTS", _DEFAULT_SECURE)
 
+    # Amazon SES / transactional email settings for password reset emails.
+    SES_REGION = os.environ.get("SES_REGION", "us-west-2")
+    MAIL_DEFAULT_SENDER = os.environ.get(
+        "MAIL_DEFAULT_SENDER",
+        "Wormhole Physics <no-reply@physics.oregonstate.edu>",
+    )
+    MAIL_REPLY_TO = os.environ.get(
+        "MAIL_REPLY_TO",
+        "Wormhole Physics <Wormhole.Physics@oregonstate.edu>",
+    )
+    EMAIL_ENABLED = _env_bool("EMAIL_ENABLED", _DEFAULT_SECURE)
+    RESET_PASSWORD_TOKEN_MAX_AGE = int(
+        os.environ.get("RESET_PASSWORD_TOKEN_MAX_AGE", "3600")
+    )
+    RESET_PASSWORD_TOKEN_SALT = os.environ.get(
+        "RESET_PASSWORD_TOKEN_SALT", "password-reset-salt"
+    )
+
     # In production (Elastic Beanstalk), DATABASE_URL must be set as an
     # environment variable pointing to an RDS instance.
     # The SQLite fallback is kept only for local development.

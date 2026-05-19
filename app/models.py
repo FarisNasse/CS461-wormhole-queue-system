@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import sqlalchemy as sa
+from flask import current_app
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from sqlalchemy import orm
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -79,6 +81,35 @@ class User(Base):
         if not self.password_hash:
             return False
         return check_password_hash(self.password_hash, password)
+
+    def get_reset_password_token(self) -> str:
+        """Return a signed, time-limited password reset token for this user."""
+        serializer = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        return serializer.dumps(
+            {"reset_password": self.id},
+            salt=current_app.config["RESET_PASSWORD_TOKEN_SALT"],
+        )
+
+    @staticmethod
+    def verify_reset_password_token(token: str) -> Optional["User"]:
+        """Return the user for a valid reset token, or None if invalid/expired."""
+        serializer = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        try:
+            data = serializer.loads(
+                token,
+                salt=current_app.config["RESET_PASSWORD_TOKEN_SALT"],
+                max_age=current_app.config["RESET_PASSWORD_TOKEN_MAX_AGE"],
+            )
+        except (BadSignature, SignatureExpired):
+            return None
+
+        if not isinstance(data, dict):
+            return None
+
+        user_id = data.get("reset_password")
+        if not isinstance(user_id, int):
+            return None
+        return db.session.get(User, user_id)
 
     def claim_ticket(self, ticket: "Ticket") -> bool:
         if ticket.wa_id is None:
