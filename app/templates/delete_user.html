@@ -115,12 +115,12 @@
                     </div>
                 </form>
             </section>
-            <section class="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
+            <section class="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm dark:border-red-900/50 dark:bg-red-950/20">
                 <div class="mb-5">
-                    <h2 class="text-xl font-semibold text-red-900">
+                    <h2 class="text-xl font-semibold text-red-900 dark:text-red-100">
                         Delete User
                     </h2>
-                    <p class="mt-1 text-sm text-red-800">
+                    <p class="mt-1 text-sm text-red-800 dark:text-red-200">
                         This action permanently removes the account and cannot be undone.
                     </p>
                 </div>
@@ -130,9 +130,9 @@
                       novalidate
                       class="space-y-4">
                     {{ delete_form.hidden_tag() }}
-                    <div class="rounded-lg border border-red-200 bg-white dark:bg-gray-900 p-3 text-sm text-red-800 dark:border-red-900/40 dark:text-red-200">
+                    <div class="rounded-lg border border-red-200 bg-white p-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
                         <div class="mb-2 flex items-center gap-2">
-                            {{ status_badge("Required", "danger") }}
+                            {{ status_badge('Required', 'danger') }}
                             <span class="font-medium">Deletion confirmation</span>
                         </div>
                         <p>
@@ -143,8 +143,9 @@
                     <div>
                         {% set confirm_errors = delete_form.confirm.errors %}
                         {{ delete_form.confirm.label(class="mb-1 block text-sm font-medium text-red-900 dark:text-red-200") }}
-                        {{ delete_form.confirm(id="delete-confirm-input", autocomplete="off", aria_describedby="delete-confirm-help delete-confirm-error", class="block w-full rounded-lg border bg-white dark:bg-gray-900 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:ring-red-500 " ~ ("border-red-500 focus:border-red-500" if confirm_errors else "border-red-300 focus:border-red-500")) }}
-                        <p id="delete-confirm-help" class="mt-1 text-xs text-red-800 dark:text-red-300">
+                        {{ delete_form.confirm(id="delete-confirm-input", autocomplete="off", aria_describedby="delete-confirm-help delete-confirm-error", class="block w-full rounded-lg border bg-white p-2.5 text-sm text-gray-900 focus:ring-red-500 dark:bg-gray-950 dark:text-gray-100 dark:placeholder-gray-400 " ~ ("border-red-500 focus:border-red-500 dark:border-red-500" if confirm_errors else "border-red-300 focus:border-red-500 dark:border-red-800 dark:focus:border-red-500") ) }}
+                        <p id="delete-confirm-help"
+                           class="mt-1 text-xs text-red-800 dark:text-red-300">
                             This check is case-sensitive. Type the word DELETE in all capital letters.
                         </p>
                         <p id="delete-confirm-error"
@@ -170,7 +171,6 @@
         </div>
     </div>
 {% endblock %}
-
 {% block body_scripts %}
     {{ super() }}
     <script>
@@ -184,30 +184,59 @@
                 return;
             }
 
-            const errorMessage = "Type DELETE before deleting this user.";
+            const getErrorMessage = () => {
+                if (input.value.trim()) {
+                    return 'Type "DELETE" exactly to confirm user deletion.';
+                }
+
+                return 'Please type "DELETE" to confirm user deletion.';
+            };
 
             const markInvalid = () => {
-                error.textContent = errorMessage;
+                error.textContent = getErrorMessage();
                 error.classList.remove("hidden");
                 input.setAttribute("aria-invalid", "true");
-                input.classList.remove("border-red-300");
-                input.classList.add("border-red-500", "focus:border-red-500");
+                input.classList.remove("border-red-300", "dark:border-red-800");
+                input.classList.add(
+                    "border-red-500",
+                    "focus:border-red-500",
+                    "dark:border-red-500"
+                );
             };
 
             const clearInvalid = () => {
                 error.classList.add("hidden");
                 input.removeAttribute("aria-invalid");
-                input.classList.remove("border-red-500");
-                input.classList.add("border-red-300");
+                input.classList.remove("border-red-500", "dark:border-red-500");
+                input.classList.add("border-red-300", "dark:border-red-800");
             };
 
             const closeConfirmModal = () => {
-                if (!modalElement || !window.Modal) {
+                if (!modalElement) {
                     return;
                 }
 
-                const modal = window.Modal.getInstance(modalElement) || new window.Modal(modalElement);
-                modal.hide();
+                const modal = window.FlowbiteInstances?.getInstance?.(
+                    "Modal",
+                    "confirm-action-modal"
+                );
+
+                if (modal && typeof modal.hide === "function") {
+                    modal.hide();
+                    return;
+                }
+
+                // Fallback for cases where Flowbite has not registered the modal yet.
+                modalElement.classList.add("hidden");
+                modalElement.classList.remove("flex");
+                modalElement.setAttribute("aria-hidden", "true");
+                modalElement.removeAttribute("aria-modal");
+                modalElement.removeAttribute("role");
+
+                document.body.classList.remove("overflow-hidden");
+                document.querySelectorAll("[modal-backdrop]").forEach((backdrop) => {
+                    backdrop.remove();
+                });
             };
 
             form.addEventListener("submit", (event) => {
@@ -225,6 +254,8 @@
             input.addEventListener("input", () => {
                 if (input.value.trim() === "DELETE") {
                     clearInvalid();
+                } else if (!error.classList.contains("hidden")) {
+                    markInvalid();
                 }
             });
         });
