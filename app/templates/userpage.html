@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-{% block scripts %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJ+YRFb2v3l+6Gk5bQ5f5Q5h5Yt1lV9l8a5Qg="
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/userpage.js') }}"></script>
+{% block meta_description %}Wormhole Assistant dashboard for claiming tickets, viewing current requests, and managing account tools.{% endblock %}
+{% block body_scripts %}
+    {{ super() }}
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js" defer></script>
+    <script src="{{ url_for('static', filename='js/userpage.js') }}" defer></script>
 {% endblock %}
 {% block content %}
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">

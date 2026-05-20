@@ -8,6 +8,36 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  const getConfirmModal = () => {
+    const instance = window.FlowbiteInstances?.getInstance?.(
+      "Modal",
+      "confirm-action-modal",
+    );
+
+    if (instance) {
+      return instance;
+    }
+
+    if (typeof window.Modal !== "function") {
+      return null;
+    }
+
+    return new window.Modal(
+      modalElement,
+      {
+        backdrop: "dynamic",
+        closable: true,
+        placement: "center",
+      },
+      {
+        id: "confirm-action-modal",
+        override: true,
+      },
+    );
+  };
+
+  getConfirmModal();
+
   let pendingForm = null;
   let pendingSubmitName = "";
   let pendingSubmitValue = "";
@@ -43,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (pendingSubmitName) {
       let submitMarker = pendingForm.querySelector(
-        'input[data-confirm-submit-marker="true"]'
+        'input[data-confirm-submit-marker="true"]',
       );
 
       if (!submitMarker) {
