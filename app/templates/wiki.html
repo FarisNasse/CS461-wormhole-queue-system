@@ -1,213 +1,331 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="bg-transparent">
-        <div>
-            <section class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-900 dark:to-osu-navy/70 sm:p-8">
-                <p class="text-sm font-semibold uppercase tracking-wide text-osu-orange">
-                    Documentation
-                </p>
-                <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl">
-                    Wormhole Queue System Wiki
-                </h1>
-                <p class="mt-3 max-w-3xl text-base text-gray-600 dark:text-gray-300">
-                    A practical guide for students, Wormhole Assistants, and administrators using the queue management system.
-                </p>
-            </section>
-            <section class="mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:p-5">
-                <label for="wikiSearch"
-                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Search wiki articles
-                </label>
-                <input type="text"
-                       id="wikiSearch"
-                       class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40"
-                       placeholder="Search getting started, student help, admin features...">
-            </section>
-            <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-4">
-                <aside class="lg:col-span-1">
-                    <div class="sticky top-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                            Documentation
+        <section class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-900 dark:to-osu-navy/70 sm:p-8">
+            <p class="text-sm font-semibold uppercase tracking-wide text-osu-orange">
+                Documentation
+            </p>
+            <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl">
+                Wormhole Queue System Wiki
+            </h1>
+            <p class="mt-3 max-w-3xl text-base text-gray-600 dark:text-gray-300">
+                A practical guide for students, Wormhole Assistants, and administrators using the queue management system.
+            </p>
+        </section>
+        <section class="mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:p-5">
+            <label for="wikiSearch"
+                   class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
+                Search wiki articles
+            </label>
+            <input type="text"
+                   id="wikiSearch"
+                   class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 focus:border-osu-navy focus:ring-osu-navy dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-osu-blue-light dark:focus:ring-osu-blue-light/40"
+                   placeholder="Search getting started, student help, admin features...">
+        </section>
+        <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-4">
+            <aside class="lg:col-span-1">
+                <div class="sticky top-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        Documentation
+                    </h2>
+                    <nav class="mt-4">
+                        <ul class="space-y-2 text-sm">
+                            <li>
+                                <a href="#getting-started"
+                                   class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:hover:text-osu-blue-light">
+                                    Getting Started
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#student-guide"
+                                   class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:hover:text-osu-blue-light">
+                                    Student Guide
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#website-overview"
+                                   class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:hover:text-osu-blue-light">
+                                    Website Overview
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#wormhole-assistants"
+                                   class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:hover:text-osu-blue-light">
+                                    Wormhole Assistants
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#admin-features"
+                                   class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:hover:text-osu-blue-light">
+                                    Admin Features
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#troubleshooting"
+                                   class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:hover:text-osu-blue-light">
+                                    Troubleshooting
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#faq"
+                                   class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-osu-navy dark:text-gray-200 dark:hover:bg-osu-navy-dark/40 dark:hover:text-osu-blue-light">
+                                    FAQ
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </aside>
+            <main class="lg:col-span-3">
+                <div id="wiki-accordion"
+                     class="divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900"
+                     data-accordion="collapse">
+                    <section id="getting-started" class="wiki-section scroll-mt-6">
+                        <h2 id="wiki-heading-getting-started">
+                            <button type="button"
+                                    class="flex w-full items-center justify-between gap-3 px-6 py-5 text-left text-lg font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
+                                    data-accordion-target="#wiki-body-getting-started"
+                                    aria-expanded="true"
+                                    aria-controls="wiki-body-getting-started">
+                                <span>Getting Started</span>
+                                <svg data-accordion-icon
+                                     class="h-3 w-3 shrink-0 rotate-180"
+                                     aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     fill="none"
+                                     viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+                                </svg>
+                            </button>
                         </h2>
-                        <nav class="mt-4">
-                            <ul class="space-y-2 text-sm">
-                                <li>
-                                    <a href="#getting-started"
-                                       class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-osu-navy-dark/40 hover:text-osu-navy dark:hover:text-osu-blue-light">
-                                        Getting Started
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#student-guide"
-                                       class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-osu-navy-dark/40 hover:text-osu-navy dark:hover:text-osu-blue-light">
-                                        Student Guide
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#website-overview"
-                                       class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-osu-navy-dark/40 hover:text-osu-navy dark:hover:text-osu-blue-light">
-                                        Website Overview
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#wormhole-assistants"
-                                       class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-osu-navy-dark/40 hover:text-osu-navy dark:hover:text-osu-blue-light">
-                                        Wormhole Assistants
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#admin-features"
-                                       class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-osu-navy-dark/40 hover:text-osu-navy dark:hover:text-osu-blue-light">
-                                        Admin Features
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#troubleshooting"
-                                       class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-osu-navy-dark/40 hover:text-osu-navy dark:hover:text-osu-blue-light">
-                                        Troubleshooting
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#faq"
-                                       class="nav-link block rounded-lg px-3 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-osu-navy-dark/40 hover:text-osu-navy dark:hover:text-osu-blue-light">
-                                        FAQ
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </aside>
-                <main class="space-y-6 lg:col-span-3">
-                    <section id="getting-started"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="prose max-w-none dark:prose-invert">
-                            <h2>
-                                Getting Started
-                            </h2>
-                            <p>
-                                Welcome to the Wormhole Queue System wiki! This guide will help you get up and running with our queue management platform.
-                            </p>
-                            <h3>
-                                Creating Your Account
-                            </h3>
-                            <p>
-                                To get started, create an account by hovering over the "User" button in the navigation bar. A dropdown will appear, click "Log In". Provide your email address and password.
-                            </p>
+                        <div id="wiki-body-getting-started"
+                             aria-labelledby="wiki-heading-getting-started">
+                            <div class="prose max-w-none p-6 dark:prose-invert">
+                                <p>
+                                    Welcome to the Wormhole Queue System wiki! This guide will help you get up and running with our queue management platform.
+                                </p>
+                                <h3>
+                                    Creating Your Account
+                                </h3>
+                                <p>
+                                    To get started, create an account by hovering over the "User" button in the navigation bar. A dropdown will appear, click "Log In". Provide your email address and password.
+                                </p>
+                            </div>
                         </div>
                     </section>
-                    <section id="student-guide"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="prose max-w-none dark:prose-invert">
-                            <h2>
-                                Student Guide
-                            </h2>
-                            <h3>
-                                Getting Help Online
-                            </h3>
-                            <p>
-                                On the "Home" page, there is a section called "For Students." First, submit a help request by clicking the link. Enter a name that the Wormhole Assistant will be able to identify on your platform of choice. Choose your class from the dropdown. Select the platform through which an assistant can reach you. You will automatically be redirected to the "Live Queue" page. Here you can see your place in line. Navigate back to the For Students section on the Home page to access the Zoom or Teams of the wormhole assistants.
-                            </p>
-                            <h3>
-                                In-person Help
-                            </h3>
-                            <p>
-                                Find a table with a button box on it. Simply press the button that corresponds to the class you need help with. A ticket with your table name and the class will be added to the queue displayed on the TV and a wormhole assistant will be with you when they are available.
-                            </p>
+                    <section id="student-guide" class="wiki-section scroll-mt-6">
+                        <h2 id="wiki-heading-student-guide">
+                            <button type="button"
+                                    class="flex w-full items-center justify-between gap-3 px-6 py-5 text-left text-lg font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
+                                    data-accordion-target="#wiki-body-student-guide"
+                                    aria-expanded="false"
+                                    aria-controls="wiki-body-student-guide">
+                                <span>Student Guide</span>
+                                <svg data-accordion-icon
+                                     class="h-3 w-3 shrink-0"
+                                     aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     fill="none"
+                                     viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="wiki-body-student-guide"
+                             class="hidden"
+                             aria-labelledby="wiki-heading-student-guide">
+                            <div class="prose max-w-none p-6 dark:prose-invert">
+                                <h3>
+                                    Getting Help Online
+                                </h3>
+                                <p>
+                                    On the "Home" page, there is a section called "For Students." First, submit a help request by clicking the link. Enter a name that the Wormhole Assistant will be able to identify on your platform of choice. Choose your class from the dropdown. Select the platform through which an assistant can reach you. You will automatically be redirected to the "Live Queue" page. Here you can see your place in line. Navigate back to the For Students section on the Home page to access the Zoom or Teams of the wormhole assistants.
+                                </p>
+                                <h3>
+                                    In-person Help
+                                </h3>
+                                <p>
+                                    Find a table with a button box on it. Simply press the button that corresponds to the class you need help with. A ticket with your table name and the class will be added to the queue displayed on the TV and a wormhole assistant will be with you when they are available.
+                                </p>
+                            </div>
                         </div>
                     </section>
-                    <section id="website-overview"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="prose max-w-none dark:prose-invert">
-                            <h2>
-                                Website Overview
-                            </h2>
-                            <h3>
-                                Home
-                            </h3>
-                            <p>
-                                The Home page provides an overview of the Wormhole, including quick links to key features and resources. It shows the schedule for the Wormhole as well as the breakdown of wormhole assistant who will be available.
-                            </p>
-                            <h3>
-                                Viewing the Live Queue
-                            </h3>
-                            <p>
-                                The live queue page shows real-time information about the current queue status. Tickets are handled first come first serve, and in progress tickets will have an "in progress" label instead of a number in line.
-                            </p>
-                            <h3>
-                                Wiki
-                            </h3>
-                            <p>
-                                This wiki page provides comprehensive documentation, acting as a guide for using the Wormhole Queue System.
-                            </p>
-                            <h3>
-                                User
-                            </h3>
-                            <p>
-                                By hovering over the "User" button, you will open a dropdown menu of options. You do not need to login as a student to get physics help.
-                            </p>
+                    <section id="website-overview" class="wiki-section scroll-mt-6">
+                        <h2 id="wiki-heading-website-overview">
+                            <button type="button"
+                                    class="flex w-full items-center justify-between gap-3 px-6 py-5 text-left text-lg font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
+                                    data-accordion-target="#wiki-body-website-overview"
+                                    aria-expanded="false"
+                                    aria-controls="wiki-body-website-overview">
+                                <span>Website Overview</span>
+                                <svg data-accordion-icon
+                                     class="h-3 w-3 shrink-0"
+                                     aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     fill="none"
+                                     viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="wiki-body-website-overview"
+                             class="hidden"
+                             aria-labelledby="wiki-heading-website-overview">
+                            <div class="prose max-w-none p-6 dark:prose-invert">
+                                <h3>
+                                    Home
+                                </h3>
+                                <p>
+                                    The Home page provides an overview of the Wormhole, including quick links to key features and resources. It shows the schedule for the Wormhole as well as the breakdown of wormhole assistant who will be available.
+                                </p>
+                                <h3>
+                                    Viewing the Live Queue
+                                </h3>
+                                <p>
+                                    The live queue page shows real-time information about the current queue status. Tickets are handled first come first serve, and in progress tickets will have an "in progress" label instead of a number in line.
+                                </p>
+                                <h3>
+                                    Wiki
+                                </h3>
+                                <p>
+                                    This wiki page provides comprehensive documentation, acting as a guide for using the Wormhole Queue System.
+                                </p>
+                                <h3>
+                                    User
+                                </h3>
+                                <p>
+                                    By hovering over the "User" button, you will open a dropdown menu of options. You do not need to login as a student to get physics help.
+                                </p>
+                            </div>
                         </div>
                     </section>
-                    <section id="wormhole-assistants"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="prose max-w-none dark:prose-invert">
-                            <h2>
-                                Wormhole Assistants
-                            </h2>
-                            <p>
-                                Wormhole Assistants can log in to manage their profile, view queue activity, and help students through the live queue workflow.
-                            </p>
+                    <section id="wormhole-assistants" class="wiki-section scroll-mt-6">
+                        <h2 id="wiki-heading-wormhole-assistants">
+                            <button type="button"
+                                    class="flex w-full items-center justify-between gap-3 px-6 py-5 text-left text-lg font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
+                                    data-accordion-target="#wiki-body-wormhole-assistants"
+                                    aria-expanded="false"
+                                    aria-controls="wiki-body-wormhole-assistants">
+                                <span>Wormhole Assistants</span>
+                                <svg data-accordion-icon
+                                     class="h-3 w-3 shrink-0"
+                                     aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     fill="none"
+                                     viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="wiki-body-wormhole-assistants"
+                             class="hidden"
+                             aria-labelledby="wiki-heading-wormhole-assistants">
+                            <div class="prose max-w-none p-6 dark:prose-invert">
+                                <p>
+                                    Wormhole Assistants can log in to manage their profile, view queue activity, and help students through the live queue workflow.
+                                </p>
+                            </div>
                         </div>
                     </section>
-                    <section id="admin-features"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="prose max-w-none dark:prose-invert">
-                            <h2>
-                                Admin Features
-                            </h2>
-                            <p>
-                                Admin users can manage users, review queue data, export archives, edit public website content, and monitor hardware status.
-                            </p>
+                    <section id="admin-features" class="wiki-section scroll-mt-6">
+                        <h2 id="wiki-heading-admin-features">
+                            <button type="button"
+                                    class="flex w-full items-center justify-between gap-3 px-6 py-5 text-left text-lg font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
+                                    data-accordion-target="#wiki-body-admin-features"
+                                    aria-expanded="false"
+                                    aria-controls="wiki-body-admin-features">
+                                <span>Admin Features</span>
+                                <svg data-accordion-icon
+                                     class="h-3 w-3 shrink-0"
+                                     aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     fill="none"
+                                     viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="wiki-body-admin-features"
+                             class="hidden"
+                             aria-labelledby="wiki-heading-admin-features">
+                            <div class="prose max-w-none p-6 dark:prose-invert">
+                                <p>
+                                    Admin users can manage users, review queue data, export archives, edit public website content, and monitor hardware status.
+                                </p>
+                            </div>
                         </div>
                     </section>
-                    <section id="troubleshooting"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="prose max-w-none dark:prose-invert">
-                            <h2>
-                                Troubleshooting
-                            </h2>
-                            <p>
-                                If a page does not load as expected, refresh the browser, confirm you are using the correct account, and contact an administrator if the issue continues.
-                            </p>
+                    <section id="troubleshooting" class="wiki-section scroll-mt-6">
+                        <h2 id="wiki-heading-troubleshooting">
+                            <button type="button"
+                                    class="flex w-full items-center justify-between gap-3 px-6 py-5 text-left text-lg font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
+                                    data-accordion-target="#wiki-body-troubleshooting"
+                                    aria-expanded="false"
+                                    aria-controls="wiki-body-troubleshooting">
+                                <span>Troubleshooting</span>
+                                <svg data-accordion-icon
+                                     class="h-3 w-3 shrink-0"
+                                     aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     fill="none"
+                                     viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="wiki-body-troubleshooting"
+                             class="hidden"
+                             aria-labelledby="wiki-heading-troubleshooting">
+                            <div class="prose max-w-none p-6 dark:prose-invert">
+                                <p>
+                                    If a page does not load as expected, refresh the browser, confirm you are using the correct account, and contact an administrator if the issue continues.
+                                </p>
+                            </div>
                         </div>
                     </section>
-                    <section id="faq"
-                             class="wiki-section scroll-mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="prose max-w-none dark:prose-invert">
-                            <h2>
-                                FAQ
-                            </h2>
-                            <h3>
-                                Do students need to log in?
-                            </h3>
-                            <p>
-                                No. Students can submit help requests without logging in.
-                            </p>
-                            <h3>
-                                Where can I see my place in line?
-                            </h3>
-                            <p>
-                                Use the Live Queue page to view the current request order.
-                            </p>
+                    <section id="faq" class="wiki-section scroll-mt-6">
+                        <h2 id="wiki-heading-faq">
+                            <button type="button"
+                                    class="flex w-full items-center justify-between gap-3 px-6 py-5 text-left text-lg font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
+                                    data-accordion-target="#wiki-body-faq"
+                                    aria-expanded="false"
+                                    aria-controls="wiki-body-faq">
+                                <span>FAQ</span>
+                                <svg data-accordion-icon
+                                     class="h-3 w-3 shrink-0"
+                                     aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     fill="none"
+                                     viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="wiki-body-faq" class="hidden" aria-labelledby="wiki-heading-faq">
+                            <div class="prose max-w-none p-6 dark:prose-invert">
+                                <h3>
+                                    Do students need to log in?
+                                </h3>
+                                <p>
+                                    No. Students can submit help requests without logging in.
+                                </p>
+                                <h3>
+                                    Where can I see my place in line?
+                                </h3>
+                                <p>
+                                    Use the Live Queue page to view the current request order.
+                                </p>
+                            </div>
                         </div>
                     </section>
-                    <div class="flex justify-end">
-                        <a href="#"
-                           class="back-to-top inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 dark:focus:ring-gray-700">
-                            Back to Top
-                        </a>
-                    </div>
-                </main>
-            </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <a href="#"
+                       class="back-to-top inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 dark:focus:ring-gray-700">
+                        Back to Top
+                    </a>
+                </div>
+            </main>
         </div>
     </div>
     <script>
@@ -219,7 +337,14 @@
 
                 sections.forEach(section => {
                     const text = section.textContent.toLowerCase();
-                    section.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                    const matches = text.includes(searchTerm);
+                    const body = section.querySelector('[id^="wiki-body-"]');
+
+                    section.style.display = matches ? 'block' : 'none';
+
+                    if (body && searchTerm.length > 0 && matches) {
+                        body.classList.remove('hidden');
+                    }
                 });
             });
         }

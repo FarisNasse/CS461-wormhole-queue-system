@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import status_badge %}
 {% block content %}
     <div class="space-y-6">
         <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
@@ -52,21 +53,13 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         {% if box.Battery_Status == 'Green' %}
-                                            <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                                                {{ box.Battery_Status }}
-                                            </span>
+                                            {{ status_badge(box.Battery_Status, "success") }}
                                         {% elif box.Battery_Status == 'Yellow' %}
-                                            <span class="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                                                {{ box.Battery_Status }}
-                                            </span>
+                                            {{ status_badge(box.Battery_Status, "warning") }}
                                         {% elif box.Battery_Status == 'Orange' %}
-                                            <span class="inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-800">
-                                                {{ box.Battery_Status }}
-                                            </span>
+                                            {{ status_badge(box.Battery_Status, "orange") }}
                                         {% else %}
-                                            <span class="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
-                                                {{ box.Battery_Status }}
-                                            </span>
+                                            {{ status_badge(box.Battery_Status, "danger") }}
                                         {% endif %}
                                     </td>
                                     <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
@@ -94,35 +87,35 @@
                 Battery colors indicate whether a hardware box is ready, low, needs charging, or offline.
             </p>
             <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <div class="rounded-lg border border-green-200 bg-green-50 p-4">
-                    <p class="text-sm font-semibold text-green-900">
+                <div class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/30">
+                    <p class="text-sm font-semibold text-green-900 dark:text-green-100">
                         Good Battery Life
                     </p>
-                    <p class="mt-1 text-sm text-green-800">
+                    <p class="mt-1 text-sm text-green-800 dark:text-green-200">
                         Ready for normal use.
                     </p>
                 </div>
-                <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-                    <p class="text-sm font-semibold text-yellow-900">
+                <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950/30">
+                    <p class="text-sm font-semibold text-yellow-900 dark:text-yellow-100">
                         Mid Battery Life
                     </p>
-                    <p class="mt-1 text-sm text-yellow-800">
+                    <p class="mt-1 text-sm text-yellow-800 dark:text-yellow-200">
                         Usable, but should be watched.
                     </p>
                 </div>
-                <div class="rounded-lg border border-orange-200 bg-orange-50 p-4">
-                    <p class="text-sm font-semibold text-orange-900">
+                <div class="rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950/30">
+                    <p class="text-sm font-semibold text-orange-900 dark:text-orange-100">
                         Charge Battery
                     </p>
-                    <p class="mt-1 text-sm text-orange-800">
+                    <p class="mt-1 text-sm text-orange-800 dark:text-orange-200">
                         Should be charged soon.
                     </p>
                 </div>
-                <div class="rounded-lg border border-red-200 bg-red-50 p-4">
-                    <p class="text-sm font-semibold text-red-900">
+                <div class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/30">
+                    <p class="text-sm font-semibold text-red-900 dark:text-red-100">
                         Offline
                     </p>
-                    <p class="mt-1 text-sm text-red-800">
+                    <p class="mt-1 text-sm text-red-800 dark:text-red-200">
                         Needs attention.
                     </p>
                 </div>

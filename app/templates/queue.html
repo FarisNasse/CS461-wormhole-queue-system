@@ -1,268 +1,400 @@
 {% extends "base.html" %}
-{% from "macros.html" import confirm_button, warning_confirm_button %}
+{% from "macros.html" import confirm_button, status_badge, warning_confirm_button %}
 {% block scripts %}
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/queue.js') }}"></script>
 {% endblock %}
 {% block content %}
     <div class="space-y-6">
-        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+        <section class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    <p class="text-sm font-semibold uppercase tracking-wide text-osu-orange">
+                        Admin Dashboard
+                    </p>
+                    <h1 class="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
                         Queue Dashboard
                     </h1>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                        Monitor open, in-progress, and recently closed Wormhole help requests.
+                    <p class="mt-1 max-w-3xl text-sm text-gray-600 dark:text-gray-300">
+                        Monitor open, in-progress, and recently closed Wormhole help requests from one tabbed control center.
                     </p>
                 </div>
+                <div class="grid grid-cols-3 gap-2 text-center sm:min-w-80">
+                    <div class="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-900 dark:bg-blue-950/40">
+                        <span class="block text-lg font-bold text-blue-800 dark:text-blue-200">{{ ol|length }}</span>
+                        <span class="text-xs font-medium text-blue-700 dark:text-blue-300">Open</span>
+                    </div>
+                    <div class="rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 dark:border-purple-900 dark:bg-purple-950/40">
+                        <span class="block text-lg font-bold text-purple-800 dark:text-purple-200">{{ cul|length }}</span>
+                        <span class="text-xs font-medium text-purple-700 dark:text-purple-300">Current</span>
+                    </div>
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-800">
+                        <span class="block text-lg font-bold text-gray-900 dark:text-gray-100">{{ cll|length }}</span>
+                        <span class="text-xs font-medium text-gray-600 dark:text-gray-300">Closed</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div class="border-b border-gray-200 px-4 pt-4 dark:border-gray-800">
+                <ul id="queue-dashboard-tabs"
+                    class="-mb-px flex flex-wrap gap-2 text-center text-sm font-medium"
+                    data-tabs-toggle="#queue-dashboard-tabs-content"
+                    role="tablist">
+                    <li role="presentation">
+                        <button id="open-tab"
+                                data-tabs-target="#open-panel"
+                                type="button"
+                                role="tab"
+                                aria-controls="open-panel"
+                                aria-selected="true"
+                                class="inline-flex items-center gap-2 rounded-t-lg border-b-2 border-transparent px-4 py-3 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            Open Tickets
+                            {{ status_badge(ol|length ~ " open", "info") }}
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button id="current-tab"
+                                data-tabs-target="#current-panel"
+                                type="button"
+                                role="tab"
+                                aria-controls="current-panel"
+                                aria-selected="false"
+                                class="inline-flex items-center gap-2 rounded-t-lg border-b-2 border-transparent px-4 py-3 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            Current Tickets
+                            {{ status_badge(cul|length ~ " active", "purple") }}
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button id="closed-tab"
+                                data-tabs-target="#closed-panel"
+                                type="button"
+                                role="tab"
+                                aria-controls="closed-panel"
+                                aria-selected="false"
+                                class="inline-flex items-center gap-2 rounded-t-lg border-b-2 border-transparent px-4 py-3 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            Closed Tickets
+                            {{ status_badge(cll|length ~ " closed", "neutral") }}
+                        </button>
+                    </li>
+                    {% if user.is_admin %}
+                        <li role="presentation">
+                            <button id="controls-tab"
+                                    data-tabs-target="#controls-panel"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="controls-panel"
+                                    aria-selected="false"
+                                    class="inline-flex items-center gap-2 rounded-t-lg border-b-2 border-transparent px-4 py-3 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                Queue Controls
+                                {{ status_badge('Admin', 'orange') }}
+                            </button>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div id="queue-dashboard-tabs-content" class="p-6">
+                <div id="open-panel" role="tabpanel" aria-labelledby="open-tab">
+                    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Open Tickets
+                            </h2>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                Requests waiting to be claimed by a Wormhole Assistant.
+                            </p>
+                        </div>
+                    </div>
+                    {% if ol %}
+                        <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+                            <table class="w-full min-w-[760px] text-left text-sm text-gray-700 dark:text-gray-200">
+                                <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Student
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Class
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Table
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
+                                    {% for tk in ol %}
+                                        <tr class="interactive-table-row hover:bg-orange-50/60 dark:hover:bg-osu-navy-dark/30">
+                                            <td class="px-4 py-3">
+                                                {{ status_badge('Waiting', 'info') }}
+                                            </td>
+                                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                                                {{ tk.name }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.phClass }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ status_badge("Table " ~ tk.table, "neutral", "tabular-nums") }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}"
+                                                   class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                            There are no open tickets right now.
+                        </p>
+                    {% endif %}
+                </div>
+                <div id="current-panel"
+                     class="hidden"
+                     role="tabpanel"
+                     aria-labelledby="current-tab">
+                    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Current Tickets
+                            </h2>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                Requests currently assigned to assistants.
+                            </p>
+                        </div>
+                    </div>
+                    {% if cul %}
+                        <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+                            <table class="w-full min-w-[760px] text-left text-sm text-gray-700 dark:text-gray-200">
+                                <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Student
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Table
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Assistant
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
+                                    {% for tk in cul %}
+                                        <tr class="interactive-table-row hover:bg-orange-50/60 dark:hover:bg-osu-navy-dark/30">
+                                            <td class="px-4 py-3">
+                                                {{ status_badge('In progress', 'purple') }}
+                                            </td>
+                                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                                                {{ tk.name }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ status_badge("Table " ~ tk.table, "neutral", "tabular-nums") }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.assigned_to }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <a href="{{ url_for('views.currentticket', tktid=tk.id) }}"
+                                                   class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
+                                                    Resolve
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                            There are no tickets currently in progress.
+                        </p>
+                    {% endif %}
+                </div>
+                <div id="closed-panel"
+                     class="hidden"
+                     role="tabpanel"
+                     aria-labelledby="closed-tab">
+                    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Closed Tickets
+                            </h2>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                Recently closed ticket history.
+                            </p>
+                        </div>
+                    </div>
+                    {% if cll %}
+                        <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+                            <table class="w-full min-w-[980px] text-left text-sm text-gray-700 dark:text-gray-200">
+                                <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            ID
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Student
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Table
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Class
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Opened
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Closed
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Reason
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Students
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Closed By
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
+                                    {% for tk in cll %}
+                                        <tr class="interactive-table-row hover:bg-orange-50/60 dark:hover:bg-osu-navy-dark/30">
+                                            <td class="px-4 py-3">
+                                                {{ status_badge('Closed', 'neutral') }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}"
+                                                   class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
+                                                    {{ tk.id }}
+                                                </a>
+                                            </td>
+                                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                                                {{ tk.name }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.table }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.phClass }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.time_create_pacific }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.time_close_pacific }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.closed_reason or "N/A" }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.num_students }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                {{ tk.closed_by }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                            There are no closed tickets yet.
+                        </p>
+                    {% endif %}
+                </div>
                 {% if user.is_admin %}
-                    <div class="flex flex-col gap-2 sm:flex-row">
-                        <form id="flush-queue-form"
-                              action="{{ url_for('views.flush') }}"
-                              method="post">
-                            {{ flush_form.hidden_tag() }}
-                            {{ warning_confirm_button("flush-queue-form",
-                                                        label="Flush Queue",
-                                                        title="Flush old tickets?",
-                                                        message="This will close all currently active tickets. Make sure the queue state is correct before continuing.",
-                                                        confirm_label="Flush tickets",
-                                                        extra="w-full") }}
-                        </form>
-                        <form id="clear-queue-form"
-                              action="{{ url_for('views.clear_queue') }}"
-                              method="post">
-                            {{ clear_form.hidden_tag() }}
-                            {{ confirm_button("clear-queue-form",
-                                                        label="Clear Queue",
-                                                        title="Clear the current queue?",
-                                                        message="This will permanently clear queue ticket data. Create an archive first if you need to preserve ticket history.",
-                                                        confirm_label="Clear queue",
-                                                        extra="w-full") }}
-                        </form>
+                    <div id="controls-panel"
+                         class="hidden"
+                         role="tabpanel"
+                         aria-labelledby="controls-tab">
+                        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-5 dark:border-yellow-900 dark:bg-yellow-950/30">
+                                <h2 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">
+                                    Flush old tickets
+                                </h2>
+                                <p class="mt-1 text-sm text-yellow-800 dark:text-yellow-200">
+                                    Closes active tickets while keeping the queue history available for review.
+                                </p>
+                                <form id="flush-queue-form"
+                                      action="{{ url_for('views.flush') }}"
+                                      method="post"
+                                      class="mt-4">
+                                    {{ flush_form.hidden_tag() }}
+                                    {{ warning_confirm_button("flush-queue-form",
+                                                                        label="Flush Queue",
+                                                                        title="Flush old tickets?",
+                                                                        message="This will close all currently active tickets. Make sure the queue state is correct before continuing.",
+                                                                        confirm_label="Flush tickets",
+                                                                        extra="w-full sm:w-auto",
+                                                                        tooltip_id="flush-queue-tooltip") }}
+                                </form>
+                                <div id="flush-queue-tooltip"
+                                     role="tooltip"
+                                     class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-xs font-medium text-white opacity-0 shadow-sm dark:bg-gray-700">
+                                    Closes active tickets without deleting all ticket rows.
+                                    <div class="tooltip-arrow" data-popper-arrow>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-red-200 bg-red-50 p-5 dark:border-red-900 dark:bg-red-950/30">
+                                <h2 class="text-lg font-semibold text-red-900 dark:text-red-100">
+                                    Clear queue data
+                                </h2>
+                                <p class="mt-1 text-sm text-red-800 dark:text-red-200">
+                                    Permanently clears queue ticket data. Create an archive first if you need the history.
+                                </p>
+                                <form id="clear-queue-form"
+                                      action="{{ url_for('views.clear_queue') }}"
+                                      method="post"
+                                      class="mt-4">
+                                    {{ clear_form.hidden_tag() }}
+                                    {{ confirm_button("clear-queue-form",
+                                                                        label="Clear Queue",
+                                                                        title="Clear the current queue?",
+                                                                        message="This will permanently clear queue ticket data. Create an archive first if you need to preserve ticket history.",
+                                                                        confirm_label="Clear queue",
+                                                                        extra="w-full sm:w-auto",
+                                                                        tooltip_id="clear-queue-tooltip") }}
+                                </form>
+                                <div id="clear-queue-tooltip"
+                                     role="tooltip"
+                                     class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-xs font-medium text-white opacity-0 shadow-sm dark:bg-gray-700">
+                                    Deletes ticket rows and resets the queue state.
+                                    <div class="tooltip-arrow" data-popper-arrow>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
             </div>
         </section>
-        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
-            <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                        Open Tickets
-                    </h2>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                        Requests waiting to be claimed.
-                    </p>
-                </div>
-                <span class="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800 dark:bg-osu-blue-light/10 dark:text-osu-blue-light dark:ring-1 dark:ring-osu-blue-light/30">
-                    {{ ol|length }} open
-                </span>
-            </div>
-            {% if ol %}
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
-                    <table class="w-full text-left text-sm text-gray-700 dark:text-gray-200">
-                        <thead class="bg-gray-100 dark:bg-gray-800 text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
-                            <tr>
-                                <th scope="col" class="px-4 py-3">
-                                    Student
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Class
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Table
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
-                            {% for tk in ol %}
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
-                                        {{ tk.name }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.phClass }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.table }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}"
-                                           class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
-                                            View
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <p class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 text-sm text-gray-600 dark:text-gray-300">
-                    There are no open tickets right now.
-                </p>
-            {% endif %}
-        </section>
-        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
-            <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                        Current Tickets
-                    </h2>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                        Requests currently assigned to assistants.
-                    </p>
-                </div>
-                <span class="inline-flex w-fit rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800 dark:bg-osu-lavender/20 dark:text-osu-lavender-dark">
-                    {{ cul|length }} in progress
-                </span>
-            </div>
-            {% if cul %}
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
-                    <table class="w-full text-left text-sm text-gray-700 dark:text-gray-200">
-                        <thead class="bg-gray-100 dark:bg-gray-800 text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
-                            <tr>
-                                <th scope="col" class="px-4 py-3">
-                                    Student
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Table
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Assistant
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
-                            {% for tk in cul %}
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
-                                        {{ tk.name }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.table }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.assigned_to }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <a href="{{ url_for('views.currentticket', tktid=tk.id) }}"
-                                           class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
-                                            Resolve
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <p class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 text-sm text-gray-600 dark:text-gray-300">
-                    There are no tickets currently in progress.
-                </p>
-            {% endif %}
-        </section>
-        <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
-            <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                        Closed Tickets
-                    </h2>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                        Recently closed ticket history.
-                    </p>
-                </div>
-                <span class="inline-flex w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-200">
-                    {{ cll|length }} closed
-                </span>
-            </div>
-            {% if cll %}
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
-                    <table class="w-full min-w-[900px] text-left text-sm text-gray-700 dark:text-gray-200">
-                        <thead class="bg-gray-100 dark:bg-gray-800 text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
-                            <tr>
-                                <th scope="col" class="px-4 py-3">
-                                    ID
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Student
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Table
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Class
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Opened
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Closed
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Reason
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Students
-                                </th>
-                                <th scope="col" class="px-4 py-3">
-                                    Closed By
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
-                            {% for tk in cll %}
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                    <td class="px-4 py-3">
-                                        <a href="{{ url_for('views.pastticket', username=user.username, tktid=tk.id, next=url_for('views.queue') ) }}"
-                                           class="font-medium text-osu-navy hover:underline dark:text-osu-blue-light dark:hover:text-white">
-                                            {{ tk.id }}
-                                        </a>
-                                    </td>
-                                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
-                                        {{ tk.name }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.table }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.phClass }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.time_create_pacific }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.time_close_pacific }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.closed_reason or "N/A" }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.num_students }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        {{ tk.closed_by }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <p class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-4 text-sm text-gray-600 dark:text-gray-300">
-                    There are no closed tickets yet.
-                </p>
-            {% endif %}
-        </section>
         <div>
             <a href="{{ url_for('views.hardware_list') }}"
-               class="inline-flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700">
+               class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 dark:focus:ring-gray-700">
                 Back to Hardware List
             </a>
         </div>

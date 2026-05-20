@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import status_badge %}
 {% block content %}
     <div class="space-y-6">
         <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
@@ -46,7 +47,13 @@
                                                 {{ u.username }}
                                             </span>
                                         </span>
-                                        <span class="text-sm font-medium text-osu-navy dark:text-osu-blue-light">Manage</span>
+                                        <span class="flex items-center gap-2">
+                                            {{ status_badge('Active', 'success') }}
+                                            <span class="flex items-center gap-2">
+                                                {{ status_badge('Inactive', 'neutral') }}
+                                                <span class="text-sm font-medium text-osu-navy dark:text-osu-blue-light">Manage</span>
+                                            </span>
+                                        </span>
                                     </a>
                                 </li>
                             {% endfor %}

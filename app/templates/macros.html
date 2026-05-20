@@ -94,7 +94,21 @@
         {{ label }}
     </button>
 {% endmacro %}
-{% macro confirm_button(form_id, label="Delete", title="Confirm action", message="Are you sure you want to continue?", confirm_label="Confirm", extra="", submit_name="", submit_value="") %}
+{% macro status_badge(label, variant="neutral", extra="") %}
+    {% set styles = {
+        "success": "bg-green-100 text-green-800 ring-green-200 dark:bg-green-900/40 dark:text-green-200 dark:ring-green-800",
+        "danger": "bg-red-100 text-red-800 ring-red-200 dark:bg-red-900/40 dark:text-red-200 dark:ring-red-800",
+        "warning": "bg-yellow-100 text-yellow-800 ring-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-200 dark:ring-yellow-800",
+        "info": "bg-blue-100 text-blue-800 ring-blue-200 dark:bg-blue-900/40 dark:text-blue-200 dark:ring-blue-800",
+        "purple": "bg-purple-100 text-purple-800 ring-purple-200 dark:bg-purple-900/40 dark:text-purple-200 dark:ring-purple-800",
+        "orange": "bg-orange-100 text-orange-800 ring-orange-200 dark:bg-orange-900/40 dark:text-orange-200 dark:ring-orange-800",
+        "neutral": "bg-gray-100 text-gray-700 ring-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:ring-gray-700"
+    } %}
+    <span class="inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ styles.get(variant, styles.neutral) }} {{ extra }}">
+        {{ label }}
+    </span>
+{% endmacro %}
+{% macro confirm_button(form_id, label="Delete", title="Confirm action", message="Are you sure you want to continue?", confirm_label="Confirm", extra="", submit_name="", submit_value="", tooltip_id="") %}
     <button type="button"
             data-modal-target="confirm-action-modal"
             data-modal-toggle="confirm-action-modal"
@@ -104,11 +118,12 @@
             data-confirm-label="{{ confirm_label }}"
             {% if submit_name %}data-confirm-submit-name="{{ submit_name }}"{% endif %}
             {% if submit_value %}data-confirm-submit-value="{{ submit_value }}"{% endif %}
+            {% if tooltip_id %}data-tooltip-target="{{ tooltip_id }}"{% endif %}
             class="motion-button inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-700/30 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900 {{ extra }}">
         {{ label }}
     </button>
 {% endmacro %}
-{% macro warning_confirm_button(form_id, label="Confirm", title="Confirm action", message="Are you sure you want to continue?", confirm_label="Confirm", extra="", submit_name="", submit_value="") %}
+{% macro warning_confirm_button(form_id, label="Confirm", title="Confirm action", message="Are you sure you want to continue?", confirm_label="Confirm", extra="", submit_name="", submit_value="", tooltip_id="") %}
     <button type="button"
             data-modal-target="confirm-action-modal"
             data-modal-toggle="confirm-action-modal"
@@ -118,6 +133,7 @@
             data-confirm-label="{{ confirm_label }}"
             {% if submit_name %}data-confirm-submit-name="{{ submit_name }}"{% endif %}
             {% if submit_value %}data-confirm-submit-value="{{ submit_value }}"{% endif %}
+            {% if tooltip_id %}data-tooltip-target="{{ tooltip_id }}"{% endif %}
             class="motion-button inline-flex items-center justify-center rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 hover:bg-yellow-100 hover:shadow-lg hover:shadow-yellow-700/10 focus:outline-none focus:ring-4 focus:ring-yellow-200 dark:border-yellow-700 dark:bg-yellow-950 dark:text-yellow-200 dark:hover:bg-yellow-900 dark:focus:ring-yellow-800 {{ extra }}">
         {{ label }}
     </button>
