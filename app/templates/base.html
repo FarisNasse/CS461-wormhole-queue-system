@@ -418,7 +418,8 @@
         <script src="{{ url_for('static', filename='js/confirm-modal.js') }}" defer></script>
         <script src="{{ url_for('static', filename='js/theme-toggle.js') }}" defer></script>
         {% if not current_user.is_anonymous and current_user.is_admin %}
-            <script src="{{ url_for('static', filename='js/admin-drawer-a11y.js') }}" defer></script>
+            <script src="{{ url_for('static', filename='js/admin-drawer-a11y.js') }}"
+                    defer></script>
         {% endif %}
         <script src="{{ url_for('static', filename='js/motion.js') }}" defer></script>
         {% block body_scripts %}
