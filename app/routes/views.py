@@ -748,9 +748,12 @@ def delete_user(username):
     edit_form = EditUserForm()
     # Handle POST requests
     if request.method == "POST":
-        # Check which form was submitted
-        if delete_form.submit.data and delete_form.validate():
-            if delete_form.confirm.data == "DELETE":
+        # Check which form was submitted. Keep delete handling in its own branch so
+        # an invalid DELETE confirmation still gets visible feedback instead of
+        # silently falling through to the page render.
+        if delete_form.submit.data:
+            confirm_text = (delete_form.confirm.data or "").strip()
+            if delete_form.validate() and confirm_text == "DELETE":
                 username_to_delete = u.username
                 db.session.delete(u)
                 db.session.commit()
@@ -759,8 +762,13 @@ def delete_user(username):
                     "success",
                 )
                 return redirect(url_for("views.user_list"))
-            else:
-                flash('Please type "DELETE" to confirm user deletion.', "error")
+
+            message = 'Please type "DELETE" to confirm user deletion.'
+            if confirm_text and confirm_text != "DELETE":
+                message = 'Type "DELETE" exactly to confirm user deletion.'
+
+            delete_form.confirm.errors = [message]
+            flash(message, "error")
         elif edit_form.submit.data and edit_form.validate():
             # Update user fields based on form data
             if edit_form.first_name.data or edit_form.last_name.data:

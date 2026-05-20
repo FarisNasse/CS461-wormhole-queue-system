@@ -1,3 +1,4 @@
+import html
 import io
 
 from app import db
@@ -170,3 +171,69 @@ def test_users_add_batch_blocks_non_admin(test_client, test_app):
     with test_app.app_context():
         created = User.query.filter_by(username="slee").first()
         assert created is None
+
+
+def test_delete_user_requires_delete_confirmation_feedback(test_client, test_app):
+    """Admin delete page should visibly reject an empty DELETE confirmation."""
+    with test_app.app_context():
+        admin = User(
+            username="admin_delete_confirm",
+            email="admin-delete@test.com",
+            is_admin=True,
+        )
+        admin.set_password("pass")
+        victim = User(username="delete_me", email="delete-me@test.com", is_admin=False)
+        victim.set_password("pass")
+        db.session.add_all([admin, victim])
+        db.session.commit()
+        admin_id = admin.id
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin_id
+        sess["is_admin"] = True
+
+    response = test_client.post(
+        "/delete/delete_me",
+        data={"confirm": "", "submit": "Confirm"},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    page_text = html.unescape(response.get_data(as_text=True))
+    assert 'Please type "DELETE" to confirm user deletion.' in page_text
+
+    with test_app.app_context():
+        assert User.query.filter_by(username="delete_me").first() is not None
+
+
+def test_delete_user_rejects_wrong_confirmation_text(test_client, test_app):
+    """Admin delete page should show feedback when confirmation text is not exact."""
+    with test_app.app_context():
+        admin = User(
+            username="admin_delete_wrong", email="admin-wrong@test.com", is_admin=True
+        )
+        admin.set_password("pass")
+        victim = User(
+            username="wrong_delete", email="wrong-delete@test.com", is_admin=False
+        )
+        victim.set_password("pass")
+        db.session.add_all([admin, victim])
+        db.session.commit()
+        admin_id = admin.id
+
+    with test_client.session_transaction() as sess:
+        sess["user_id"] = admin_id
+        sess["is_admin"] = True
+
+    response = test_client.post(
+        "/delete/wrong_delete",
+        data={"confirm": "delete", "submit": "Confirm"},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    page_text = html.unescape(response.get_data(as_text=True))
+    assert 'Type "DELETE" exactly to confirm user deletion.' in page_text
+
+    with test_app.app_context():
+        assert User.query.filter_by(username="wrong_delete").first() is not None

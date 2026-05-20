@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros.html" import confirm_button %}
+{% from "macros.html" import confirm_button, status_badge %}
 {% block content %}
     <div class="space-y-6">
         <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
@@ -130,18 +130,32 @@
                       novalidate
                       class="space-y-4">
                     {{ delete_form.hidden_tag() }}
-                    <p class="rounded-lg border border-red-200 bg-white dark:bg-gray-900 p-3 text-sm text-red-800">
-                        Deleting {{ user.username }} will remove them permanently. Type
-                        <span class="font-semibold">DELETE</span> to confirm user deletion.
-                    </p>
+                    <div class="rounded-lg border border-red-200 bg-white dark:bg-gray-900 p-3 text-sm text-red-800 dark:border-red-900/40 dark:text-red-200">
+                        <div class="mb-2 flex items-center gap-2">
+                            {{ status_badge("Required", "danger") }}
+                            <span class="font-medium">Deletion confirmation</span>
+                        </div>
+                        <p>
+                            Deleting {{ user.username }} will remove them permanently. Type
+                            <span class="font-semibold tracking-wide">DELETE</span> before pressing the delete button.
+                        </p>
+                    </div>
                     <div>
-                        {{ delete_form.confirm.label(class="mb-1 block text-sm font-medium text-red-900") }}
-                        {{ delete_form.confirm(class="block w-full rounded-lg border border-red-300 bg-white dark:bg-gray-900 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:border-red-500 focus:ring-red-500") }}
-                        {% for er in delete_form.confirm.errors %}
-                            <p class="mt-1 text-sm text-red-700">
-                                {{ er }}
-                            </p>
-                        {% endfor %}
+                        {% set confirm_errors = delete_form.confirm.errors %}
+                        {{ delete_form.confirm.label(class="mb-1 block text-sm font-medium text-red-900 dark:text-red-200") }}
+                        {{ delete_form.confirm(id="delete-confirm-input", autocomplete="off", aria_describedby="delete-confirm-help delete-confirm-error", class="block w-full rounded-lg border bg-white dark:bg-gray-900 p-2.5 text-sm text-gray-900 dark:text-gray-100 focus:ring-red-500 " ~ ("border-red-500 focus:border-red-500" if confirm_errors else "border-red-300 focus:border-red-500")) }}
+                        <p id="delete-confirm-help" class="mt-1 text-xs text-red-800 dark:text-red-300">
+                            This check is case-sensitive. Type the word DELETE in all capital letters.
+                        </p>
+                        <p id="delete-confirm-error"
+                           class="{{ '' if confirm_errors else 'hidden' }} mt-1 text-sm font-semibold text-red-700 dark:text-red-300"
+                           role="alert">
+                            {% if confirm_errors %}
+                                {{ confirm_errors[0] }}
+                            {% else %}
+                                Type DELETE before deleting this user.
+                            {% endif %}
+                        </p>
                     </div>
                     {{ confirm_button("delete-user-form",
                                         label="Delete User",
@@ -155,4 +169,64 @@
             </section>
         </div>
     </div>
+{% endblock %}
+
+{% block body_scripts %}
+    {{ super() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("delete-user-form");
+            const input = document.getElementById("delete-confirm-input");
+            const error = document.getElementById("delete-confirm-error");
+            const modalElement = document.getElementById("confirm-action-modal");
+
+            if (!form || !input || !error) {
+                return;
+            }
+
+            const errorMessage = "Type DELETE before deleting this user.";
+
+            const markInvalid = () => {
+                error.textContent = errorMessage;
+                error.classList.remove("hidden");
+                input.setAttribute("aria-invalid", "true");
+                input.classList.remove("border-red-300");
+                input.classList.add("border-red-500", "focus:border-red-500");
+            };
+
+            const clearInvalid = () => {
+                error.classList.add("hidden");
+                input.removeAttribute("aria-invalid");
+                input.classList.remove("border-red-500");
+                input.classList.add("border-red-300");
+            };
+
+            const closeConfirmModal = () => {
+                if (!modalElement || !window.Modal) {
+                    return;
+                }
+
+                const modal = window.Modal.getInstance(modalElement) || new window.Modal(modalElement);
+                modal.hide();
+            };
+
+            form.addEventListener("submit", (event) => {
+                if (input.value.trim() === "DELETE") {
+                    clearInvalid();
+                    return;
+                }
+
+                event.preventDefault();
+                closeConfirmModal();
+                markInvalid();
+                input.focus();
+            });
+
+            input.addEventListener("input", () => {
+                if (input.value.trim() === "DELETE") {
+                    clearInvalid();
+                }
+            });
+        });
+    </script>
 {% endblock %}
