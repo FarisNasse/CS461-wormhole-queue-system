@@ -438,9 +438,11 @@ def assistant_login():
 def dashboard():
     return "<h1>Welcome! You are logged in to the Wormhole System.</h1>", 200
 
+
 @views_bp.route("/test-500")
 def test_500():
-    return render_template('500.html', error_code=500)
+    return render_template("500.html", error_code=500)
+
 
 @views_bp.route("/hardware_list")
 @login_required

@@ -2,12 +2,14 @@
 {% block content %}
     <section class="relative isolate overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl shadow-gray-200/70 dark:border-white/10 dark:bg-gray-900 dark:shadow-black/30">
         <div class="absolute inset-0 -z-10 bg-gradient-to-br from-slate-50 via-white to-orange-50 dark:from-osu-navy/50 dark:via-gray-900 dark:to-gray-950"
-             aria-hidden="true"></div>
+             aria-hidden="true">
+        </div>
         <div class="absolute -right-20 -top-20 -z-10 h-64 w-64 rounded-full bg-osu-orange/10 blur-3xl dark:bg-osu-orange/10"
-             aria-hidden="true"></div>
+             aria-hidden="true">
+        </div>
         <div class="absolute -bottom-24 -left-20 -z-10 h-72 w-72 rounded-full bg-osu-blue-light/20 blur-3xl dark:bg-osu-blue-light/10"
-             aria-hidden="true"></div>
-
+             aria-hidden="true">
+        </div>
         <div class="grid min-h-[62vh] grid-cols-1 items-center gap-10 px-6 py-12 sm:px-10 lg:grid-cols-2 lg:px-14">
             <div class="max-w-2xl">
                 <span class="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-orange-700 dark:border-osu-orange/30 dark:bg-osu-orange/10 dark:text-orange-200">
@@ -19,9 +21,8 @@
                 <p class="mt-4 max-w-xl text-base leading-7 text-gray-600 dark:text-gray-300 sm:text-lg">
                     The link may be outdated, the page may have moved, or the address may have been typed incorrectly. You can return to the homepage or jump back into the main Wormhole tools.
                 </p>
-
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <a href="{{ home_url|default(url_for('views.index')) }}"
+                    <a href="{{ home_url|default(url_for('views.index') ) }}"
                        class="motion-button inline-flex items-center justify-center rounded-lg bg-osu-orange px-5 py-3 text-sm font-semibold text-white hover:bg-orange-700 hover:shadow-lg hover:shadow-osu-orange/30 focus:outline-none focus:ring-4 focus:ring-orange-300">
                         <svg class="me-2 h-4 w-4"
                              aria-hidden="true"
@@ -42,7 +43,6 @@
                     </a>
                 </div>
             </div>
-
             <div class="mx-auto w-full max-w-md lg:justify-self-end">
                 <div class="relative rounded-3xl border border-gray-200 bg-white/90 p-6 shadow-2xl shadow-gray-300/60 dark:border-white/10 dark:bg-gray-950/70 dark:shadow-black/40">
                     <div class="absolute -left-4 -top-4 rounded-2xl bg-osu-navy px-4 py-2 text-sm font-bold text-white shadow-lg dark:bg-osu-blue-light dark:text-osu-navy">
@@ -51,8 +51,10 @@
                     <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-white/10 dark:bg-gray-900">
                         <div class="flex items-center justify-between gap-4">
                             <div class="space-y-2">
-                                <div class="h-3 w-28 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-                                <div class="h-3 w-40 rounded-full bg-gray-200 dark:bg-gray-800"></div>
+                                <div class="h-3 w-28 rounded-full bg-gray-300 dark:bg-gray-700">
+                                </div>
+                                <div class="h-3 w-40 rounded-full bg-gray-200 dark:bg-gray-800">
+                                </div>
                             </div>
                             <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-osu-orange dark:bg-osu-orange/10 dark:text-orange-200">
                                 <svg class="h-7 w-7"
